@@ -5,7 +5,6 @@ import type { Stage } from "@/types/gameplay";
 type InteractionRendererProps = {
   stage: Stage;
   disabled?: boolean;
-  retryCount?: number;
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
   onAutoContinue: () => void;
 };
@@ -13,7 +12,6 @@ type InteractionRendererProps = {
 export function InteractionRenderer({
   stage,
   disabled,
-  retryCount = 0,
   onAnswer,
   onAutoContinue,
 }: InteractionRendererProps) {
@@ -24,7 +22,6 @@ export function InteractionRenderer({
           stage={stage}
           onAnswer={onAnswer}
           disabled={disabled}
-          retryCount={retryCount}
         />
       );
     case "swipe":

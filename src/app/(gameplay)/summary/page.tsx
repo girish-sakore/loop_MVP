@@ -1,57 +1,24 @@
+import Link from "next/link";
+
+import { CompletionCard } from "@/components/feedback/completion-card";
 import { MobileContainer } from "@/components/layout/mobile-container";
-import BottomNav from "@/components/layout/bottom-nav";
-import { SummaryHero } from "@/components/summary/summary-hero";
-import { SummaryStats } from "@/components/summary/summary-stats";
-import { SummaryActions } from "@/components/summary/summary-actions";
+import { TopBar } from "@/components/layout/top-bar";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 
 export default function SummaryPage() {
   const edition = getFeaturedEdition();
-
   return (
     <MobileContainer>
-      {/* Header */}
-      <header
-        className="flex justify-between items-center w-full px-6 h-16 sticky top-0 z-50"
-        style={{ backgroundColor: "var(--surface)" }}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2"
-            style={{
-              backgroundColor: "var(--surface-container-highest)",
-              borderColor: "var(--surface-variant)",
-            }}
-          >
-            <span
-              className="material-symbols-outlined"
-              style={{ color: "var(--primary)" }}
-            >
-              person
-            </span>
-          </div>
-          <span
-            className="text-[28px] font-extrabold tracking-tight"
-            style={{ color: "var(--secondary)" }}
-          >
-            Habitly
-          </span>
-        </div>
-        <button
-          className="material-symbols-outlined hover:opacity-70 transition-opacity"
-          style={{ color: "var(--on-surface-variant)", fontSize: 24 }}
+      <TopBar title="Summary" subtitle="Weekly completion" />
+      <main className="space-y-4 px-4 pt-8">
+        <CompletionCard title={edition.title} score={180} />
+        <Link
+          href={`/edition/${edition.id}`}
+          className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-border text-sm font-semibold"
         >
-          settings
-        </button>
-      </header>
-
-      <main className="flex flex-col gap-6 px-6 pt-4 pb-32">
-        <SummaryHero editionTitle={edition.title} />
-        <SummaryStats totalStages={edition.stages.length} />
-        <SummaryActions />
+          Replay this edition
+        </Link>
       </main>
-
-      <BottomNav />
     </MobileContainer>
   );
 }
