@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { getFeaturedEdition } from "@/features/editions/edition-content";
-import { requireUserSession } from "@/lib/auth-session";
+import { getCachedAuthSession } from "@/lib/auth-session";
 
 export default async function CurrentEditionRedirectPage() {
-  await requireUserSession("/edition/current");
+  // await requireUserSession("/edition/current");
 
   const currentEdition = getFeaturedEdition();
   if (!currentEdition?.id) {

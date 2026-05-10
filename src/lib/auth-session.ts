@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import "server-only";
 
 import { headers } from "next/headers";
@@ -22,3 +23,14 @@ export async function requireUserSession(callbackUrl?: string) {
   }
   return session;
 }
+=======
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+
+export async function getCachedAuthSession() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  return session;
+}
+>>>>>>> 71aa9d5 (Fixed and added better auth config)

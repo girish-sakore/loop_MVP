@@ -9,17 +9,14 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
-  name          String    @default("")
   email         String    @unique
+  name          String?
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  isPremium     Boolean   @default(false)
-
-  accounts      Account[]
   sessions      Session[]
-  subscriptions Subscription[]
+  accounts      Account[]
 
   @@map("user")
 }
@@ -33,8 +30,7 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("session")
 }
@@ -44,6 +40,7 @@ model Account {
   accountId             String
   providerId            String
   userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -54,36 +51,16 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@map("account")
 }
 
 model Verification {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
+  createdAt  DateTime?
+  updatedAt  DateTime?
 
-  @@unique([identifier])
   @@map("verification")
-}
-
-model Subscription {
-  id                  String    @id @default(cuid())
-  userId              String
-  status              String    @default("inactive")
-  planId              String?
-  razorpaySubId       String?   @unique
-  razorpayPlanId      String?
-  currentPeriodEnd    DateTime?
-  cancelAtPeriodEnd   Boolean   @default(false)
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
 }

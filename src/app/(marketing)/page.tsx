@@ -24,7 +24,7 @@ export default function LandingPage() {
             href={`/edition/${edition.id}`}
             className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground"
           >
-            Start this edition
+            Start this edition(Needs login)
           </Link>
         </section>
         <section className="rounded-3xl border border-border bg-card p-5">
