@@ -1,0 +1,189 @@
+.
+├── .cursor
+├── .env
+├── .env.example
+├── .gitignore
+├── AGENTS.md
+├── CLAUDE.md
+├── README.md
+├── data
+├── directory_structure.txt
+├── eslint.config.mjs
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── prisma
+│   ├── migrations
+│   │   ├── 20260508183120_auth_init
+│   │   │   └── migration.sql
+│   │   ├── 20260509130000_better_auth_migration
+│   │   │   └── migration.sql
+│   │   ├── 20260509132031_better_auth_setup
+│   │   │   └── migration.sql
+│   │   ├── 20260509132253_better_auth_setup
+│   │   │   └── migration.sql
+│   │   ├── 20260510131359_add_column_email_verified_in_user
+│   │   │   └── migration.sql
+│   │   ├── 20260510132804_better_auth_migration
+│   │   │   └── migration.sql
+│   │   ├── 20260514115058_add_subscription
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── prisma.config.ts
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── images
+│   │   ├── books.jpg
+│   │   ├── healthy.jpg
+│   │   ├── thepaintedsquare.jpg
+│   │   └── thepaintedsquare_1.jpg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── src
+│   ├── app
+│   │   ├── (gameplay)
+│   │   │   ├── edition
+│   │   │   │   ├── [editionId]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── current
+│   │   │   │       └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── profile
+│   │   │   │   └── page.tsx
+│   │   │   └── summary
+│   │   │       └── page.tsx
+│   │   ├── (marketing)
+│   │   │   ├── layout.tsx
+│   │   │   ├── login
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── (standalone)
+│   │   │   └── pricing
+│   │   │       └── page.tsx
+│   │   ├── api
+│   │   │   ├── auth
+│   │   │   │   └── [...better-auth]
+│   │   │   │       └── route.ts
+│   │   │   └── payment
+│   │   │       ├── order
+│   │   │       │   └── route.ts
+│   │   │       ├── status
+│   │   │       │   └── route.ts
+│   │   │       └── verify
+│   │   │           └── route.ts
+│   │   ├── globals.css
+│   │   └── layout.tsx
+│   ├── components
+│   │   ├── edition-intro
+│   │   │   ├── edition-cta.tsx
+│   │   │   ├── edition-focus.tsx
+│   │   │   ├── edition-hero.tsx
+│   │   │   └── edition-progress.tsx
+│   │   ├── feedback
+│   │   │   ├── completion-card.tsx
+│   │   │   ├── feedback-modal.tsx
+│   │   │   ├── progress-bar.tsx
+│   │   │   └── reveal-state.tsx
+│   │   ├── landing-page
+│   │   │   ├── final-cta.tsx
+│   │   │   ├── footer.tsx
+│   │   │   ├── hero-section.tsx
+│   │   │   ├── interactive-progress.tsx
+│   │   │   ├── premium-benefits.tsx
+│   │   │   ├── step-card.tsx
+│   │   │   ├── three-step-journey.tsx
+│   │   │   └── weekly-experience.tsx
+│   │   ├── layout
+│   │   │   ├── bottom-nav.tsx
+│   │   │   ├── floating-header.tsx
+│   │   │   ├── mobile-container.tsx
+│   │   │   ├── navbar.tsx
+│   │   │   └── top-bar.tsx
+│   │   ├── motion
+│   │   │   └── fade-in.tsx
+│   │   ├── pricing
+│   │   │   ├── pricing-benefits.tsx
+│   │   │   ├── pricing-checkout.tsx
+│   │   │   ├── pricing-footer.tsx
+│   │   │   ├── pricing-header.tsx
+│   │   │   ├── pricing-manage.tsx
+│   │   │   └── pricing-plans.tsx
+│   │   ├── profile
+│   │   │   ├── logout-button.tsx
+│   │   │   ├── profile-avatar.tsx
+│   │   │   ├── profile-editions.tsx
+│   │   │   ├── profile-header.tsx
+│   │   │   ├── profile-stats.tsx
+│   │   │   └── user-menu.tsx
+│   │   ├── summary
+│   │   │   ├── summary-actions.tsx
+│   │   │   ├── summary-hero.tsx
+│   │   │   └── summary-stats.tsx
+│   │   └── ui
+│   │       ├── choice-card.tsx
+│   │       ├── gameplay-card.tsx
+│   │       ├── premium-card.tsx
+│   │       └── progress-bar.tsx
+│   ├── content
+│   │   └── editions
+│   │       └── edition-001.json
+│   ├── features
+│   │   ├── auth
+│   │   │   └── login-form.tsx
+│   │   ├── editions
+│   │   │   └── edition-content.ts
+│   │   ├── gameplay
+│   │   │   ├── engine
+│   │   │   │   └── gameplay-engine.tsx
+│   │   │   ├── progress
+│   │   │   │   └── index.ts
+│   │   │   ├── renderer
+│   │   │   │   └── interaction-renderer.tsx
+│   │   │   ├── scoring
+│   │   │   │   └── index.ts
+│   │   │   ├── shell
+│   │   │   │   └── gameplay-shell.tsx
+│   │   │   └── transitions
+│   │   │       └── index.ts
+│   │   └── interactions
+│   │       ├── drag-drop
+│   │       │   └── drag-drop-interaction.tsx
+│   │       ├── fill-blank
+│   │       │   └── fill-blank-interaction.tsx
+│   │       ├── image-select
+│   │       │   └── image-select-interaction.tsx
+│   │       ├── reorder
+│   │       │   └── reorder-interaction.tsx
+│   │       ├── shared
+│   │       │   └── coming-soon-interaction.tsx
+│   │       └── swipe
+│   │           └── swipe-interaction.tsx
+│   ├── hooks
+│   │   ├── use-edition.ts
+│   │   └── use-razorpay-checkout.ts
+│   ├── lib
+│   │   ├── auth-client.ts
+│   │   ├── auth-session.ts
+│   │   ├── auth.ts
+│   │   ├── db.ts
+│   │   └── razorpay-server.ts
+│   ├── prototypes
+│   │   ├── design-code
+│   │   └── profile-screen.html
+│   ├── stores
+│   │   └── gameplay-store.ts
+│   ├── theme
+│   │   └── tokens.ts
+│   └── types
+│       ├── gameplay.ts
+│       └── razorpay-checkout.d.ts
+├── tailwind.config.ts
+└── tsconfig.json
+
+67 directories, 119 files
