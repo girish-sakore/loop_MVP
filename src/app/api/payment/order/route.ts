@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-
-import { getAuthSession } from "@/lib/auth-session";
+import { getCachedAuthSession } from "@/lib/auth-session";
 import { getRazorpayClient } from "@/lib/razorpay-server";
+import { prisma } from "@/lib/db";
 
-export async function POST() {
+export async function POST(req: Request) {
   try {
-    const session = await getAuthSession();
+    const session = await getCachedAuthSession();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -18,12 +18,25 @@ export async function POST() {
       );
     }
 
-    const amount = Number(process.env.RAZORPAY_AMOUNT_PAISE ?? "79000");
+    // Read plan from request body
+    let plan: "monthly" | "yearly" = "yearly";
+    try {
+      const body = await req.json();
+      if (body.plan === "monthly" || body.plan === "yearly") {
+        plan = body.plan;
+      }
+    } catch {
+      // default to yearly if no body
+    }
+
+    const PRICES: Record<string, number> = {
+      yearly: Number(process.env.RAZORPAY_AMOUNT_YEARLY_PAISE ?? "69900"),
+      monthly: Number(process.env.RAZORPAY_AMOUNT_MONTHLY_PAISE ?? "9900"),
+    };
+
+    const amount = PRICES[plan];
     if (!Number.isFinite(amount) || amount < 100) {
-      return NextResponse.json(
-        { error: "Invalid RAZORPAY_AMOUNT_PAISE" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Invalid amount." }, { status: 500 });
     }
 
     const keyId = process.env.RAZORPAY_KEY_ID;
@@ -40,6 +53,19 @@ export async function POST() {
       receipt,
       notes: {
         userId: session.user.id,
+        plan,
+      },
+    });
+
+    // Record subscription as "created" for audit trail
+    await prisma.subscription.create({
+      data: {
+        userId: session.user.id,
+        razorpayOrderId: order.id,
+        status: "created",
+        plan,
+        amountPaise: amount,
+        currency: "INR",
       },
     });
 
@@ -48,6 +74,7 @@ export async function POST() {
       amount: order.amount,
       currency: order.currency,
       keyId,
+      plan,
     });
   } catch (error) {
     console.error("[payment/order]", error);

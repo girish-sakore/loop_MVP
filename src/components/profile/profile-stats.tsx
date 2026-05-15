@@ -1,20 +1,56 @@
-"use client";
+import Link from "next/link";
 
-import { useRouter } from "next/navigation";
+interface ProfileStatsProps {
+  isPremium: boolean;
+  plan: string | null;
+  subscriptionEnd: Date | null;
+}
 
-export function ProfileStats() {
-  const router = useRouter();
+export function ProfileStats({
+  isPremium,
+  plan,
+  subscriptionEnd,
+}: ProfileStatsProps) {
+  const planLabel = isPremium
+    ? plan === "yearly"
+      ? "Yearly Plan"
+      : plan === "monthly"
+      ? "Monthly Plan"
+      : "Premium"
+    : "Free Plan";
+
+  const planSubLabel = isPremium
+    ? subscriptionEnd
+      ? `Renews ${new Intl.DateTimeFormat("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }).format(subscriptionEnd)}`
+      : "Active"
+    : "Upgrade for full access";
+
+  const planIcon = isPremium ? "workspace_premium" : "lock_open";
+  const planColor = isPremium ? "var(--tertiary)" : "var(--secondary)";
+  const planBg = isPremium
+    ? "var(--tertiary-container)"
+    : "var(--surface-container)";
+  const planIconBg = isPremium
+    ? "color-mix(in srgb, var(--tertiary-fixed) 30%, transparent)"
+    : "var(--surface-container-high)";
 
   return (
     <section className="grid grid-cols-2 gap-4">
-      {/* Streak card */}
+      {/* Streak card — static for now, wire to DB later */}
       <div
         className="p-6 rounded-xl shadow-sm flex flex-col items-center justify-center gap-2 hover:-translate-y-0.5 transition-transform duration-200"
         style={{ backgroundColor: "var(--surface-container-low)" }}
       >
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center mb-1"
-          style={{ backgroundColor: "color-mix(in srgb, var(--secondary-container) 30%, transparent)" }}
+          style={{
+            backgroundColor:
+              "color-mix(in srgb, var(--secondary-container) 30%, transparent)",
+          }}
         >
           <span
             className="material-symbols-outlined"
@@ -41,41 +77,57 @@ export function ProfileStats() {
         </span>
       </div>
 
-      {/* Plan card */}
-      {/* <Link href="/pricing" > */}
+      {/* Plan card — with data, links to pricing */}
+      <Link
+        href="/pricing"
+        className="p-6 rounded-xl shadow-sm flex flex-col items-center justify-center gap-2 hover:-translate-y-0.5 transition-transform duration-200"
+        style={{
+          backgroundColor: planBg,
+          border: isPremium
+            ? "1px solid color-mix(in srgb, var(--outline-variant) 10%, transparent)"
+            : "1px solid color-mix(in srgb, var(--outline-variant) 30%, transparent)",
+          textDecoration: "none",
+        }}
+      >
         <div
-          className="p-6 rounded-xl shadow-sm flex flex-col items-center justify-center gap-2 hover:-translate-y-0.5 transition-transform duration-200"
-          style={{
-            backgroundColor: "var(--primary-container)",
-            border: "1px solid color-mix(in srgb, var(--outline-variant) 10%, transparent)",
-          }}
-          onClick={() => router.push("/pricing")}
+          className="w-12 h-12 rounded-full flex items-center justify-center mb-1"
+          style={{ backgroundColor: planIconBg }}
         >
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center mb-1"
-            style={{ backgroundColor: "color-mix(in srgb, var(--tertiary-fixed) 30%, transparent)" }}
-          >
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 28, color: "var(--tertiary)" }}
-            >
-              verified
-            </span>
-          </div>
           <span
-            className="text-[20px] font-bold"
-            style={{ color: "var(--tertiary)" }}
+            className="material-symbols-outlined"
+            style={{
+              fontSize: 28,
+              color: planColor,
+              fontVariationSettings: isPremium ? "'FILL' 1" : "'FILL' 0",
+            }}
           >
-            Premium
-          </span>
-          <span
-            className="text-[11px] font-bold tracking-widest uppercase"
-            style={{ color: "var(--on-surface-variant)" }}
-          >
-            Annual Plan
+            {planIcon}
           </span>
         </div>
-      {/* </Link> */}
+        <span
+          className="text-[18px] font-bold text-center leading-tight"
+          style={{ color: planColor }}
+        >
+          {planLabel}
+        </span>
+        <span
+          className="text-[10px] font-bold tracking-widest uppercase text-center"
+          style={{ color: "var(--on-surface-variant)" }}
+        >
+          {planSubLabel}
+        </span>
+        {!isPremium && (
+          <span
+            className="mt-1 text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
+            style={{
+              backgroundColor: "var(--secondary)",
+              color: "var(--secondary-foreground)",
+            }}
+          >
+            Upgrade
+          </span>
+        )}
+      </Link>
     </section>
   );
 }

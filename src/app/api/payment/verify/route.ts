@@ -1,7 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
-
-import { getAuthSession } from "@/lib/auth-session";
+import { getCachedAuthSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
 import { getRazorpayClient } from "@/lib/razorpay-server";
 
@@ -14,7 +13,7 @@ function safeCompare(a: string, b: string): boolean {
 
 export async function POST(req: Request) {
   try {
-    const session = await getAuthSession();
+    const session = await getCachedAuthSession();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -38,6 +37,7 @@ export async function POST(req: Request) {
     const orderId = body.razorpay_order_id;
     const paymentId = body.razorpay_payment_id;
     const signature = body.razorpay_signature;
+
     if (
       typeof orderId !== "string" ||
       typeof paymentId !== "string" ||
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing payment fields." }, { status: 400 });
     }
 
+    // Verify signature
     const digest = createHmac("sha256", secret)
       .update(`${orderId}|${paymentId}`)
       .digest("hex");
@@ -61,6 +62,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Payments not configured." }, { status: 503 });
     }
 
+    // Verify order belongs to this user
     const order = await rz.orders.fetch(orderId);
     const noteUser =
       typeof order.notes?.userId === "string" ? order.notes.userId : "";
@@ -71,10 +73,36 @@ export async function POST(req: Request) {
       );
     }
 
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { isPremium: true },
-    });
+    // Determine plan and subscription dates
+    const plan =
+      typeof order.notes?.plan === "string" ? order.notes.plan : "yearly";
+    const now = new Date();
+    const subscriptionEnd = new Date(now);
+    if (plan === "yearly") {
+      subscriptionEnd.setFullYear(subscriptionEnd.getFullYear() + 1);
+    } else {
+      subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
+    }
+
+    // Update user and subscription record atomically
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+          isPremium: true,
+          plan,
+          subscriptionStart: now,
+          subscriptionEnd,
+        },
+      }),
+      prisma.subscription.update({
+        where: { razorpayOrderId: orderId },
+        data: {
+          razorpayPaymentId: paymentId,
+          status: "paid",
+        },
+      }),
+    ]);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

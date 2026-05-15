@@ -13,6 +13,28 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
 
+  // Expose extra user fields on the session object
+  user: {
+    additionalFields: {
+      isPremium: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false, // not user-settable
+      },
+      plan: {
+        type: "string",
+        required: false,
+        input: false,
+      },
+      subscriptionEnd: {
+        type: "string", // ISO date string
+        required: false,
+        input: false,
+      },
+    },
+  },
+
   // PERFORMANCE BOOST: 
   // Joins fetch User + Session in one query instead of two.
   experimental: {

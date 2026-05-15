@@ -53,7 +53,7 @@ export function ProfileAvatar({ name, email, image }: ProfileAvatarProps) {
           className="absolute -bottom-2 -right-2 px-3 py-1 rounded-full shadow-lg flex items-center gap-1.5"
           style={{
             backgroundColor: "var(--secondary)",
-            color: "var(--on-secondary)",
+            color: "var(--secondary-foreground)",
           }}
         >
           <span

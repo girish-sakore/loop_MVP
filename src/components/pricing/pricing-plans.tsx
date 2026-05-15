@@ -4,14 +4,23 @@ import { useState } from "react";
 
 type Plan = "yearly" | "monthly";
 
-export function PricingPlans() {
+interface PricingPlansProps {
+  onPlanChange?: (plan: Plan) => void;
+}
+
+export function PricingPlans({ onPlanChange }: PricingPlansProps) {
   const [selected, setSelected] = useState<Plan>("yearly");
+
+  function handleSelect(plan: Plan) {
+    setSelected(plan);
+    onPlanChange?.(plan);
+  }
 
   return (
     <section className="flex flex-col gap-3">
       {/* Yearly */}
       <button
-        onClick={() => setSelected("yearly")}
+        onClick={() => handleSelect("yearly")}
         className="w-full flex items-center justify-between p-6 rounded-xl text-left transition-all duration-150 active:scale-[0.98]"
         style={{
           backgroundColor:
@@ -40,7 +49,7 @@ export function PricingPlans() {
               className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase"
               style={{
                 backgroundColor: "var(--secondary)",
-                color: "var(--on-secondary)",
+                color: "var(--secondary-foreground)",
               }}
             >
               SAVE 40%
@@ -49,10 +58,11 @@ export function PricingPlans() {
           <p
             className="text-sm"
             style={{
-              color: "color-mix(in srgb, var(--on-secondary-container) 80%, transparent)",
+              color:
+                "color-mix(in srgb, var(--on-secondary-container) 80%, transparent)",
             }}
           >
-            Billed annually at ₹49.99/yr
+            Billed annually at ₹699/yr
           </p>
         </div>
         <div className="text-right shrink-0 ml-4">
@@ -60,7 +70,7 @@ export function PricingPlans() {
             className="text-[28px] font-extrabold leading-none block"
             style={{ color: "var(--secondary)" }}
           >
-            ₹4.16
+            ₹60
           </span>
           <span
             className="text-xs"
@@ -73,7 +83,7 @@ export function PricingPlans() {
 
       {/* Monthly */}
       <button
-        onClick={() => setSelected("monthly")}
+        onClick={() => handleSelect("monthly")}
         className="w-full flex items-center justify-between p-6 rounded-xl text-left transition-all duration-150 active:scale-[0.98]"
         style={{
           backgroundColor:
@@ -106,7 +116,7 @@ export function PricingPlans() {
             className="text-[28px] font-extrabold leading-none block"
             style={{ color: "var(--on-surface)" }}
           >
-            ₹6.99
+            ₹99
           </span>
           <span className="text-xs" style={{ color: "var(--on-surface-variant)" }}>
             per month

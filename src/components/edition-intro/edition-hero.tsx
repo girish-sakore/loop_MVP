@@ -44,7 +44,7 @@ export function EditionHero({ edition }: EditionHeroProps) {
           className="text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full inline-flex self-start"
           style={{
             backgroundColor: "var(--secondary)",
-            color: "var(--on-secondary)",
+            color: "var(--secondary-foreground)",
           }}
         >
           Weekly Edition

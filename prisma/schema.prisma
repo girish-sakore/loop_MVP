@@ -8,19 +8,46 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String         @id @default(cuid())
+  email         String         @unique
   name          String?
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean        @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  // Subscription
+  isPremium         Boolean       @default(false)
+  plan              String?       // "monthly" | "yearly"
+  subscriptionStart DateTime?
+  subscriptionEnd   DateTime?
+
   sessions      Session[]
   accounts      Account[]
+  subscriptions Subscription[]
 
   @@map("user")
 }
 
+model Subscription {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  razorpayOrderId   String   @unique
+  razorpayPaymentId String?
+  status            String   // "created" | "paid" | "failed"
+  plan              String   // "monthly" | "yearly"
+  amountPaise       Int
+  currency          String   @default("INR")
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("subscription")
+}
+
+// Session, Account, Verification
 model Session {
   id        String   @id @default(cuid())
   expiresAt DateTime
@@ -55,7 +82,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
