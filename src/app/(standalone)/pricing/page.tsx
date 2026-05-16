@@ -3,10 +3,10 @@ import { PricingHeader } from "@/components/pricing/pricing-header";
 import { PricingBenefits } from "@/components/pricing/pricing-benefits";
 import { PricingCheckout } from "@/components/pricing/pricing-checkout";
 import { PricingManage } from "@/components/pricing/pricing-manage";
-import { getCachedAuthSession } from "@/lib/auth-session";
+import { getAuthSession } from "@/lib/auth-session";
 
 export default async function PricingPage() {
-  const session = await getCachedAuthSession();
+  const session = await getAuthSession();
   const user = session?.user;
   const isPremium = (user as { isPremium?: boolean })?.isPremium ?? false;
   const plan = (user as { plan?: string })?.plan ?? "yearly";

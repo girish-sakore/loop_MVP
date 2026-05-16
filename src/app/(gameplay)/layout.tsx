@@ -1,8 +1,8 @@
-import { getCachedAuthSession } from "@/lib/auth-session";
+import { getAuthSession } from "@/lib/auth-session";
 import { redirect } from "next/navigation";
 
 export default async function GameplayLayout({ children }: { children: React.ReactNode }) {
-  const session = await getCachedAuthSession();
+  const session = await getAuthSession();
 
   // Security fallback: If middleware somehow misses a check, the layout catches it
   if (!session) {

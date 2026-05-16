@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
-import { getCachedAuthSession } from "@/lib/auth-session";
+import { getAuthSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
 import { getRazorpayClient } from "@/lib/razorpay-server";
 
@@ -13,7 +13,7 @@ function safeCompare(a: string, b: string): boolean {
 
 export async function POST(req: Request) {
   try {
-    const session = await getCachedAuthSession();
+    const session = await getAuthSession();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

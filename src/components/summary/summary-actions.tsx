@@ -22,7 +22,7 @@ export function SummaryActions() {
         className="w-full h-14 rounded-xl text-[16px] font-bold flex items-center justify-center gap-2 transition-all duration-75 active:translate-y-0.5"
         style={{
           backgroundColor: "var(--secondary)",
-          color: "var(--on-secondary-foreground)",
+          color: "var(--on-secondary)",
           boxShadow: "0 4px 0 0 #2a4d41",
         }}
       >
