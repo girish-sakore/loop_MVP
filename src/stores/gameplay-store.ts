@@ -11,6 +11,7 @@ type GameplayState = {
   completed: boolean;
   transitionState: TransitionState;
   setAttempts: (attempts: number) => void;
+  setStage: (stage: number) => void;
   registerResult: (args: { correct: boolean; points: number }) => void;
   nextStage: (totalStages: number, nextAttempts: number) => void;
   reset: () => void;
@@ -27,6 +28,7 @@ const initialState = {
 export const useGameplayStore = create<GameplayState>((set) => ({
   ...initialState,
   setAttempts: (attempts) => set({ attemptsRemaining: attempts }),
+  setStage: (stage) => set({ currentStage: stage }),
   registerResult: ({ correct, points }) =>
     set((state) => ({
       transitionState: "checking",

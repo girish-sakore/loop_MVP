@@ -25,6 +25,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   subscriptions Subscription[]
+  editionProgress UserEditionProgress[]
 
   @@map("user")
 }
@@ -90,4 +91,28 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model UserEditionProgress {
+  id            String    @id @default(cuid())
+  userId        String
+  editionId     String    // matches Edition.id from JSON e.g. "edition-001"
+  
+  status        String    @default("not_started")
+  // "not_started" | "in_progress" | "completed"
+  
+  currentStage  Int       @default(0)
+  score         Int       @default(0)
+  correctAnswers Int      @default(0)
+  totalAnswers  Int       @default(0)
+  
+  startedAt     DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, editionId])  // one record per user per edition
+  @@map("user_edition_progress")
 }
