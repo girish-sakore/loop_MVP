@@ -176,7 +176,7 @@ export function SummaryStats({ totalStages }: { totalStages: number }) {
         }}
       >
         <div
-          className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 border-4"
+          className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 border-4"
           style={{
             borderColor:
               "color-mix(in srgb, var(--secondary) 20%, transparent)",
