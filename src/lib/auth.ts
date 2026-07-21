@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 
 // Use the pool-based prisma instance you already created
 export const auth = betterAuth({
-  appName: "Habitly",
+  appName: "Loop",
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -69,7 +69,7 @@ export const auth = betterAuth({
         // await transporter.sendMail({
         //   from: process.env.EMAIL_FROM ?? "no-reply@habitly.app",
         //   to: email,
-        //   subject: "Your Habitly magic link",
+        //   subject: "Your Loop magic link",
         //   html: `<p>Click <a href="${url}">here</a> to sign in.</p>`,
         // });
       },

@@ -46,7 +46,7 @@ export default async function CurrentEditionPage() {
             className="text-[28px] font-extrabold tracking-tight"
             style={{ color: "var(--secondary)" }}
           >
-            Habitly
+            Loop
           </span>
         </div>
         <button

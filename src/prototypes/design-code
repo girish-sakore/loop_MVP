@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Habitly - Gamified Growth</title>
+    <title>Loop - Gamified Growth</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -142,7 +142,7 @@
 
         // --- Shared Components ---
 
-        const TopAppBar = ({ showBack = false, title = "Habitly", icon = "colors_spark", profileUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDvX9yqw1BX_9Fs63XWOjkua8NerAgPp80gxUQOYR5uALKvkhFIfwAYCY9evaOEesuDs_8mvN4toMNLaHhO2Eunv4WXlWSbdFiqd7lqjuIKfs-o9xMlb1u_5lQaBw2Nj2WVKLBM_VKpef8OLcyus3f-hxqc8kJj3j5oK19xfz6XIh0MOWNwdjr5u0dJ2IRiQgG9gFfuNBdeJgd-1p4xFKpr7HayOJeZobOvzatFrGKr9S_ZqwiY1afYtuxV73I0-9MnZLe-P6Kh1A0" }) => {
+        const TopAppBar = ({ showBack = false, title = "Loop", icon = "colors_spark", profileUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDvX9yqw1BX_9Fs63XWOjkua8NerAgPp80gxUQOYR5uALKvkhFIfwAYCY9evaOEesuDs_8mvN4toMNLaHhO2Eunv4WXlWSbdFiqd7lqjuIKfs-o9xMlb1u_5lQaBw2Nj2WVKLBM_VKpef8OLcyus3f-hxqc8kJj3j5oK19xfz6XIh0MOWNwdjr5u0dJ2IRiQgG9gFfuNBdeJgd-1p4xFKpr7HayOJeZobOvzatFrGKr9S_ZqwiY1afYtuxV73I0-9MnZLe-P6Kh1A0" }) => {
             const navigate = useNavigate();
             return (
                 <header className="fixed top-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant/10">

@@ -8,7 +8,7 @@ export default function Footer() {
         {/* Brand Section */}
         <div className="col-span-2">
           <span className="text-3xl font-extrabold text-[#3a6757] tracking-tight block mb-4">
-            Habitly
+            Loop
           </span>
           <p className="text-gray-600 dark:text-gray-300">
             The tactile habit tracker for humans who want to thrive, not just survive.
@@ -84,7 +84,7 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="max-w-7xl mx-auto mt-24 pt-8 border-t border-gray-300/30 dark:border-gray-600/30 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          © 2024 Habitly Inc. All rights reserved.
+          © 2024 Loop Inc. All rights reserved.
         </p>
         <div className="flex gap-8 text-sm text-gray-600 dark:text-gray-300">
           <Link href="#" className="hover:text-[#3a6757]">
