@@ -20,7 +20,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Habitly",
+  title: "Loop",
   description: "Premium interactive weekly learning experience",
 };
 

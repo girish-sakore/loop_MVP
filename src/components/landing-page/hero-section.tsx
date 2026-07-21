@@ -9,7 +9,7 @@ export default function HeroSection() {
           Build habits that <span className="text-[#3a6757]">actually stick</span>.
         </h1>
         <p className="text-lg text-[#454742] max-w-lg">
-          Habitly turns boring routines into a delightful journey of growth. Experience the most tactile and rewarding habit tracker ever made.
+          Loop turns boring routines into a delightful journey of growth. Experience the most tactile and rewarding habit tracker ever made.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
           <button className="btn-tactile px-8 py-4 bg-[#3A6757] text-white rounded-xl text-xl font-bold flex items-center justify-center gap-2 hover:scale-[1.02]">

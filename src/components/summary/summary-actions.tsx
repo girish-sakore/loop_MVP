@@ -8,8 +8,8 @@ export function SummaryActions() {
   function handleShare() {
     if (navigator.share) {
       navigator.share({
-        title: "Habitly",
-        text: "I just completed a session on Habitly!",
+        title: "Loop",
+        text: "I just completed a session on Loop!",
         url: window.location.origin,
       });
     }

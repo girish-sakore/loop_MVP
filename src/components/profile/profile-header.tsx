@@ -38,7 +38,7 @@ export function ProfileHeader({ name, image }: ProfileHeaderProps) {
           className="text-2xl font-bold tracking-tight"
           style={{ color: "var(--primary)" }}
         >
-          Habitly
+          Loop
         </span>
       </div>
       <button

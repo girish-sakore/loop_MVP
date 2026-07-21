@@ -20,7 +20,7 @@ export default async function LoginPage() {
             className="text-[32px] font-extrabold tracking-tight"
             style={{ color: "var(--secondary)" }}
           >
-            Habitly
+            Loop
           </span>
         </header>
 

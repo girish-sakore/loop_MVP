@@ -62,7 +62,7 @@ export function useRazorpayCheckout({
           key: keyId,
           amount: String(amount),
           currency,
-          name: "Habitly",
+          name: "Loop",
           description:
             plan === "yearly" ? "Yearly Membership" : "Monthly Pass",
           order_id: orderId,
