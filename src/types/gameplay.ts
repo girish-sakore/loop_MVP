@@ -37,4 +37,6 @@ export type Edition = {
   description: string;
   estimatedTime: string;
   stages: Stage[];
+  order: number;        // NEW — position on the map path
+  theme: string;         // NEW — e.g. "salt-village", drives background image + node art
 };
