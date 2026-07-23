@@ -25,12 +25,21 @@ export async function POST(req: Request) {
         userId: session.user.id,
         editionId,
         status: "in_progress",
+        currentStage: 0,
+        score: 0,
+        correctAnswers: 0,
+        totalAnswers: 0,
         startedAt: new Date(),
+        completedAt: null,
       },
       update: {
-        // Don't overwrite if already completed
         status: "in_progress",
+        currentStage: 0,
+        score: 0,
+        correctAnswers: 0,
+        totalAnswers: 0,
         startedAt: new Date(),
+        completedAt: null,
       },
     });
 

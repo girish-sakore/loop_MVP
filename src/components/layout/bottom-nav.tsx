@@ -8,6 +8,7 @@ export default function BottomNav() {
 
   const links = [
     { href: "/edition/current", icon: "joystick", label: "Play" },
+    { href: "/map", icon: "map", label: "Map" },
     { href: "/rankings", icon: "leaderboard", label: "Rankings" },
     { href: "/profile", icon: "person", label: "Profile" },
   ];
@@ -20,14 +21,16 @@ export default function BottomNav() {
           <Link
             key={href}
             href={href}
+            aria-label={label}
+            title={label}
             className={
               isActive
-                ? "flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-6 py-2 shadow-[0_2px_0_0_#3a6757] active:translate-y-0.5 transition-all duration-75"
-                : "flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-variant rounded-xl active:translate-y-0.5 transition-all duration-75"
+                ? "flex h-12 w-16 items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl shadow-[0_2px_0_0_#3a6757] active:translate-y-0.5 transition-all duration-75"
+                : "flex h-12 w-12 items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-xl active:translate-y-0.5 transition-all duration-75"
             }
           >
             <span
-              className="material-symbols-outlined mb-1"
+              className="material-symbols-outlined"
               style={
                 isActive
                   ? { fontVariationSettings: "'FILL' 1" }
@@ -36,9 +39,6 @@ export default function BottomNav() {
             >
               {icon}
             </span>
-            {/* <span className="">
-              {label}
-            </span> */}
           </Link>
         );
       })}

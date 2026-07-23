@@ -15,10 +15,10 @@ export function EditionCompleted({
 }: EditionCompletedProps) {
   const completedLabel = completedAt
     ? new Intl.DateTimeFormat("en-IN", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }).format(new Date(completedAt))
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(completedAt))
     : null;
 
   const accuracy =
@@ -122,7 +122,20 @@ export function EditionCompleted({
           </span>
         </div>
       </div>
-
+      <Link
+        href="/map"
+        className="h-14 px-8 rounded-xl text-[16px] font-bold flex items-center justify-center gap-2 transition-all duration-75 active:translate-y-0.5"
+        style={{
+          backgroundColor: "var(--secondary)",
+          color: "var(--on-secondary)",
+          boxShadow: "0 4px 0 0 #2a4d41",
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+          map
+        </span>
+        Game map
+      </Link>
       {/* Next edition teaser */}
       <div
         className="w-full p-5 rounded-2xl flex items-center gap-4"

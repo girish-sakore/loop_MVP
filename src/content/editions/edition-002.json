@@ -1,0 +1,68 @@
+{
+  "id": "edition-002",
+  "title": "Image Reveal 2",
+  "description": "Test copy for checking game placement on the map.",
+  "estimatedTime": "5 mins",
+  "stages": [
+    {
+      "id": "stage-1",
+      "type": "image-select",
+      "question": "Who is Marie Curie?",
+      "attemptsAllowed": 3,
+      "points": 100,
+      "options": [
+        {
+          "id": "opt-1",
+          "label": "Marie Curie",
+          "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+          "isCorrect": true,
+          "feedback": "Correct. Curie pioneered research on radioactivity."
+        },
+        {
+          "id": "opt-2",
+          "label": "Ada Lovelace",
+          "image": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=400&q=80",
+          "isCorrect": false,
+          "feedback": "Close, but this image does not depict Curie."
+        },
+        {
+          "id": "opt-3",
+          "label": "Rosalind Franklin",
+          "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+          "isCorrect": false,
+          "feedback": "Not this time. Try looking for Curie's era portrait cues."
+        }
+      ]
+    },
+    {
+      "id": "stage-2",
+      "type": "image-select",
+      "question": "Who is Marie Curie?",
+      "attemptsAllowed": 3,
+      "points": 100,
+      "options": [
+        {
+          "id": "opt-1",
+          "label": "Marie Curie",
+          "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+          "isCorrect": true,
+          "feedback": "Correct. Curie pioneered research on radioactivity."
+        },
+        {
+          "id": "opt-2",
+          "label": "Ada Lovelace",
+          "image": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=400&q=80",
+          "isCorrect": false,
+          "feedback": "Close, but this image does not depict Curie."
+        },
+        {
+          "id": "opt-3",
+          "label": "Rosalind Franklin",
+          "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+          "isCorrect": false,
+          "feedback": "Not this time. Try looking for Curie's era portrait cues."
+        }
+      ]
+    }
+  ]
+}
