@@ -3,6 +3,8 @@
   "title": "Image Reveal",
   "description": "Find the right historical profile through visual clues.",
   "estimatedTime": "5 mins",
+  "order": 1,
+  "theme": "salt-village",
   "stages": [
     {
       "id": "stage-1",
