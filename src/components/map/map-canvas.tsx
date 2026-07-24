@@ -7,7 +7,7 @@ import { MapNavToggle } from "@/components/map/map-nav-toggle";
 import { useUiStore } from "@/stores/ui-store";
 import { MAP_ZOOM_SCALE, FOCUS_X_FRACTION, FOCUS_Y_FRACTION } from "@/features/map/map-config";
 import type { VillageMapData, MapNode } from "@/features/map/types";
-import BottomNav from "../layout/bottom-nav";
+import BottomNav from "@/components/layout/bottom-nav";
 
 const themeBackgrounds: Record<string, string> = {
   "salt-village": "/images/villages/salt-village-bg.png",
