@@ -43,6 +43,30 @@
       "attemptsAllowed": 2,
       "points": 80,
       "prompt": "Swipe variant is scaffolded for the renderer."
+    },
+    {
+      "id": "stage-3",
+      "type": "swipe",
+      "question": "Swipe interaction placeholder",
+      "attemptsAllowed": 2,
+      "points": 80,
+      "prompt": "Swipe variant is scaffolded for the renderer."
+    },
+    {
+      "id": "stage-4",
+      "type": "swipe",
+      "question": "Swipe interaction placeholder",
+      "attemptsAllowed": 2,
+      "points": 80,
+      "prompt": "Swipe variant is scaffolded for the renderer."
+    },
+    {
+      "id": "stage-5",
+      "type": "swipe",
+      "question": "Swipe interaction placeholder",
+      "attemptsAllowed": 2,
+      "points": 80,
+      "prompt": "Swipe variant is scaffolded for the renderer."
     }
   ]
 }
