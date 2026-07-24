@@ -42,7 +42,9 @@
 │   │   ├── books.jpg
 │   │   ├── healthy.jpg
 │   │   ├── thepaintedsquare.jpg
-│   │   └── thepaintedsquare_1.jpg
+│   │   ├── thepaintedsquare_1.jpg
+│   │   └── villages
+│   │       └── salt-village-bg.png
 │   ├── next.svg
 │   ├── vercel.svg
 │   └── window.svg
@@ -55,6 +57,8 @@
 │   │   │   │   └── current
 │   │   │   │       └── page.tsx
 │   │   │   ├── layout.tsx
+│   │   │   ├── map
+│   │   │   │   └── page.tsx
 │   │   │   ├── profile
 │   │   │   │   └── page.tsx
 │   │   │   └── summary
@@ -119,6 +123,11 @@
 │   │   │   ├── mobile-container.tsx
 │   │   │   ├── navbar.tsx
 │   │   │   └── top-bar.tsx
+│   │   ├── map
+│   │   │   ├── map-canvas.tsx
+│   │   │   ├── map-nav-toggle.tsx
+│   │   │   ├── map-node.tsx
+│   │   │   └── stage-popup.tsx
 │   │   ├── motion
 │   │   │   └── fade-in.tsx
 │   │   ├── pricing
@@ -165,19 +174,24 @@
 │   │   │   │   └── gameplay-shell.tsx
 │   │   │   └── transitions
 │   │   │       └── index.ts
-│   │   └── interactions
-│   │       ├── drag-drop
-│   │       │   └── drag-drop-interaction.tsx
-│   │       ├── fill-blank
-│   │       │   └── fill-blank-interaction.tsx
-│   │       ├── image-select
-│   │       │   └── image-select-interaction.tsx
-│   │       ├── reorder
-│   │       │   └── reorder-interaction.tsx
-│   │       ├── shared
-│   │       │   └── coming-soon-interaction.tsx
-│   │       └── swipe
-│   │           └── swipe-interaction.tsx
+│   │   ├── interactions
+│   │   │   ├── drag-drop
+│   │   │   │   └── drag-drop-interaction.tsx
+│   │   │   ├── fill-blank
+│   │   │   │   └── fill-blank-interaction.tsx
+│   │   │   ├── image-select
+│   │   │   │   └── image-select-interaction.tsx
+│   │   │   ├── reorder
+│   │   │   │   └── reorder-interaction.tsx
+│   │   │   ├── shared
+│   │   │   │   └── coming-soon-interaction.tsx
+│   │   │   └── swipe
+│   │   │       └── swipe-interaction.tsx
+│   │   └── map
+│   │       ├── map-config.ts
+│   │       ├── map-content.ts
+│   │       ├── types.ts
+│   │       └── village-layouts.ts
 │   ├── hooks
 │   │   ├── use-edition.ts
 │   │   └── use-razorpay-checkout.ts
@@ -192,7 +206,8 @@
 │   │   ├── design-code
 │   │   └── profile-screen.html
 │   ├── stores
-│   │   └── gameplay-store.ts
+│   │   ├── gameplay-store.ts
+│   │   └── ui-store.ts
 │   ├── theme
 │   │   └── tokens.ts
 │   └── types
@@ -201,4 +216,4 @@
 ├── tailwind.config.ts
 └── tsconfig.json
 
-73 directories, 128 files
+77 directories, 139 files
