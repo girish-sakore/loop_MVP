@@ -15,6 +15,7 @@ export function MapNodeMarker({
     <button
       disabled={!isTappable}
       onClick={() => isTappable && onTap(node)}
+      className={node.status === "current" ? "map-node current" : "map-node"}
       style={{
         position: "absolute",
         left: node.x,
@@ -35,11 +36,20 @@ export function MapNodeMarker({
               : "var(--surface-variant)",
         color: "var(--on-primary)",
         boxShadow: isTappable
-          ? "0 7px 0 0 #2a4d41"
-          : "0 7px 0 0 #c6c7c0",
+          ? "0 7px 0 0 var(--secondary-shadow)"
+          : node.status === "current"
+            ? "0 7px 0 0 var(--secondary-shadow)"
+            : "0 7px 0 0 var(--background-shadow)",
         opacity: node.status === "locked" ? 0.4 : 1,
       }}
     >
+      {node.status === "current" && (
+        <>
+          <span className="ray ray-1" />
+          <span className="ray ray-2" />
+          <span className="ray ray-3" />
+        </>
+      )}
       {node.status === "completed" && "★"}
       {node.status === "current" && node.stageIndex + 1}
       {(node.status === "upcoming" || node.status === "locked") && "?"}
