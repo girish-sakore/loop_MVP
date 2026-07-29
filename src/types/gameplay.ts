@@ -7,6 +7,9 @@ export type StageType =
 
 export type StageBase = {
   id: string;
+  // Map metadata
+  mapTitle: string;
+  mapSubtitle: string;
   type: StageType;
   question: string;
   attemptsAllowed: number;

@@ -1,9 +1,9 @@
 export const villageLayouts: Record<string, Array<{ x: string; y: string }>> = {
   "salt-village": [
-    { x: "55%", y: "87%" },
+    { x: "55%", y: "88%" },
     { x: "45%", y: "74%" },
     { x: "66%", y: "64%" },
-    { x: "72%", y: "48%" },
+    { x: "73%", y: "48%" },
     { x: "55%", y: "38%" },
     { x: "55%", y: "33%" },
     { x: "60%", y: "26%" },

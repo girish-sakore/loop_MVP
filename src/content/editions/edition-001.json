@@ -9,6 +9,8 @@
     {
       "id": "stage-1",
       "type": "image-select",
+      "mapTitle": "Salt Mine",
+      "mapSubtitle": "Discover where it all begins.",
       "question": "Who is Marie Curie?",
       "attemptsAllowed": 3,
       "points": 100,
