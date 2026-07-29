@@ -21,7 +21,7 @@ export function MapNodeMarker({
         top: node.y,
         transform: "translate(-50%, -50%)",
         width: 44,
-        height: 44,
+        height: 33,
         borderRadius: "50%",
         display: "flex",
         alignItems: "center",
@@ -34,7 +34,9 @@ export function MapNodeMarker({
               ? "var(--secondary)"
               : "var(--surface-variant)",
         color: "var(--on-primary)",
-        boxShadow: isTappable ? "0 4px 0 0 #2a4d41" : "none",
+        boxShadow: isTappable
+          ? "0 7px 0 0 #2a4d41"
+          : "0 7px 0 0 #c6c7c0",
         opacity: node.status === "locked" ? 0.4 : 1,
       }}
     >

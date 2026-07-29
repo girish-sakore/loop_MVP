@@ -7,6 +7,8 @@ export type MapNode = {
   status: MapNodeStatus;
   x: string;             // percentage, e.g. "42%"
   y: string;
+  title: string;
+  subtitle: string;
 };
 
 export type VillageMapData = {

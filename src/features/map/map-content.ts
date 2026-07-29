@@ -29,7 +29,16 @@ export async function buildVillageMapData(userId: string): Promise<VillageMapDat
         status = "upcoming";
       }
       const { x, y } = getNodePosition(edition.theme, index);
-      return { stageId: stage.id, stageIndex: index, status, x, y };
+      return {
+        stageId: stage.id,
+        stageIndex: index,
+        status,
+        x,
+        y,
+
+        title: stage.mapTitle,
+        subtitle: stage.mapSubtitle,
+      };
     });
 
     villages.push({
