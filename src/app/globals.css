@@ -33,7 +33,7 @@
   --muted-foreground: #5a5a57;
   --card: #ffffff;
   --border: #c6c7c0;
-  --background-shadow: #949c8a;
+  --background-shadow: #555950;
 
   /* Primary */
   --primary: #5e5e5c;
@@ -43,7 +43,7 @@
   --primary-fixed-dim: #c8c6c3;
   --on-primary-fixed: #1b1c1a;
   --on-primary-fixed-variant: #474744;
-
+  --current-shadow: #415f57;
   --on-surface-variant: #454742;
 
   /* Secondary */
@@ -179,22 +179,22 @@ body {
   65%,
   100% {
     transform: translate(-50%, -50%) translateY(0) rotate(0deg);
-    box-shadow: 0 7px 0 var(--secondary-shadow);
+    box-shadow: 0 10px 0 var(--current-shadow);
   }
 
   68% {
     transform: translate(-50%, -50%) translateY(5px) rotate(-2deg);
-    box-shadow: 0 2px 0 var(--secondary-shadow);
+    box-shadow: 0 2px 0 var(--current-shadow);
   }
 
   70% {
     transform: translate(-50%, -50%) translateY(0) rotate(0deg);
-    box-shadow: 0 7px 0 var(--secondary-shadow);
+    box-shadow: 0 10px 0 var(--current-shadow);
   }
 
-  84% {
+  88% {
     transform: translate(-50%, -50%) translateY(0) rotate(2deg);
-    box-shadow: 0 7px 0 var(--secondary-shadow);
+    box-shadow: 0 10px 0 var(--current-shadow);
   }
 
   90% {
@@ -213,7 +213,7 @@ body {
 }
 
 .map-node.current {
-  animation: pressButton 1.5s ease-in-out infinite;
+  animation: pressButton 2s ease-in-out infinite;
 }
 
 .ray {
@@ -222,7 +222,7 @@ body {
   height: 18px;
   border-radius: 999px;
   background: var(--secondary);
-  animation: blink-animation 1.5s steps(1, start) infinite;
+  animation: blink-animation 2s steps(1, start) infinite;
 }
 
 .ray-1 {
