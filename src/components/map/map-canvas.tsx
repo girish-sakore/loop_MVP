@@ -85,10 +85,11 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
               position: "relative",
               width: "100%",
               aspectRatio: "845 / 1500",
-              backgroundImage: `url(${themeBackgrounds[village.theme] ?? ""})`,
+              // backgroundImage: `url(${themeBackgrounds[village.theme] ?? ""})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               opacity: village.status === "locked" ? 0.5 : 1,
+              backgroundColor: village.status === "locked" ? "var(--on-tertiary-fixed)" : "#191a1b",
             }}
           >
             {village.nodes.map((node) => (
