@@ -1,5 +1,6 @@
 import { ImageSelectInteraction } from "@/features/interactions/image-select/image-select-interaction";
 import { ComingSoonInteraction } from "@/features/interactions/shared/coming-soon-interaction";
+import { SwipeInteractionPlaceholder } from "@/features/interactions/swipe/swipe-interaction";
 import type { Stage } from "@/types/gameplay";
 
 type InteractionRendererProps = {
@@ -28,6 +29,14 @@ export function InteractionRenderer({
         />
       );
     case "swipe":
+      return (
+        <SwipeInteractionPlaceholder
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+        />
+      );
     case "fill-blank":
     case "reorder":
     case "drag-drop":

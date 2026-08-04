@@ -23,11 +23,12 @@
           "feedback": "Correct. Curie pioneered research on radioactivity."
         },
         {
-          "id": "opt-2",
-          "label": "Ada Lovelace",
-          "image": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=400&q=80",
-          "isCorrect": false,
-          "feedback": "Close, but this image does not depict Curie."
+          "id": "stage-2",
+          "type": "swipe",
+          "question": "Swipe interaction placeholder",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "prompt": "Swipe variant is scaffolded for the renderer."
         },
         {
           "id": "opt-3",
@@ -41,14 +42,34 @@
     {
       "id": "stage-2",
       "type": "swipe",
-      "question": "Swipe interaction placeholder",
+      "mapTitle": "Salt Mine",
+      "mapSubtitle": "Discover ancient beliefs",
+      "question": "Swipe left or right",
       "attemptsAllowed": 2,
       "points": 80,
-      "prompt": "Swipe variant is scaffolded for the renderer."
+      "statement": "Salt was once more valuable than gold in some regions.",
+      "card": {
+        "title": "Salt Value",
+        "subtitle": "Fact or Myth?",
+        "image": "/images/cards/salt-value.png"
+      },
+      "left": {
+        "label": "Myth",
+        "icon": "close"
+      },
+      "right": {
+        "label": "Fact",
+        "icon": "check"
+      },
+      "correctDirection": "right",
+      "feedback": {
+        "correct": "Correct! Salt was an extremely valuable commodity.",
+        "incorrect": "This statement is actually true."
+      }
     },
     {
       "id": "stage-3",
-      "type": "swipe",
+      "type": "reorder",
       "question": "Swipe interaction placeholder",
       "attemptsAllowed": 2,
       "points": 80,
@@ -56,7 +77,7 @@
     },
     {
       "id": "stage-4",
-      "type": "swipe",
+      "type": "reorder",
       "question": "Swipe interaction placeholder",
       "attemptsAllowed": 2,
       "points": 80,
@@ -64,7 +85,7 @@
     },
     {
       "id": "stage-5",
-      "type": "swipe",
+      "type": "reorder",
       "question": "Swipe interaction placeholder",
       "attemptsAllowed": 2,
       "points": 80,
