@@ -28,11 +28,39 @@ export type ImageSelectStage = StageBase & {
 };
 
 export type PlaceholderStage = StageBase & {
-  type: "swipe" | "fill-blank" | "reorder" | "drag-drop";
+  type: "fill-blank" | "reorder" | "drag-drop";
   prompt: string;
 };
 
-export type Stage = ImageSelectStage | PlaceholderStage;
+export type SwipeStage = StageBase & {
+  type: "swipe";
+
+  statement: string;
+
+  card: {
+    title: string;
+    subtitle?: string;
+    image?: string;
+  };
+
+  left: {
+    label: string;
+    icon?: string;
+  };
+
+  right: {
+    label: string;
+    icon?: string;
+  };
+
+  correctDirection: "left" | "right";
+
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
+export type Stage = ImageSelectStage  | PlaceholderStage | SwipeStage;
 
 export type Edition = {
   id: string;

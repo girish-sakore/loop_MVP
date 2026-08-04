@@ -81,13 +81,13 @@ export function ImageSelectInteraction({
                 className="aspect-square w-full rounded-lg overflow-hidden"
                 style={{ backgroundColor: "var(--surface-container-high)" }}
               >
-                <Image
+                {/* <Image
                   src={option.image}
                   alt={option.label}
                   width={200}
                   height={200}
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                />
+                /> */}
               </div>
 
               <div className="flex items-center justify-between">
