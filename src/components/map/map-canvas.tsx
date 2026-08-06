@@ -5,7 +5,7 @@ import { MapNodeMarker } from "@/components/map/map-node";
 import { StagePopup } from "@/components/map/stage-popup";
 import { MapNavToggle } from "@/components/map/map-nav-toggle";
 import { useUiStore } from "@/stores/ui-store";
-import { MAP_ZOOM_SCALE, FOCUS_X_FRACTION, FOCUS_Y_FRACTION } from "@/features/map/map-config";
+// import { MAP_ZOOM_SCALE, FOCUS_X_FRACTION, FOCUS_Y_FRACTION } from "@/features/map/map-config";
 import type { VillageMapData, MapNode } from "@/features/map/types";
 import BottomNav from "@/components/layout/bottom-nav";
 import { VillageTitleCard } from "@/components/map/village-title-card";
@@ -38,18 +38,18 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
     const container = scrollRef.current;
     if (!container) return;
 
-    const currentNode = villages.flatMap((v) => v.nodes).find((n) => n.status === "current");
+    const currentNode = villages
+      .flatMap((v) => v.nodes)
+      .find((n) => n.status === "current");
+
     if (!currentNode) return;
 
-    const contentWidth = container.clientWidth * MAP_ZOOM_SCALE;
     const contentHeight = container.scrollHeight;
-
-    const nodeAbsX = (parseFloat(currentNode.x) / 100) * contentWidth;
-    const nodeAbsY = (parseFloat(currentNode.y) / 100) * contentHeight;
+    const nodeAbsY =
+      (parseFloat(currentNode.y) / 100) * contentHeight;
 
     container.scrollTo({
-      left: nodeAbsX - container.clientWidth * FOCUS_X_FRACTION,
-      top: nodeAbsY - container.clientHeight * FOCUS_Y_FRACTION,
+      top: nodeAbsY - container.clientHeight * 0.65,
       behavior: "auto",
     });
   }, [villages]);
@@ -58,8 +58,9 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
     <div
       ref={scrollRef}
       style={{
-        height: "100dvh",
-        overflow: "auto",
+        height: "100vh",
+        overflowY: "auto",
+        overflowX: "hidden",
         WebkitOverflowScrolling: "touch",
         touchAction: "pan-x pan-y",
         backgroundColor: "var(--surface)",
@@ -72,54 +73,40 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
           completed={completed}
           total={total}
         />
-
-        <div ref={scrollRef}>
-          ...
-        </div>
       </>
-      <div style={{ position: "relative", width: `${MAP_ZOOM_SCALE * 100}%` }}>
+      <div style={{ position: "relative", width: "100%" }}>
         {villages.map((village) => (
           <div
             key={village.editionId}
             style={{
               position: "relative",
               width: "100%",
-              aspectRatio: "845 / 1500",
-              // backgroundImage: `url(${themeBackgrounds[village.theme] ?? ""})`,
+              height: "100vh",
               backgroundSize: "cover",
               backgroundPosition: "center",
               opacity: village.status === "locked" ? 0.5 : 1,
               backgroundColor: village.status === "locked" ? "var(--on-tertiary-fixed)" : "var(--on-tertiary-fixed)", //#191a1b
             }}
           >
-            {village.nodes.map((node) => (
-              <MapNodeMarker
-                key={node.stageId}
-                node={node}
-                onTap={(tappedNode) =>
-                  setActiveNode({ editionId: village.editionId, node: tappedNode })
-                }
-              />
-            ))}
 
-            {/* {activeNode?.editionId === village.editionId && (
-              <StagePopup
-                node={activeNode.node}
-                editionId={activeNode.editionId}
-                onClose={() => setActiveNode(null)}
-              />
-            )} */}
+            {village.nodes.map((node, index) => {
+              return (
+                <MapNodeMarker
+                  key={node.stageId}
+                  node={node}
+                  onTap={(tappedNode) =>
+                    setActiveNode({
+                      editionId: village.editionId,
+                      node: tappedNode,
+                    })
+                  }
+                />
+              );
+            })}
+
           </div>
         ))}
       </div>
-      <div style={{ position: "relative", width: `${MAP_ZOOM_SCALE * 100}%` }}>
-        {villages.map((village) => (
-          <div key={village.editionId}>
-            ...
-          </div>
-        ))}
-      </div>
-
       <AnimatePresence>
         {activeNode && (
           <StagePopup
@@ -130,7 +117,6 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
         )}
       </AnimatePresence>
 
-      <MapNavToggle />
       <MapNavToggle />
       <BottomNav />
 

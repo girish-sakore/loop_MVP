@@ -10,7 +10,6 @@ export function MapNodeMarker({
   onTap: (node: MapNode) => void;
 }) {
   const isTappable = node.status === "current";
-
   return (
     <button
       disabled={!isTappable}
