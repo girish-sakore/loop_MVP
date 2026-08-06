@@ -28,10 +28,24 @@ export type ImageSelectStage = StageBase & {
 };
 
 export type PlaceholderStage = StageBase & {
-  type: "fill-blank" | "reorder" | "drag-drop";
+  type: "reorder" | "drag-drop";
   prompt: string;
 };
+export type FillBlankStage = StageBase & {
+  type: "fill-blank";
 
+  prompt: string; // Supports {{b1}} placeholders
+
+  blanks: Array<{
+    id: string;
+    answer: string;
+  }>;
+
+  options: Array<{
+    id: string;
+    word: string;
+  }>;
+};
 export type SwipeStage = StageBase & {
   type: "swipe";
 
@@ -60,7 +74,15 @@ export type SwipeStage = StageBase & {
     incorrect: string;
   };
 };
-export type Stage = ImageSelectStage  | PlaceholderStage | SwipeStage;
+export type TimelineEvent = {
+  id: string;
+  title: string;
+  year: string;
+  description: string;
+  order: number;
+};
+
+export type Stage = ImageSelectStage | PlaceholderStage | SwipeStage | FillBlankStage | TimelineEvent;
 
 export type Edition = {
   id: string;

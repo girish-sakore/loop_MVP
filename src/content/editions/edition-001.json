@@ -23,7 +23,7 @@
           "feedback": "Correct. Curie pioneered research on radioactivity."
         },
         {
-          "id": "stage-2",
+          "id": "opt-2",
           "type": "swipe",
           "question": "Swipe interaction placeholder",
           "attemptsAllowed": 2,
@@ -69,19 +69,83 @@
     },
     {
       "id": "stage-3",
-      "type": "reorder",
-      "question": "Swipe interaction placeholder",
+      "type": "fill-blank",
+      "mapTitle": "Salt Mine",
+      "mapSubtitle": "Learn a famous phrase",
+      "question": "Fill in the missing words",
       "attemptsAllowed": 2,
       "points": 80,
-      "prompt": "Swipe variant is scaffolded for the renderer."
+      "prompt": "The {{b1}} was used to pay Roman soldiers, and this payment became the origin of the word {{b2}}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "answer": "salt"
+        },
+        {
+          "id": "b2",
+          "answer": "salary"
+        }
+      ],
+      "options": [
+        {
+          "id": "o1",
+          "word": "gold"
+        },
+        {
+          "id": "o2",
+          "word": "salt"
+        },
+        {
+          "id": "o3",
+          "word": "salary"
+        },
+        {
+          "id": "o4",
+          "word": "bread"
+        },
+        {
+          "id": "o5",
+          "word": "Rome"
+        }
+      ]
     },
     {
-      "id": "stage-4",
-      "type": "reorder",
-      "question": "Swipe interaction placeholder",
-      "attemptsAllowed": 2,
-      "points": 80,
-      "prompt": "Swipe variant is scaffolded for the renderer."
+      "id": "timeline-builder-001",
+      "type": "timeline-builder",
+      "mapTitle": "Salt Through Time",
+      "mapSubtitle": "Restore the Timeline",
+      "estimatedTime": "3 mins",
+      "instructions": "Drag each historical event to its correct place on the timeline.",
+      "events": [
+        {
+          "id": "romania",
+          "order": 1,
+          "year": "6000 BC",
+          "title": "Romanian Salt Springs",
+          "description": "People living in what is now Romania boiled water from natural salt springs to collect salt. This is one of the oldest known salt-making sites in the world."
+        },
+        {
+          "id": "bulgaria",
+          "order": 2,
+          "year": "5500–4200 BC",
+          "title": "Solnitsata Salt Center",
+          "description": "At Solnitsata in present-day Bulgaria, people produced salt by boiling brine. The settlement later became one of Europe's earliest known towns."
+        },
+        {
+          "id": "egypt-tombs",
+          "order": 3,
+          "year": "3000–2000 BC",
+          "title": "Salt in Egyptian Tombs",
+          "description": "Ancient Egyptians placed salt, salted birds and fish inside tombs as valuable funeral offerings."
+        },
+        {
+          "id": "egypt-trade",
+          "order": 4,
+          "year": "2800 BC",
+          "title": "Egyptian Salt Trade",
+          "description": "Egypt exported salted fish to the Phoenicians in exchange for cedar wood, glass and the famous Tyrian purple dye."
+        }
+      ]
     },
     {
       "id": "stage-5",

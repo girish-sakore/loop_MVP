@@ -25,7 +25,11 @@
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 }
-
+.gameplay-theme{
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+}
 :root {
   /* Base */
   --background: #fcf8f7;

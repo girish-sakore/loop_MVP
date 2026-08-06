@@ -1,6 +1,8 @@
+import { FillBlankInteraction } from "@/features/interactions/fill-blank/fill-blank-interaction";
 import { ImageSelectInteraction } from "@/features/interactions/image-select/image-select-interaction";
 import { ComingSoonInteraction } from "@/features/interactions/shared/coming-soon-interaction";
 import { SwipeInteractionPlaceholder } from "@/features/interactions/swipe/swipe-interaction";
+import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeline-builder";
 import type { Stage } from "@/types/gameplay";
 
 type InteractionRendererProps = {
@@ -22,7 +24,7 @@ export function InteractionRenderer({
     case "image-select":
       return (
         <ImageSelectInteraction
-          stage={stage}
+          stage={stage} 
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
@@ -38,7 +40,19 @@ export function InteractionRenderer({
         />
       );
     case "fill-blank":
+      return (
+        <FillBlankInteraction
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+        />
+      );
     case "reorder":
+    case "timeline-builder": 
+    return (
+      <TimelineBuilder stage={stage} />
+    );
     case "drag-drop":
       return (
         <ComingSoonInteraction

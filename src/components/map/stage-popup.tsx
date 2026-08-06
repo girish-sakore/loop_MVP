@@ -24,7 +24,8 @@ export function StagePopup({
         exit={{ opacity: 0 }}
         onClick={onClose}
         style={{
-          position: "fixed",
+          position: "absolute",
+          width: "93%",
           inset: 0,
           zIndex: 199,
           background: "transparent",
@@ -42,7 +43,7 @@ export function StagePopup({
         }}
         onClick={(e) => e.stopPropagation()}
         style={{
-          position: "fixed",
+          position: "absolute",
           left: 16,
           right: 16,
           bottom: 20,

@@ -13,7 +13,7 @@ export function MapNavToggle() {
       aria-label={isVisible ? "Hide navigation" : "Show navigation"}
       style={{
         position: "fixed",
-        bottom: 16,
+        bottom: 96,
         right: 16,
         zIndex: 60,
         width: 48,

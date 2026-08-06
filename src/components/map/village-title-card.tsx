@@ -18,7 +18,7 @@ export function VillageTitleCard({
   const progress = (completed / total) * 100;
 
   return (
-    <div className="fixed left-6 top-28 z-50 w-[235px] overflow-hidden rounded-2xl border border-[#E6D7B8] bg-[#F9F0DE] shadow-[0_10px_30px_rgba(62,42,18,0.22)]">
+    <div className="absolute left-6 top-28 z-50 w-[235px] overflow-hidden rounded-2xl border border-[#E6D7B8] bg-[#F9F0DE] shadow-[0_10px_30px_rgba(62,42,18,0.22)]">
 
       {/* Paper Texture */}
       <div
