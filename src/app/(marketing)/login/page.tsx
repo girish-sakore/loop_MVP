@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default async function LoginPage() {
   const session = await getAuthSession();
-  if (session?.user?.id) redirect("/edition/current");
+  if (session?.user?.id) redirect("/map");
 
   return (
     <MobileContainer>

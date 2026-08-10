@@ -2,14 +2,14 @@ import type { Edition } from "@/types/gameplay";
 
 interface EditionProgressProps {
   edition: Edition;
-  completedStages?: number;
+  completedNodes?: number;
 }
 
 export function EditionProgress({
   edition,
-  completedStages = 0,
+  completedNodes = 0,
 }: EditionProgressProps) {
-  const total = edition.stages.length;
+  const total = edition.nodes.length || 1;
 
   return (
     <section className="grid grid-cols-3 gap-3">
@@ -41,16 +41,16 @@ export function EditionProgress({
               className="text-[11px] font-bold tracking-widest uppercase"
               style={{ color: "var(--on-secondary-container)" }}
             >
-              {completedStages} / {total} Stages
+              {completedNodes} / {total} Stages
             </span>
           </div>
         </div>
 
         {/* Stage indicators */}
         <div className="flex gap-1.5 w-full h-10">
-          {edition.stages.map((stage, i) => {
-            const isCompleted = i < completedStages;
-            const isCurrent = i === completedStages;
+          {edition.nodes.map((stage, i) => {
+            const isCompleted = i < completedNodes;
+            const isCurrent = i === completedNodes;
             return (
               <div
                 key={stage.id}

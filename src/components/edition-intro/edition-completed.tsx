@@ -3,14 +3,14 @@ import Link from "next/link";
 interface EditionCompletedProps {
   score: number;
   completedAt: Date | null;
-  totalStages: number;
+  totalNodes: number;
   correctAnswers: number;
 }
 
 export function EditionCompleted({
   score,
   completedAt,
-  totalStages,
+  totalNodes,
   correctAnswers,
 }: EditionCompletedProps) {
   const completedLabel = completedAt
@@ -22,8 +22,8 @@ export function EditionCompleted({
     : null;
 
   const accuracy =
-    totalStages > 0
-      ? Math.round((correctAnswers / totalStages) * 100)
+    totalNodes > 0
+      ? Math.round((correctAnswers / totalNodes) * 100)
       : 0;
 
   return (

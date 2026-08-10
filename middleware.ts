@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
   // Logged in users should not visit login page
   if (isAuthPage && isLoggedIn) {
     return NextResponse.redirect(
-      new URL("/edition/current", request.url)
+      new URL("/map", request.url)
     );
   }
 

@@ -7,17 +7,16 @@ import { FeedbackModal } from "@/components/feedback/feedback-modal";
 import { InteractionRenderer } from "@/features/gameplay/renderer/interaction-renderer";
 import { GameplayShell } from "@/features/gameplay/shell/gameplay-shell";
 import { useGameplayStore } from "@/stores/gameplay-store";
-import type { Edition } from "@/types/gameplay";
+import type { Stage } from "@/types/gameplay";
 
 interface GameplayEngineProps {
-  edition: Edition;
+  editionId: string;
+  nodeId: string;
+  stages: Stage[];
   initialStage?: number;
 }
-
 export function GameplayEngine({
-  edition,
-  initialStage = 0,
-}: GameplayEngineProps) {
+  editionId, nodeId, stages, initialStage = 0 }: GameplayEngineProps) {
   const router = useRouter();
   const hasNavigated = useRef(false); // guard navigation
   const [retryCount, setRetryCount] = useState(0);
@@ -41,64 +40,38 @@ export function GameplayEngine({
     reset,
   } = useGameplayStore();
 
-  const stage = edition.stages[currentStage];
+  const stage = stages[currentStage];
   const totalAttempts = stage?.attemptsAllowed ?? 3;
-
-  const progress = useMemo(
-    () => (currentStage / edition.stages.length) * 100,
-    [currentStage, edition.stages.length],
-  );
+  const progress = useMemo(() => (currentStage / stages.length) * 100, [currentStage, stages.length]);
 
   // initialize from DB progress, not always 0
   useEffect(() => {
     reset();
     setStage(initialStage);
-    setAttempts(
-      edition.stages[initialStage]?.attemptsAllowed ??
-      edition.stages[0]?.attemptsAllowed ??
-      0,
-    );
-  }, [edition, initialStage, reset, setStage, setAttempts]);
+    setAttempts(stages[initialStage]?.attemptsAllowed ?? stages[0]?.attemptsAllowed ?? 0);
+  }, [stages, initialStage, reset, setStage, setAttempts]);
 
-  const syncProgress = useCallback(async (overrides?: {
-    score?: number;
-    correctAnswers?: number;
-    totalAnswers?: number;
-    currentStage?: number;
-  }) => {
-    try {
-      await fetch("/api/progress/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          editionId: edition.id,
-          currentStage: overrides?.currentStage ?? currentStage,
-          score: overrides?.score ?? score,
-          correctAnswers: overrides?.correctAnswers ?? correctAnswers,
-          totalAnswers: overrides?.totalAnswers ?? totalAnswers,
-        }),
-      });
-    } catch {
-      // Non-blocking
-    }
-  }, [edition.id, currentStage, score, correctAnswers, totalAnswers]);
+  const syncProgress = useCallback(async (overrides) => {
+    await fetch("/api/progress/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        editionId, nodeId,
+        currentSubStage: overrides?.currentStage ?? currentStage,
+        score: overrides?.score ?? score,
+        correctAnswers: overrides?.correctAnswers ?? correctAnswers,
+        totalAnswers: overrides?.totalAnswers ?? totalAnswers,
+      }),
+    }).catch(() => {});
+  }, [editionId, nodeId, currentStage, score, correctAnswers, totalAnswers]);
 
   const completeProgress = useCallback(async () => {
-    try {
-      await fetch("/api/progress/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          editionId: edition.id,
-          score,
-          correctAnswers,
-          totalAnswers,
-        }),
-      });
-    } catch {
-      // Non-blocking
-    }
-  }, [edition.id, score, correctAnswers, totalAnswers]);
+    await fetch("/api/progress/complete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
+    }).catch(() => {});
+  }, [editionId, nodeId, score, correctAnswers, totalAnswers]);
 
   // Issue 2 fix — navigate in an effect, never during render
   useEffect(() => {
@@ -143,12 +116,9 @@ export function GameplayEngine({
 
   async function advanceStage() {
     const nextIndex = currentStage + 1;
-    const nextAttempts = edition.stages[nextIndex]?.attemptsAllowed ?? 0;
-    nextStage(edition.stages.length, nextAttempts);
-    // Sync mid-game — navigation handled by the useEffect above on completion
-    if (nextIndex < edition.stages.length) {
-      syncProgress({ currentStage: nextIndex });
-    }
+    const nextAttempts = stages[nextIndex]?.attemptsAllowed ?? 0;
+    nextStage(stages.length, nextAttempts);
+    if (nextIndex < stages.length) syncProgress({ currentStage: nextIndex });
   }
 
   async function handleContinue() {
@@ -169,7 +139,7 @@ export function GameplayEngine({
   return (
     <>
       <GameplayShell
-        stageLabel={`Stage ${currentStage + 1} of ${edition.stages.length}`}
+        stageLabel={`Stage ${currentStage + 1} of ${stages.length}`}
         progress={progress}
         attemptsRemaining={attemptsRemaining}
         totalAttempts={totalAttempts}

@@ -1,159 +1,214 @@
 {
   "id": "edition-001",
-  "title": "Image Reveal",
+  "title": "Salt Village",
   "description": "Find the right historical profile through visual clues.",
   "estimatedTime": "5 mins",
   "order": 1,
   "theme": "salt-village",
-  "stages": [
+  "nodes": [
     {
-      "id": "stage-1",
+      "id": "node-1",
       "type": "image-select",
       "mapTitle": "Salt Mine",
       "mapSubtitle": "Discover where it all begins.",
-      "question": "Who is Marie Curie?",
-      "attemptsAllowed": 3,
-      "points": 100,
-      "options": [
+      "subStages": [
         {
-          "id": "opt-1",
-          "label": "Marie Curie",
-          "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
-          "isCorrect": true,
-          "feedback": "Correct. Curie pioneered research on radioactivity."
+          "id": "stage-1",
+          "question": "Who is Marie Curie?",
+          "attemptsAllowed": 3,
+          "points": 100,
+          "options": [
+            {
+              "id": "opt-1",
+              "label": "Marie Curie",
+              "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+              "isCorrect": true,
+              "feedback": "Correct. Curie pioneered research on radioactivity."
+            },
+            {
+              "id": "opt-2",
+              "label": "Ada Lovelace",
+              "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+              "isCorrect": false,
+              "feedback": "Not quite. Think of pioneer scientists in radioactivity."
+            },
+            {
+              "id": "opt-3",
+              "label": "Rosalind Franklin",
+              "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+              "isCorrect": false,
+              "feedback": "Not this time. Try looking for Curie's era portrait cues."
+            }
+          ]
         },
         {
-          "id": "opt-2",
-          "type": "swipe",
+          "id": "stage-2",
+          "question": "Who is Thomas Edison?",
+          "attemptsAllowed": 3,
+          "points": 100,
+          "options": [
+            {
+              "id": "opt-1",
+              "label": "Marie Curie",
+              "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+              "isCorrect": true,
+              "feedback": "Correct. Curie pioneered research on radioactivity."
+            },
+            {
+              "id": "opt-2",
+              "label": "Ada Lovelace",
+              "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+              "isCorrect": false,
+              "feedback": "Not quite. Think of pioneer scientists in radioactivity."
+            },
+            {
+              "id": "opt-3",
+              "label": "Rosalind Franklin",
+              "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+              "isCorrect": false,
+              "feedback": "Not this time. Try looking for Curie's era portrait cues."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-2",
+      "type": "swipe",
+      "mapTitle": "Salt Mine",
+      "mapSubtitle": "Discover ancient beliefs",
+      "subStages": [
+        {
+          "id": "stage-1",
+          "question": "Swipe left or right",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "statement": "Salt was once more valuable than gold in some regions.",
+          "card": {
+            "title": "Salt Value",
+            "subtitle": "Fact or Myth?",
+            "image": "/images/cards/salt-value.png"
+          },
+          "left": {
+            "label": "Myth",
+            "icon": "close"
+          },
+          "right": {
+            "label": "Fact",
+            "icon": "check"
+          },
+          "correctDirection": "right",
+          "feedback": {
+            "correct": "Correct! Salt was an extremely valuable commodity.",
+            "incorrect": "This statement is actually true."
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-3",
+      "type": "fill-blank",
+      "mapTitle": "Salt Mine",
+      "mapSubtitle": "Learn a famous phrase",
+      "subStages": [
+        {
+          "id": "stage-3",
+          "question": "Fill in the missing words",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "prompt": "The {{b1}} was used to pay Roman soldiers, and this payment became the origin of the word {{b2}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "salt"
+            },
+            {
+              "id": "b2",
+              "answer": "salary"
+            }
+          ],
+          "options": [
+            {
+              "id": "o1",
+              "word": "gold"
+            },
+            {
+              "id": "o2",
+              "word": "salt"
+            },
+            {
+              "id": "o3",
+              "word": "salary"
+            },
+            {
+              "id": "o4",
+              "word": "bread"
+            },
+            {
+              "id": "o5",
+              "word": "Rome"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-4",
+      "type": "timeline-builder",
+      "mapTitle": "Salt Through Time",
+      "mapSubtitle": "Restore the Timeline",
+      "subStages": [
+        {
+          "id": "timeline-builder-001",
+          "estimatedTime": "3 mins",
+          "instructions": "Drag each historical event to its correct place on the timeline.",
+          "events": [
+            {
+              "id": "romania",
+              "order": 1,
+              "year": "6000 BC",
+              "title": "Romanian Salt Springs",
+              "description": "People living in what is now Romania boiled water from natural salt springs to collect salt. This is one of the oldest known salt-making sites in the world."
+            },
+            {
+              "id": "bulgaria",
+              "order": 2,
+              "year": "5500–4200 BC",
+              "title": "Solnitsata Salt Center",
+              "description": "At Solnitsata in present-day Bulgaria, people produced salt by boiling brine. The settlement later became one of Europe's earliest known towns."
+            },
+            {
+              "id": "egypt-tombs",
+              "order": 3,
+              "year": "3000–2000 BC",
+              "title": "Salt in Egyptian Tombs",
+              "description": "Ancient Egyptians placed salt, salted birds and fish inside tombs as valuable funeral offerings."
+            },
+            {
+              "id": "egypt-trade",
+              "order": 4,
+              "year": "2800 BC",
+              "title": "Egyptian Salt Trade",
+              "description": "Egypt exported salted fish to the Phoenicians in exchange for cedar wood, glass and the famous Tyrian purple dye."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-5",
+      "type": "reorder",
+      "mapTitle": "Salt Mine",
+      "mapSubtitle": "Put it in order",
+      "subStages": [
+        {
+          "id": "stage-5",
           "question": "Swipe interaction placeholder",
           "attemptsAllowed": 2,
           "points": 80,
           "prompt": "Swipe variant is scaffolded for the renderer."
-        },
-        {
-          "id": "opt-3",
-          "label": "Rosalind Franklin",
-          "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-          "isCorrect": false,
-          "feedback": "Not this time. Try looking for Curie's era portrait cues."
         }
       ]
-    },
-    {
-      "id": "stage-2",
-      "type": "swipe",
-      "mapTitle": "Salt Mine",
-      "mapSubtitle": "Discover ancient beliefs",
-      "question": "Swipe left or right",
-      "attemptsAllowed": 2,
-      "points": 80,
-      "statement": "Salt was once more valuable than gold in some regions.",
-      "card": {
-        "title": "Salt Value",
-        "subtitle": "Fact or Myth?",
-        "image": "/images/cards/salt-value.png"
-      },
-      "left": {
-        "label": "Myth",
-        "icon": "close"
-      },
-      "right": {
-        "label": "Fact",
-        "icon": "check"
-      },
-      "correctDirection": "right",
-      "feedback": {
-        "correct": "Correct! Salt was an extremely valuable commodity.",
-        "incorrect": "This statement is actually true."
-      }
-    },
-    {
-      "id": "stage-3",
-      "type": "fill-blank",
-      "mapTitle": "Salt Mine",
-      "mapSubtitle": "Learn a famous phrase",
-      "question": "Fill in the missing words",
-      "attemptsAllowed": 2,
-      "points": 80,
-      "prompt": "The {{b1}} was used to pay Roman soldiers, and this payment became the origin of the word {{b2}}.",
-      "blanks": [
-        {
-          "id": "b1",
-          "answer": "salt"
-        },
-        {
-          "id": "b2",
-          "answer": "salary"
-        }
-      ],
-      "options": [
-        {
-          "id": "o1",
-          "word": "gold"
-        },
-        {
-          "id": "o2",
-          "word": "salt"
-        },
-        {
-          "id": "o3",
-          "word": "salary"
-        },
-        {
-          "id": "o4",
-          "word": "bread"
-        },
-        {
-          "id": "o5",
-          "word": "Rome"
-        }
-      ]
-    },
-    {
-      "id": "timeline-builder-001",
-      "type": "timeline-builder",
-      "mapTitle": "Salt Through Time",
-      "mapSubtitle": "Restore the Timeline",
-      "estimatedTime": "3 mins",
-      "instructions": "Drag each historical event to its correct place on the timeline.",
-      "events": [
-        {
-          "id": "romania",
-          "order": 1,
-          "year": "6000 BC",
-          "title": "Romanian Salt Springs",
-          "description": "People living in what is now Romania boiled water from natural salt springs to collect salt. This is one of the oldest known salt-making sites in the world."
-        },
-        {
-          "id": "bulgaria",
-          "order": 2,
-          "year": "5500–4200 BC",
-          "title": "Solnitsata Salt Center",
-          "description": "At Solnitsata in present-day Bulgaria, people produced salt by boiling brine. The settlement later became one of Europe's earliest known towns."
-        },
-        {
-          "id": "egypt-tombs",
-          "order": 3,
-          "year": "3000–2000 BC",
-          "title": "Salt in Egyptian Tombs",
-          "description": "Ancient Egyptians placed salt, salted birds and fish inside tombs as valuable funeral offerings."
-        },
-        {
-          "id": "egypt-trade",
-          "order": 4,
-          "year": "2800 BC",
-          "title": "Egyptian Salt Trade",
-          "description": "Egypt exported salted fish to the Phoenicians in exchange for cedar wood, glass and the famous Tyrian purple dye."
-        }
-      ]
-    },
-    {
-      "id": "stage-5",
-      "type": "reorder",
-      "question": "Swipe interaction placeholder",
-      "attemptsAllowed": 2,
-      "points": 80,
-      "prompt": "Swipe variant is scaffolded for the renderer."
     }
   ]
 }
