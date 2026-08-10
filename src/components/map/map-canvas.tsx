@@ -89,7 +89,7 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
               backgroundSize: "cover",
               backgroundPosition: "center",
               opacity: village.status === "locked" ? 0.5 : 1,
-              backgroundColor: village.status === "locked" ? "var(--on-tertiary-fixed)" : "#191a1b",
+              backgroundColor: village.status === "locked" ? "var(--on-tertiary-fixed)" : "var(--on-tertiary-fixed)", //#191a1b
             }}
           >
             {village.nodes.map((node) => (

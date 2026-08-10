@@ -30,10 +30,10 @@ export function MapNodeMarker({
         fontWeight: 700,
         backgroundColor:
           node.status === "completed"
-            ? "#2ECFDB"
+            ? "var(--secondary)"
             : node.status === "current"
-              ? "#2ECFDB"
-              : "#2ECFDB",
+              ? "var(--secondary-fixed)"
+              : "var(--on-tertiary-container)",
         color: "var(--card)",
         boxShadow: isTappable
           ? "0 8px 0 0 var(--secondary-shadow)"
