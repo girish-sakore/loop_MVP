@@ -35,7 +35,6 @@ export async function buildVillageMapData(userId: string): Promise<VillageMapDat
         status,
         x,
         y,
-
         title: stage.mapTitle,
         subtitle: stage.mapSubtitle,
       };

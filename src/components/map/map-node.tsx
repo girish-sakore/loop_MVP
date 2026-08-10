@@ -20,8 +20,8 @@ export function MapNodeMarker({
         left: node.x,
         top: node.y,
         transform: "translate(-50%, -50%)",
-        width: 70,
-        height: 60,
+        width: 60,
+        height: 50,
         borderRadius: "50%",
         display: "flex",
         alignItems: "center",
@@ -36,9 +36,11 @@ export function MapNodeMarker({
         color: "var(--card)",
         boxShadow: isTappable
           ? "0 8px 0 0 var(--secondary-shadow)"
-          : node.status === "current"
-            ? "0 8px 0 0 var(--secondary-shadow)"
-            : "0 8px 0 0 var(--background-shadow)",
+          : node.status === "completed"
+            ? "0 8px 0 0 var(--current-shadow)"
+            : node.status === "current"
+              ? "0 8px 0 0 var(--secondary-fixed-dim)"
+              : "0 8px 0 0 var(--on-tertiary-fixed-variant)",
         opacity: node.status === "locked" ? 0.4 : 1,
       }}
     >
