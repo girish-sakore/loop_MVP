@@ -41,6 +41,7 @@
 │   ├── images
 │   │   ├── books.jpg
 │   │   ├── healthy.jpg
+│   │   ├── papaer-effect.png
 │   │   ├── thepaintedsquare.jpg
 │   │   ├── thepaintedsquare_1.jpg
 │   │   └── villages
@@ -127,7 +128,8 @@
 │   │   │   ├── map-canvas.tsx
 │   │   │   ├── map-nav-toggle.tsx
 │   │   │   ├── map-node.tsx
-│   │   │   └── stage-popup.tsx
+│   │   │   ├── stage-popup.tsx
+│   │   │   └── village-title-card.tsx
 │   │   ├── motion
 │   │   │   └── fade-in.tsx
 │   │   ├── pricing
@@ -178,15 +180,23 @@
 │   │   │   ├── drag-drop
 │   │   │   │   └── drag-drop-interaction.tsx
 │   │   │   ├── fill-blank
-│   │   │   │   └── fill-blank-interaction.tsx
+│   │   │   │   ├── blank-drop-zone.tsx
+│   │   │   │   ├── fill-blank-interaction.tsx
+│   │   │   │   ├── parse-prompt.tsx
+│   │   │   │   ├── word-bank.tsx
+│   │   │   │   └── word-chip.tsx
 │   │   │   ├── image-select
 │   │   │   │   └── image-select-interaction.tsx
 │   │   │   ├── reorder
 │   │   │   │   └── reorder-interaction.tsx
 │   │   │   ├── shared
 │   │   │   │   └── coming-soon-interaction.tsx
-│   │   │   └── swipe
-│   │   │       └── swipe-interaction.tsx
+│   │   │   ├── swipe
+│   │   │   │   └── swipe-interaction.tsx
+│   │   │   └── timeline-builder
+│   │   │       ├── event-card.tsx
+│   │   │       ├── timeline-builder.tsx
+│   │   │       └── timeline-slot.tsx
 │   │   └── map
 │   │       ├── map-config.ts
 │   │       ├── map-content.ts
@@ -201,6 +211,7 @@
 │   │   ├── auth.ts
 │   │   ├── db.ts
 │   │   ├── edition-progress.ts
+│   │   ├── fonts.ts
 │   │   └── razorpay-server.ts
 │   ├── prototypes
 │   │   ├── design-code
@@ -216,4 +227,4 @@
 ├── tailwind.config.ts
 └── tsconfig.json
 
-77 directories, 139 files
+78 directories, 149 files
