@@ -24,7 +24,7 @@ export function VillageTitleCard({
       <div
         className="absolute inset-0 opacity-40"
         style={{
-          backgroundImage: "url('/images/papaer-effect.png')",
+          // backgroundImage: "url('/images/papaer-effect.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
