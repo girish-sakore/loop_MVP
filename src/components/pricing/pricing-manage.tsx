@@ -99,7 +99,7 @@ export function PricingManage({ plan, subscriptionEnd }: PricingManageProps) {
 
       {/* Return CTA */}
       <Link
-        href="/edition/current"
+        href="/map"
         className="w-full h-14 rounded-xl text-[16px] font-bold flex items-center justify-center gap-2 transition-all duration-75 active:translate-y-0.5"
         style={{
           backgroundColor: "var(--secondary)",

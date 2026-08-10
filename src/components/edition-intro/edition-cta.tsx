@@ -7,13 +7,13 @@ import type { Edition } from "@/types/gameplay";
 interface EditionCtaProps {
   edition: Edition;
   status: "not_started" | "in_progress" | "completed";
-  currentStage?: number;
+  currentNode?: number;
 }
 
 export function EditionCta({
   edition,
   status,
-  currentStage = 0,
+  currentNode = 0,
 }: EditionCtaProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -29,14 +29,14 @@ export function EditionCta({
     } catch {
       // Non-blocking — still navigate even if record fails
     }
-    router.push(`/edition/${edition.id}`);
+    router.push(`/map`);
   }
 
   const isResume = status === "in_progress";
   const label = isResume ? "Resume Session" : "Start Session";
   const icon = isResume ? "play_circle" : "play_arrow";
   const sublabel = isResume
-    ? `Continue from stage ${currentStage + 1}`
+    ? `Continue from stage ${currentNode + 1}`
     : "Tap to begin your rhythm";
 
   return (

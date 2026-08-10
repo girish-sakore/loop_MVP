@@ -11,7 +11,7 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(false);
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/edition/current";
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/map";
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();

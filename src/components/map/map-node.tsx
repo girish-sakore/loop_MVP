@@ -52,7 +52,7 @@ export function MapNodeMarker({
         </>
       )}
       {node.status === "completed" && "★"}
-      {node.status === "current" && node.stageIndex + 1}
+      {node.status === "current" && node.nodeIndex + 1}
       {(node.status === "upcoming" || node.status === "locked") && "?"}
     </button>
   );

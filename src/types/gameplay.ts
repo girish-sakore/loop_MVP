@@ -84,12 +84,20 @@ export type TimelineEvent = {
 
 export type Stage = ImageSelectStage | PlaceholderStage | SwipeStage | FillBlankStage | TimelineEvent;
 
+export interface EditionNode {
+  id: string;
+  type: string; // or your existing StageType union, e.g. "image-select" | "swipe" | "fill-blank" | "timeline-builder" | "reorder"
+  mapTitle: string;
+  mapSubtitle: string;
+  subStages: Stage[]; // Stage = your existing per-question union type — unchanged
+}
+
 export type Edition = {
   id: string;
   title: string;
   description: string;
   estimatedTime: string;
-  stages: Stage[];
+  nodes: EditionNode[];
   order: number;        // NEW — position on the map path
   theme: string;         // NEW — e.g. "salt-village", drives background image + node art
 };

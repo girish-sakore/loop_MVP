@@ -27,7 +27,7 @@ export async function GET(
     if (!progress) {
       return NextResponse.json({
         status: "not_started",
-        currentStage: 0,
+        currentNodeIndex: 0,
         score: 0,
         correctAnswers: 0,
         totalAnswers: 0,

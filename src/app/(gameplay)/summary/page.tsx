@@ -47,7 +47,7 @@ export default function SummaryPage() {
 
       <main className="flex flex-col gap-6 px-6 pt-4 pb-32">
         <SummaryHero editionTitle={edition.title} />
-        <SummaryStats totalStages={edition.stages.length} />
+        <SummaryStats totalStages={edition.nodes.length} />
         <SummaryActions />
       </main>
 

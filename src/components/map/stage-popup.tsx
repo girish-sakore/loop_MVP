@@ -93,7 +93,7 @@ export function StagePopup({
           </div>
 
           <button
-            onClick={() => router.push(`/edition/${editionId}`)}
+            onClick={() => router.push(`/edition/${editionId}/${node.nodeId}`)}
             style={{
               border: "none",
               borderRadius: 12,

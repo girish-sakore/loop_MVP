@@ -92,7 +92,7 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
             {village.nodes.map((node, index) => {
               return (
                 <MapNodeMarker
-                  key={node.stageId}
+                  key={node.nodeId}
                   node={node}
                   onTap={(tappedNode) =>
                     setActiveNode({

@@ -2,13 +2,14 @@ export type MapNodeStatus = "completed" | "current" | "upcoming" | "locked";
 export type VillageStatus = "locked" | "unlocked" | "completed";
 
 export type MapNode = {
-  stageId: string;
-  stageIndex: number;    // 0-based index into edition.stages
+  nodeId: string;
+  nodeIndex: number;
   status: MapNodeStatus;
   x: string;             // percentage, e.g. "42%"
   y: string;
   title: string;
   subtitle: string;
+  stars: number; // 0-3, from UserNodeProgress
 };
 
 export type VillageMapData = {
