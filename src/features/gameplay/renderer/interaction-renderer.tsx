@@ -3,6 +3,8 @@ import { ImageSelectInteraction } from "@/features/interactions/image-select/ima
 import { ComingSoonInteraction } from "@/features/interactions/shared/coming-soon-interaction";
 import { SwipeInteractionPlaceholder } from "@/features/interactions/swipe/swipe-interaction";
 import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeline-builder";
+import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
+
 import type { Stage } from "@/types/gameplay";
 
 type InteractionRendererProps = {
@@ -48,11 +50,6 @@ export function InteractionRenderer({
           retryCount={retryCount}
         />
       );
-    case "reorder":
-    case "timeline-builder": 
-    return (
-      <TimelineBuilder stage={stage} />
-    );
     case "drag-drop":
       return (
         <ComingSoonInteraction
@@ -61,6 +58,24 @@ export function InteractionRenderer({
           onContinue={onAutoContinue}
         />
       );
+    case "timeline-builder":
+      return (
+        <TimelineBuilder
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+        />
+      );
+    case "reorder":
+      return (
+        <ReorderInteractionPlaceholder
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+        />
+  );
     default:
       return null;
   }
