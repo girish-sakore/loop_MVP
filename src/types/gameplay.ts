@@ -28,7 +28,8 @@ export type ImageSelectStage = StageBase & {
 };
 
 export type PlaceholderStage = StageBase & {
-  type: "reorder" | "drag-drop";
+  type: "fill-blank" |"reorder" | "drag-drop";
+
   prompt: string;
 };
 export type FillBlankStage = StageBase & {
