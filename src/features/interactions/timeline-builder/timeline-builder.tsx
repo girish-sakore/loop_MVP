@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -25,9 +25,14 @@ type TimelineBuilderStage = {
 
 type Props = {
   stage: TimelineBuilderStage;
+  onAnswer: (payload: { correct: boolean; feedback: string }) => void;
+  disabled?: boolean;
+  retryCount?: number;
 };
 
-export function TimelineBuilder({ stage }: Props) {
+export function TimelineBuilder({ stage, onAnswer, disabled, retryCount = 0 }: Props) {
+  const [submitted, setSubmitted] = useState(false);
+
   const sortedEvents = useMemo(
     () => [...stage.events].sort((a, b) => a.order - b.order),
     [stage.events]
@@ -46,6 +51,12 @@ export function TimelineBuilder({ stage }: Props) {
       stage.events.map((event) => [event.id, null])
     )
   );
+
+  useEffect(() => {
+    setPlacements(Object.fromEntries(stage.events.map((e) => [e.id, null])));
+    setAvailableEvents(stage.events);
+    setSubmitted(false);
+  }, [stage, retryCount]);
 
   function handleDragStart(event: DragStartEvent) {
     const dragged = stage.events.find(
@@ -83,6 +94,14 @@ export function TimelineBuilder({ stage }: Props) {
     setAvailableEvents((current) =>
       current.filter((item) => item.id !== draggedEvent.id)
     );
+
+    // after updating placements, check completion:
+    const updated = { ...placements, [over.id as string]: draggedEvent };
+    const allPlaced = Object.values(updated).every((v) => v !== null);
+    if (allPlaced && !submitted) {
+      setSubmitted(true);
+      onAnswer({ correct: true, feedback: "Timeline restored correctly." });
+    }
   }
 
   return (

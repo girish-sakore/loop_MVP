@@ -26,6 +26,8 @@ export function GameplayEngine({
     message: string;
   }>({ open: false, correct: false, message: "" });
 
+  const [ready, setReady] = useState(false);
+
   const {
     currentStage,
     attemptsRemaining,
@@ -49,6 +51,7 @@ export function GameplayEngine({
     reset();
     setStage(initialStage);
     setAttempts(stages[initialStage]?.attemptsAllowed ?? stages[0]?.attemptsAllowed ?? 0);
+    setReady(true);
   }, [stages, initialStage, reset, setStage, setAttempts]);
 
   const syncProgress = useCallback(async (overrides) => {
@@ -75,13 +78,14 @@ export function GameplayEngine({
 
   // Issue 2 fix — navigate in an effect, never during render
   useEffect(() => {
+    if (!ready) return;
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
         router.push("/summary");
       });
     }
-  }, [completed, stage, completeProgress, router]);
+  }, [ready, completed, stage, completeProgress, router]);
 
   function handleAnswer({
     correct,
