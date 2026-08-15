@@ -26,7 +26,7 @@ export function InteractionRenderer({
     case "image-select":
       return (
         <ImageSelectInteraction
-          stage={stage} 
+          stage={stage}
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
@@ -59,23 +59,19 @@ export function InteractionRenderer({
         />
       );
     case "timeline-builder":
-      return (
-        <TimelineBuilder
-          stage={stage}
-          onAnswer={onAnswer}
-          disabled={disabled}
-          retryCount={retryCount}
-        />
-      );
+      return <TimelineBuilder
+                stage={stage}
+                onAnswer={onAnswer}
+                disabled={disabled}
+                retryCount={retryCount}
+              />;
     case "reorder":
-      return (
-        <ReorderInteractionPlaceholder
-          stage={stage}
-          onAnswer={onAnswer}
-          disabled={disabled}
-          retryCount={retryCount}
-        />
-  );
+      return <ReorderInteractionPlaceholder
+                stage={stage}
+                onAnswer={onAnswer}
+                disabled={disabled}
+                retryCount={retryCount}
+              />;
     default:
       return null;
   }

@@ -27,7 +27,12 @@ export default async function NodeGameplayPage({ params }: PageProps) {
 
   const nodeProgress = await getUserNodeProgress(session.user.id, editionId, nodeId);
   const node = edition.nodes[nodeIndex];
-  const stages = node.subStages.map((s) => ({ ...s, type: node.type }));
+  // const stages = node.subStages.map((s) => ({ ...s, type: node.type }));
+  const stages = node.subStages.map((s) => {
+    const stageWithType = { ...s, type: node.type };
+    // console.log(node.id, stageWithType);
+    return stageWithType;
+  });
 
   return (
     <MobileContainer>
