@@ -102,6 +102,31 @@
             "correct": "Correct! Salt was an extremely valuable commodity.",
             "incorrect": "This statement is actually true."
           }
+        },
+        {
+          "id": "stage-2",
+          "question": "Swipe left or right",
+          "attemptsAllowed": 3,
+          "points": 80,
+          "statement": "Kya aap Memes Review krna chahte hai??",
+          "card": {
+            "title": "Meme Quiz",
+            "subtitle": "Haa... or Nah!!?",
+            "image": "https://img.buzzfeed.com/buzzfeed-static/static/2017-12/21/14/asset/buzzfeed-prod-fastlane-03/sub-buzz-13410-1513883496-9.png?downsize=900:*&output-format=auto&output-quality=auto"
+          },
+          "left": {
+            "label": "Time nahi hai bro..",
+            "icon": "close"
+          },
+          "right": {
+            "label": "Memes he review krna hai!!!",
+            "icon": "check"
+          },
+          "correctDirection": "right",
+          "feedback": {
+            "correct": "Hum is bat pr agree krte hai ki aapko memes review krna chahiye. (Daily 2 mins)",
+            "incorrect": "Thik hai yr koi na.."
+          }
         }
       ]
     },
@@ -110,43 +135,83 @@
       "type": "fill-blank",
       "mapTitle": "Salt Mine",
       "mapSubtitle": "Learn a famous phrase",
-      "subStages": [
+      "subStages": 
+      [
         {
-          "id": "stage-3",
+          "id": "stage-1",
           "question": "Fill in the missing words",
           "attemptsAllowed": 2,
           "points": 80,
-          "prompt": "The {{b1}} was used to pay Roman soldiers, and this payment became the origin of the word {{b2}}.",
+          "prompt": "The viral 'This is Fine' meme features a dog calmly sitting in a room that is on {{b1}}, saying the phrase 'This is {{b2}}'.",
           "blanks": [
             {
               "id": "b1",
-              "answer": "salt"
+              "answer": "fire"
             },
             {
               "id": "b2",
-              "answer": "salary"
+              "answer": "fine"
             }
           ],
           "options": [
             {
               "id": "o1",
-              "word": "gold"
+              "word": "fire"
             },
             {
               "id": "o2",
-              "word": "salt"
+              "word": "fine"
             },
             {
               "id": "o3",
-              "word": "salary"
+              "word": "water"
             },
             {
               "id": "o4",
-              "word": "bread"
+              "word": "okay"
             },
             {
               "id": "o5",
-              "word": "Rome"
+              "word": "smoke"
+            }
+          ]
+        },
+        {
+          "id": "stage-2",
+          "question": "Fill in the missing words",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "prompt": "In the classic 'Distracted Boyfriend' meme, a man turns to look at another {{b1}} while walking with his {{b2}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "woman"
+            },
+            {
+              "id": "b2",
+              "answer": "girlfriend"
+            }
+          ],
+          "options": [
+            {
+              "id": "o1",
+              "word": "woman"
+            },
+            {
+              "id": "o2",
+              "word": "girlfriend"
+            },
+            {
+              "id": "o3",
+              "word": "car"
+            },
+            {
+              "id": "o4",
+              "word": "friend"
+            },
+            {
+              "id": "o5",
+              "word": "dog"
             }
           ]
         }
@@ -190,6 +255,41 @@
               "year": "2800 BC",
               "title": "Egyptian Salt Trade",
               "description": "Egypt exported salted fish to the Phoenicians in exchange for cedar wood, glass and the famous Tyrian purple dye."
+            }
+          ]
+        },
+        {
+          "id": "meme-timeline-001",
+          "estimatedTime": "3 mins",
+          "instructions": "Drag each meme event to its correct place on the timeline.",
+          "events": [
+            {
+              "id": "all-your-base",
+              "order": 1,
+              "year": "2001",
+              "title": "All Your Base Are Belong to Us",
+              "description": "A poorly translated cutscene from the game Zero Wing spreads across the early internet, becoming one of the first major viral memes."
+            },
+            {
+              "id": "rickroll",
+              "order": 2,
+              "year": "2007",
+              "title": "Rickrolling Takes Off",
+              "description": "The bait-and-switch prank of linking to Rick Astley’s ‘Never Gonna Give You Up’ becomes a massive internet phenomenon."
+            },
+            {
+              "id": "doge",
+              "order": 3,
+              "year": "2013",
+              "title": "Doge Meme Rises",
+              "description": "The Shiba Inu photo paired with broken English captions like ‘such wow’ and ‘very meme’ explodes in popularity."
+            },
+            {
+              "id": "distracted-boyfriend",
+              "order": 4,
+              "year": "2017",
+              "title": "Distracted Boyfriend Goes Viral",
+              "description": "A stock photo of a man checking out another woman while walking with his girlfriend becomes one of the most widely used meme templates."
             }
           ]
         }
