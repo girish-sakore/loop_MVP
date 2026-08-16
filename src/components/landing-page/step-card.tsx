@@ -1,4 +1,4 @@
-export default function StepCard({ number, title, desc, color, translate = false }: any) {
+export default function StepCard({ number, title, desc, color, translate = false }: {number: string, title: string, desc: string, color: string, translate?: boolean}) {
   const iconName = number === "1" ? "edit_calendar" : number === "2" ? "touch_app" : "auto_graph";
   return (
     <div className={`bg-white rounded-3xl p-8 soft-card-shadow space-y-6 ${translate ? 'md:translate-y-4' : ''}`}>

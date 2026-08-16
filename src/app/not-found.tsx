@@ -37,7 +37,7 @@ export default function NotFound() {
             className="text-[16px] leading-relaxed"
             style={{ color: "var(--on-surface-variant)" }}
           >
-            This page doesn't exist or was moved.
+            This page doesn&apos;t exist or was moved.
           </p>
         </div>
 
