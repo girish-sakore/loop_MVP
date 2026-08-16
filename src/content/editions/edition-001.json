@@ -13,7 +13,7 @@
       "mapSubtitle": "Discover where it all begins.",
       "subStages": [
         {
-          "id": "stage-1",
+          "id": "node-1-stage-1",
           "question": "Who is Marie Curie?",
           "attemptsAllowed": 3,
           "points": 100,
@@ -42,7 +42,7 @@
           ]
         },
         {
-          "id": "stage-2",
+          "id": "node-1-stage-2",
           "question": "Who is Thomas Edison?",
           "attemptsAllowed": 3,
           "points": 100,
@@ -79,7 +79,7 @@
       "mapSubtitle": "Discover ancient beliefs",
       "subStages": [
         {
-          "id": "stage-1",
+          "id": "node-2-stage-1",
           "question": "Swipe left or right",
           "attemptsAllowed": 2,
           "points": 80,
@@ -104,7 +104,7 @@
           }
         },
         {
-          "id": "stage-2",
+          "id": "node-2-stage-2",
           "question": "Swipe left or right",
           "attemptsAllowed": 3,
           "points": 80,
@@ -138,7 +138,7 @@
       "subStages": 
       [
         {
-          "id": "stage-1",
+          "id": "node-3-stage-1",
           "question": "Fill in the missing words",
           "attemptsAllowed": 2,
           "points": 80,
@@ -177,7 +177,7 @@
           ]
         },
         {
-          "id": "stage-2",
+          "id": "node-3-stage-2",
           "question": "Fill in the missing words",
           "attemptsAllowed": 2,
           "points": 80,
@@ -302,7 +302,7 @@
       "mapSubtitle": "Put it in order",
       "subStages": [
         {
-          "id": "stage-5",
+          "id": "node-5-stage-5",
           "question": "Swipe interaction placeholder",
           "attemptsAllowed": 2,
           "points": 80,

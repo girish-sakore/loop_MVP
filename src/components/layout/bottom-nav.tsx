@@ -33,7 +33,7 @@ export default function BottomNav() {
               }
             >
               <span
-                className="material-symbols-outlined mb-1"
+                className={"material-symbols-outlined mb-1 " + label}
                 style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
               >
                 {icon}

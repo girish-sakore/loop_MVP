@@ -13,7 +13,7 @@ export default function HeroSection() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
           <button className="btn-tactile px-8 py-4 bg-[#3A6757] text-white rounded-xl text-xl font-bold flex items-center justify-center gap-2 hover:scale-[1.02]">
-            Start This Week's Challenge
+            Start This Week&apos;s Challenge
             <span>→</span>
           </button>
           <button className="px-8 py-4 bg-[#f1edec] text-[#1c1b1b] rounded-xl text-xl font-bold hover:bg-[#e5e2e1] transition-colors">

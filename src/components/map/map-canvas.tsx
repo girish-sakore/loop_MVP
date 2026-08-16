@@ -9,11 +9,11 @@ import { useUiStore } from "@/stores/ui-store";
 import type { VillageMapData, MapNode } from "@/features/map/types";
 import BottomNav from "@/components/layout/bottom-nav";
 import { VillageTitleCard } from "@/components/map/village-title-card";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
-const themeBackgrounds: Record<string, string> = {
-  "salt-village": "/images/villages/salt-village-bg.png",
-};
+// const themeBackgrounds: Record<string, string> = {
+//   "salt-village": "/images/villages/salt-village-bg.png",
+// };
 
 export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
   const [activeNode, setActiveNode] = useState<{ editionId: string; node: MapNode } | null>(null);

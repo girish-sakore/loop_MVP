@@ -11,7 +11,7 @@ export function EditionFocus() {
         className="text-[16px] leading-relaxed"
         style={{ color: "var(--on-surface-variant)" }}
       >
-        Today's session focuses on visual recognition and sharp thinking.
+        Today&apos;s session focuses on visual recognition and sharp thinking.
         Find a comfortable spot and give it your full attention.
       </p>
     </section>
