@@ -3,7 +3,8 @@ export type StageType =
   | "swipe"
   | "fill-blank"
   | "reorder"
-  | "drag-drop";
+  | "drag-drop"
+  | "timeline-builder";
 
 export type StageBase = {
   id: string;
@@ -75,7 +76,9 @@ export type SwipeStage = StageBase & {
     incorrect: string;
   };
 };
-export type TimelineEvent = {
+
+export type TimelineBuilder = StageBase & {
+  type: "timeline-builder";
   id: string;
   title: string;
   year: string;
@@ -83,7 +86,7 @@ export type TimelineEvent = {
   order: number;
 };
 
-export type Stage = ImageSelectStage | PlaceholderStage | SwipeStage | FillBlankStage | TimelineEvent;
+export type Stage = ImageSelectStage | SwipeStage | FillBlankStage | TimelineBuilder;
 
 export interface EditionNode {
   id: string;

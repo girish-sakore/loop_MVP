@@ -50,28 +50,30 @@ export function InteractionRenderer({
           retryCount={retryCount}
         />
       );
-    case "drag-drop":
+    // case "drag-drop":
+    //   return (
+    //     <ComingSoonInteraction
+    //       type={stage.type}
+    //       prompt={stage.prompt}
+    //       onContinue={onAutoContinue}
+    //     />
+    //   );
+    case "timeline-builder":
       return (
-        <ComingSoonInteraction
-          type={stage.type}
-          prompt={stage.prompt}
-          onContinue={onAutoContinue}
+        <TimelineBuilder
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
         />
       );
-    case "timeline-builder":
-      return <TimelineBuilder
-                stage={stage}
-                onAnswer={onAnswer}
-                disabled={disabled}
-                retryCount={retryCount}
-              />;
-    case "reorder":
-      return <ReorderInteractionPlaceholder
-                stage={stage}
-                onAnswer={onAnswer}
-                disabled={disabled}
-                retryCount={retryCount}
-              />;
+    // case "reorder":
+    //   return <ReorderInteractionPlaceholder
+    //             stage={stage}
+    //             onAnswer={onAnswer}
+    //             disabled={disabled}
+    //             retryCount={retryCount}
+    //           />;
     default:
       return null;
   }

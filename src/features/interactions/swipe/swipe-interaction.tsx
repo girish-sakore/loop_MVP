@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -22,27 +23,29 @@ export function SwipeInteractionPlaceholder({
   stage,
   onAnswer,
   disabled,
-  retryCount = 3,
+  retryCount = 0,
 }: Props) {
-
   const answered = useRef(false);
 
   const x = useMotionValue(0);
-
   const rotate = useTransform(x, [-250, 250], [-18, 18]);
-
   const leftOpacity = useTransform(x, [-140, 0], [1, 0]);
-
   const rightOpacity = useTransform(x, [0, 140], [0, 1]);
+
+  // Track props to trigger position reset during render synchronously
+  const [resetKey, setResetKey] = useState({ stage, retryCount });
+
+  // Reset card state when stage or retryCount changes
+  // if (resetKey.stage !== stage || resetKey.retryCount !== retryCount) {
+  //   setResetKey({ stage, retryCount });
+  //   answered.current = false;
+  //   x.set(0);
+  // }
   useEffect(() => {
     answered.current = false;
+    x.set(0);
+  }, [stage, retryCount, x]);
 
-    animate(x, 0, {
-      type: "spring",
-      stiffness: 320,
-      damping: 24,
-    });
-  }, [retryCount]);
   function resetCard() {
     animate(x, 0, {
       type: "spring",
@@ -98,6 +101,8 @@ export function SwipeInteractionPlaceholder({
           style={{
             x,
             rotate,
+            background: "var(--surface-container-low)",
+            boxShadow: "0 20px 50px rgba(0,0,0,.12)",
           }}
           onDragEnd={(_, info) => {
             if (disabled) return;
@@ -117,12 +122,6 @@ export function SwipeInteractionPlaceholder({
             type: "spring",
             stiffness: 280,
             damping: 24,
-          }}
-          style={{
-            x,
-            rotate,
-            background: "var(--surface-container-low)",
-            boxShadow: "0 20px 50px rgba(0,0,0,.12)",
           }}
         >
           {/* LEFT */}
@@ -147,11 +146,15 @@ export function SwipeInteractionPlaceholder({
 
           <div className="flex h-full flex-col items-center justify-center gap-6 p-8 text-center">
             {stage.card.image ? (
-              <img
-                src={stage.card.image}
-                alt=""
-                className="w-40 h-40 object-cover rounded-2xl"
-              />
+              <div className="relative w-40 h-40 overflow-hidden rounded-2xl">
+                <Image
+                  src={stage.card.image}
+                  alt={stage.card.title || "Swipe card image"}
+                  fill
+                  sizes="160px"
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <span
                 className="material-symbols-outlined"

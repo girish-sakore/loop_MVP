@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -31,37 +31,33 @@ type Props = {
 };
 
 export function TimelineBuilder({ stage, onAnswer, disabled, retryCount = 0 }: Props) {
+  // Key state track to derive fresh state when props change (removes useEffect requirement)
+  const [resetKey, setResetKey] = useState({ stage, retryCount });
   const [submitted, setSubmitted] = useState(false);
+  const [activeEvent, setActiveEvent] = useState<TimelineEvent | null>(null);
+
+  // State initialization functions
+  const [availableEvents, setAvailableEvents] = useState(stage.events);
+  const [placements, setPlacements] = useState<Record<string, TimelineEvent | null>>(() =>
+    Object.fromEntries(stage.events.map((event) => [event.id, null]))
+  );
+
+  // Sync state during render if stage or retryCount changes
+  if (resetKey.stage !== stage || resetKey.retryCount !== retryCount) {
+    setResetKey({ stage, retryCount });
+    setSubmitted(false);
+    setAvailableEvents(stage.events);
+    setPlacements(Object.fromEntries(stage.events.map((e) => [e.id, null])));
+  }
 
   const sortedEvents = useMemo(
     () => [...stage.events].sort((a, b) => a.order - b.order),
     [stage.events]
   );
 
-  const [activeEvent, setActiveEvent] =
-    useState<TimelineEvent | null>(null);
-
-  const [availableEvents, setAvailableEvents] =
-    useState(stage.events);
-
-  const [placements, setPlacements] = useState<
-    Record<string, TimelineEvent | null>
-  >(() =>
-    Object.fromEntries(
-      stage.events.map((event) => [event.id, null])
-    )
-  );
-
-  useEffect(() => {
-    setPlacements(Object.fromEntries(stage.events.map((e) => [e.id, null])));
-    setAvailableEvents(stage.events);
-    setSubmitted(false);
-  }, [stage, retryCount]);
-
   function handleDragStart(event: DragStartEvent) {
-    const dragged = stage.events.find(
-      (item) => item.id === event.active.id
-    );
+    if (disabled) return;
+    const dragged = stage.events.find((item) => item.id === event.active.id);
 
     if (dragged) {
       setActiveEvent(dragged);
@@ -70,14 +66,13 @@ export function TimelineBuilder({ stage, onAnswer, disabled, retryCount = 0 }: P
 
   function handleDragEnd(event: DragEndEvent) {
     setActiveEvent(null);
+    if (disabled) return;
 
     const { active, over } = event;
 
     if (!over) return;
 
-    const draggedEvent = stage.events.find(
-      (item) => item.id === active.id
-    );
+    const draggedEvent = stage.events.find((item) => item.id === active.id);
 
     if (!draggedEvent) return;
 
@@ -95,7 +90,7 @@ export function TimelineBuilder({ stage, onAnswer, disabled, retryCount = 0 }: P
       current.filter((item) => item.id !== draggedEvent.id)
     );
 
-    // after updating placements, check completion:
+    // After updating placements, check completion:
     const updated = { ...placements, [over.id as string]: draggedEvent };
     const allPlaced = Object.values(updated).every((v) => v !== null);
     if (allPlaced && !submitted) {

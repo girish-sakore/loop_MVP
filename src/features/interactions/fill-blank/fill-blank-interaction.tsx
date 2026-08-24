@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -29,33 +29,31 @@ export function FillBlankInteraction({
   disabled,
   retryCount = 0,
 }: Props) {
+  // Track previous prop values to reset state synchronously during render
+  const [resetKey, setResetKey] = useState({ stage, retryCount });
 
   // blankId -> option
-  const [placements, setPlacements] =
+  const [placements, setPlacements] = useState<Record<string, Option | null>>(
+    () => Object.fromEntries(stage.blanks.map((blank) => [blank.id, null]))
+  );
+  const [activeOption, setActiveOption] = useState<Option | null>(null);
 
-    useState<Record<string, Option | null>>(() =>
-      Object.fromEntries(
-        stage.blanks.map((blank) => [blank.id, null])
-      )
+  // Sync state during render when stage or retryCount changes (removes useEffect warning)
+  if (resetKey.stage !== stage || resetKey.retryCount !== retryCount) {
+    setResetKey({ stage, retryCount });
+    setPlacements(
+      Object.fromEntries(stage.blanks.map((blank) => [blank.id, null]))
     );
-  const [activeOption, setActiveOption] =
-    useState<Option | null>(null);
-  // console.log('stage.prompt:', stage.prompt);
-  // console.log('parsed parts:', parsePrompt(stage.prompt));
+    setActiveOption(null);
+  }
+
   const parts = useMemo(
     () => parsePrompt(stage.prompt),
     [stage.prompt]
   );
-  useEffect(() => {
-    setPlacements(
-      Object.fromEntries(
-        stage.blanks.map((blank) => [blank.id, null])
-      )
-    );
 
-    setActiveOption(null);
-  }, [retryCount, stage]);
   function handleDragStart(event: DragStartEvent) {
+    if (disabled) return;
     const option = stage.options.find(
       (item) => item.id === event.active.id
     );
@@ -64,8 +62,10 @@ export function FillBlankInteraction({
       setActiveOption(option);
     }
   }
+
   function handleDragEnd(event: DragEndEvent) {
     setActiveOption(null);
+    if (disabled) return;
 
     const { active, over } = event;
 
@@ -115,6 +115,7 @@ export function FillBlankInteraction({
       return next;
     });
   }
+
   return (
     <div className="flex flex-col gap-8 pt-2">
       {/* Header */}
@@ -137,7 +138,8 @@ export function FillBlankInteraction({
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-      >        {/* Prompt */}
+      >
+        {/* Prompt */}
         <div
           className="rounded-3xl p-6 text-lg leading-9"
           style={{

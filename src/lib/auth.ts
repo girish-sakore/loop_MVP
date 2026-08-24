@@ -64,19 +64,19 @@ export const auth = betterAuth({
         }
 
         // Send actual email via Nodemailer
-        await transporter.sendMail({
-          from: `Loop <${process.env.EMAIL_FROM}>`,
-          to: email,
-          subject: "Sign in to Loop",
-          html: `
-            <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
-              <h2>Sign in to Loop</h2>
-              <p>Click the button below to sign in to your account. This link will expire in 10 minutes.</p>
-              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 6px; margin: 16px 0;">Sign In</a>
-              <p style="color: #666; font-size: 14px;">If you didn't request this email, you can safely ignore it.</p>
-            </div>
-          `,
-        });
+        // await transporter.sendMail({
+        //   from: `Loop <${process.env.EMAIL_FROM}>`,
+        //   to: email,
+        //   subject: "Sign in to Loop",
+        //   html: `
+        //     <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+        //       <h2>Sign in to Loop</h2>
+        //       <p>Click the button below to sign in to your account. This link will expire in 10 minutes.</p>
+        //       <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 6px; margin: 16px 0;">Sign In</a>
+        //       <p style="color: #666; font-size: 14px;">If you didn't request this email, you can safely ignore it.</p>
+        //     </div>
+        //   `,
+        // });
       },
     }),
   ],
