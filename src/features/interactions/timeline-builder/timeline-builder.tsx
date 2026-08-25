@@ -10,18 +10,7 @@ import {
 
 import { EventCard } from "./event-card";
 import { TimelineSlot } from "./timeline-slot";
-
-export type TimelineEvent = {
-  id: string;
-  title: string;
-  year: string;
-  description: string;
-  order: number;
-};
-
-type TimelineBuilderStage = {
-  events: TimelineEvent[];
-};
+import { TimelineBuilderStage, TimelineEvent } from "@/types/gameplay";
 
 type Props = {
   stage: TimelineBuilderStage;

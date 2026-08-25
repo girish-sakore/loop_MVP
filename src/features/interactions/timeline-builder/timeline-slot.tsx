@@ -2,7 +2,7 @@
 
 import { useDroppable } from "@dnd-kit/core";
 
-import { TimelineEvent } from "./timeline-builder";
+import { TimelineEvent } from "@/types/gameplay";
 
 type Props = {
   event: TimelineEvent;

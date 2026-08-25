@@ -11,7 +11,6 @@ export type StageBase = {
   // Map metadata
   mapTitle: string;
   mapSubtitle: string;
-  type: StageType;
   question: string;
   attemptsAllowed: number;
   points: number;
@@ -77,8 +76,9 @@ export type SwipeStage = StageBase & {
   };
 };
 
-export type TimelineBuilder = StageBase & {
-  type: "timeline-builder";
+export type TimelineBuilder = StageBase & TimelineBuilderStage;
+
+export type TimelineEvent = {
   id: string;
   title: string;
   year: string;
@@ -86,14 +86,20 @@ export type TimelineBuilder = StageBase & {
   order: number;
 };
 
+export type TimelineBuilderStage = {
+  type: "timeline-builder";
+  events: TimelineEvent[];
+};
+
+
 export type Stage = ImageSelectStage | SwipeStage | FillBlankStage | TimelineBuilder;
 
 export interface EditionNode {
   id: string;
-  type: string; // or your existing StageType union, e.g. "image-select" | "swipe" | "fill-blank" | "timeline-builder" | "reorder"
+  type: StageType; // or your existing StageType union, e.g. "image-select" | "swipe" | "fill-blank" | "timeline-builder" | "reorder"
   mapTitle: string;
   mapSubtitle: string;
-  subStages: Stage[]; // Stage = your existing per-question union type — unchanged
+  subStages: Stage[]; // Stage = your existing per-question union type
 }
 
 export type Edition = {
