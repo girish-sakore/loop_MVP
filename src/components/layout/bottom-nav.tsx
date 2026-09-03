@@ -2,24 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUiStore } from "@/stores/ui-store";
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const isMapNavVisible = useUiStore((s) => s.isMapNavVisible);
-
-  const isMapRoute = pathname === "/map";
-  if (isMapRoute && !isMapNavVisible) return null;
 
   const links = [
-    { href: "/map", icon: "map", label: "Play" },
-    { href: "/rankings", icon: "leaderboard", label: "Rankings" },
-    { href: "/profile", icon: "person", label: "Profile" },
+    { href: "/map", icon: "today", label: "Today" },
+    { href: "/library", icon: "view_carousel", label: "Library" },
+    { href: "/profile", icon: "schedule", label: "Profile" },
   ];
 
   return (
     <>
-      <nav className="fixed bottom-0 left-1/2 z-50 flex w-full max-w-[520px] -translate-x-1/2 justify-around rounded-t-[28px] border-x-[4px] border-t-[4px] border-[#0b0b0f] bg-[#fffdf7] px-4 pb-6 pt-3 shadow-[0_-8px_0_rgba(11,11,15,0.18)]">
+      <nav className="fixed bottom-5 left-1/2 z-50 grid w-[min(290px,calc(100%-48px))] max-w-[520px] -translate-x-1/2 grid-cols-3 rounded-full bg-[#efe8dc] p-1.5 shadow-[0_2px_10px_rgba(11,11,15,0.06)]">
         {links.map(({ href, icon, label }) => {
           const isActive = pathname === href;
           return (
@@ -28,16 +23,17 @@ export default function BottomNav() {
               href={href}
               className={
                 isActive
-                  ? "flex h-14 w-16 flex-col items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#f7d91f] text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] active:translate-y-0.5 transition-all duration-75"
-                  : "flex h-14 w-16 flex-col items-center justify-center rounded-full text-[#0b0b0f] hover:bg-[#f5f0e9] active:translate-y-0.5 transition-all duration-75"
+                  ? "flex h-14 flex-col items-center justify-center rounded-full bg-[#ded1b8] text-[#0b0b0f] transition-all duration-75 active:translate-y-0.5"
+                  : "flex h-14 flex-col items-center justify-center rounded-full text-[#0b0b0f] transition-all duration-75 hover:bg-[#f5f0e9] active:translate-y-0.5"
               }
             >
               <span
-                className={"material-symbols-outlined mb-1 " + label}
+                className="material-symbols-outlined mb-0.5 text-[22px]"
                 style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
               >
                 {icon}
               </span>
+              <span className="text-[12px] font-bold leading-none">{label}</span>
             </Link>
           );
         })}

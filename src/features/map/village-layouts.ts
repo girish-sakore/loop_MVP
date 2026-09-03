@@ -7,6 +7,7 @@ export const villageLayouts: Record<string, Array<{ x: string; y: string }>> = {
     { x: "55%", y: "28%" },
     { x: "55%", y: "23%" },
     { x: "60%", y: "16%" },
+    { x: "48%", y: "9%" },
   ],
   // [
   //   { x: "48%", y: "94%" }, // stage 0 — gate, bottom (START)

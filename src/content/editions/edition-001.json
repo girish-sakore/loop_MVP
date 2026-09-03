@@ -5,6 +5,11 @@
   "estimatedTime": "5 mins",
   "order": 1,
   "theme": "salt-village",
+  "category": "History",
+  "publishedAt": "2026-09-02",
+  "weekLabel": "Wednesday, September 2",
+  "author": "Loop Studio",
+  "coverImage": "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=480&q=80",
   "nodes": [
     {
       "id": "node-1",
@@ -618,6 +623,215 @@
           "feedback": {
             "correct": "Correct. The invention links are all in place.",
             "incorrect": "Not quite. Look for the card that shares the most clues, then swap again."
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-6",
+      "type": "reorder",
+      "mapTitle": "Salt Sequence",
+      "mapSubtitle": "Put the clues in order.",
+      "subStages": [
+        {
+          "id": "node-6-stage-1",
+          "question": "Arrange the salt story",
+          "attemptsAllowed": 3,
+          "points": 80,
+          "prompt": "Place these moments from earliest to latest.",
+          "items": [
+            {
+              "id": "salt-springs",
+              "label": "People boil brine from natural salt springs",
+              "order": 1
+            },
+            {
+              "id": "salt-trade",
+              "label": "Salt becomes a valuable trade good",
+              "order": 2
+            },
+            {
+              "id": "modern-table",
+              "label": "Iodized table salt becomes common at home",
+              "order": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-7",
+      "type": "four-way-swipe",
+      "mapTitle": "Salt Compass",
+      "mapSubtitle": "Swipe toward the answer.",
+      "subStages": [
+        {
+          "id": "node-7-stage-1",
+          "question": "Which mineral is common table salt mostly made from?",
+          "attemptsAllowed": 3,
+          "points": 80,
+          "category": "Science",
+          "prompt": "Choose the chemical pairing.",
+          "answers": {
+            "up": {
+              "label": "Iron + Oxygen"
+            },
+            "down": {
+              "label": "Sodium + Chlorine"
+            },
+            "left": {
+              "label": "Carbon + Hydrogen"
+            },
+            "right": {
+              "label": "Calcium + Carbon"
+            }
+          },
+          "correctDirection": "down",
+          "feedback": {
+            "correct": "Correct. Table salt is sodium chloride.",
+            "incorrect": "Not quite. Table salt is sodium chloride."
+          }
+        },
+        {
+          "id": "node-7-stage-2",
+          "question": "Which direction did salt caravans often cross in the Sahara?",
+          "attemptsAllowed": 3,
+          "points": 80,
+          "category": "History",
+          "prompt": "Follow the old trade routes.",
+          "answers": {
+            "up": {
+              "label": "North and south"
+            },
+            "down": {
+              "label": "Only east"
+            },
+            "left": {
+              "label": "Only west"
+            },
+            "right": {
+              "label": "Underwater"
+            }
+          },
+          "correctDirection": "up",
+          "feedback": {
+            "correct": "Correct. Salt moved along north-south desert trade routes.",
+            "incorrect": "Not this one. Think of desert routes connecting North and West Africa."
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-8",
+      "type": "clue-connect",
+      "mapTitle": "Clue Board",
+      "mapSubtitle": "Connect every true clue.",
+      "subStages": [
+        {
+          "id": "node-8-stage-1",
+          "question": "Connect the Clues",
+          "attemptsAllowed": 1,
+          "points": 150,
+          "prompt": "Drag a string from the mystery card to each clue that truly belongs. Tap clues if you prefer.",
+          "introLabel": "Clue Board",
+          "maxMistakes": 3,
+          "cases": [
+            {
+              "id": "marie-curie",
+              "category": "History",
+              "answer": "Marie Curie",
+              "fact": "She was the first person to win Nobel Prizes in two different scientific fields.",
+              "clueSlots": [
+                { "x": 18, "y": 19 },
+                { "x": 82, "y": 18 },
+                { "x": 15, "y": 50 },
+                { "x": 85, "y": 53 },
+                { "x": 23, "y": 83 },
+                { "x": 78, "y": 84 }
+              ],
+              "clues": [
+                {
+                  "id": "curie-polonium-radium",
+                  "text": "Discovered polonium and radium",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-two-nobels",
+                  "text": "Won Nobel Prizes in Physics and Chemistry",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-radioactivity",
+                  "text": "Pioneered radioactivity research",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-radiation",
+                  "text": "Illness was linked to radiation exposure",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-light-bulb",
+                  "text": "Invented the light bulb",
+                  "isCorrect": false
+                },
+                {
+                  "id": "curie-first-space",
+                  "text": "Was the first woman in space",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "id": "japan",
+              "category": "Geography",
+              "answer": "Japan",
+              "fact": "Japan is an island nation in the Pacific with Tokyo as its capital.",
+              "clueSlots": [
+                { "x": 18, "y": 19 },
+                { "x": 82, "y": 18 },
+                { "x": 15, "y": 50 },
+                { "x": 85, "y": 53 },
+                { "x": 23, "y": 83 },
+                { "x": 78, "y": 84 }
+              ],
+              "clues": [
+                {
+                  "id": "japan-islands",
+                  "text": "Made up of thousands of Pacific islands",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-fuji",
+                  "text": "Home to Mount Fuji",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-tokyo",
+                  "text": "Its capital is Tokyo",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-yen",
+                  "text": "Uses the yen as currency",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-china-border",
+                  "text": "Shares a land border with China",
+                  "isCorrect": false
+                },
+                {
+                  "id": "japan-seoul",
+                  "text": "Its capital is Seoul",
+                  "isCorrect": false
+                }
+              ]
+            }
+          ],
+          "feedback": {
+            "correct": "Every clue is connected. The board is solved.",
+            "incorrect": "Too many decoys were connected. Look for clues that all point to the same answer."
           }
         }
       ]

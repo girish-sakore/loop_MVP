@@ -10,6 +10,8 @@ export type MapNode = {
   title: string;
   subtitle: string;
   stars: number; // 0-3, from UserNodeProgress
+  completedSubGames: number;
+  totalSubGames: number;
 };
 
 export type VillageMapData = {

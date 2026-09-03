@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const nodeProgress = await prisma.userNodeProgress.upsert({
       where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
       create: { userId, editionId, nodeId, status: "in_progress", startedAt: new Date() },
-      update: { status: "in_progress" },
+      update: {},
     });
 
     return NextResponse.json({ ok: true, progress: nodeProgress });

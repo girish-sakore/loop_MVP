@@ -4,7 +4,9 @@ export type StageType =
   | "fill-blank"
   | "timeline-builder"
   | "reorder"
-  | "drag-drop";
+  | "four-way-swipe"
+  | "drag-drop"
+  | "clue-connect";
 
 export type StageBase = {
   id: string;
@@ -32,6 +34,11 @@ export type PlaceholderStage = StageBase & {
   type: "reorder";
 
   prompt: string;
+  items?: Array<{
+    id: string;
+    label: string;
+    order: number;
+  }>;
 };
 
 export type LinkMapCard = {
@@ -83,6 +90,40 @@ export type DragDropStage = StageBase & {
     incorrect: string;
   };
 };
+
+export type ClueConnectClue = {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+};
+
+export type ClueConnectSlot = {
+  x: number;
+  y: number;
+};
+
+export type ClueConnectCase = {
+  id: string;
+  category: string;
+  answer: string;
+  icon?: string;
+  fact: string;
+  clueSlots: ClueConnectSlot[];
+  clues: ClueConnectClue[];
+};
+
+export type ClueConnectStage = StageBase & {
+  type: "clue-connect";
+  prompt: string;
+  introLabel?: string;
+  maxMistakes?: number;
+  cases: ClueConnectCase[];
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
+
 export type FillBlankStage = StageBase & {
   type: "fill-blank";
 
@@ -126,6 +167,23 @@ export type SwipeStage = StageBase & {
     incorrect: string;
   };
 };
+
+export type FourWaySwipeDirection = "up" | "down" | "left" | "right";
+
+export type FourWaySwipeStage = StageBase & {
+  type: "four-way-swipe";
+  category?: string;
+  prompt?: string;
+  answers: Record<FourWaySwipeDirection, {
+    label: string;
+    icon?: string;
+  }>;
+  correctDirection: FourWaySwipeDirection;
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
 export type TimelineEvent = {
   id: string;
   title: string;
@@ -146,9 +204,11 @@ export type Stage =
   | ImageSelectStage
   | PlaceholderStage
   | SwipeStage
+  | FourWaySwipeStage
   | FillBlankStage
   | TimelineBuilderStage
-  | DragDropStage;
+  | DragDropStage
+  | ClueConnectStage;
 
 export interface EditionNode {
   id: string;
@@ -166,4 +226,9 @@ export type Edition = {
   nodes: EditionNode[];
   order: number;        // NEW — position on the map path
   theme: string;         // NEW — e.g. "salt-village", drives background image + node art
+  category?: string;
+  publishedAt?: string;
+  weekLabel?: string;
+  author?: string;
+  coverImage?: string;
 };

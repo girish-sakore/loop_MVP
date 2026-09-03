@@ -24,10 +24,27 @@ export async function POST(req: Request) {
     const edition = getEditionById(editionId);
     if (!edition) return NextResponse.json({ error: "Unknown edition." }, { status: 400 });
 
-    const nodeIndex = edition.nodes.findIndex((n) => n.id === nodeId);
-    if (nodeIndex === -1) return NextResponse.json({ error: "Unknown node." }, { status: 400 });
+    if (!edition.nodes.some((node) => node.id === nodeId)) {
+      return NextResponse.json({ error: "Unknown node." }, { status: 400 });
+    }
 
     const userId = session.user.id;
+    const existingNode = await prisma.userNodeProgress.findUnique({
+      where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
+    });
+
+    if (existingNode?.status === "completed") {
+      const completedCount = await prisma.userNodeProgress.count({
+        where: { userId, editionId, status: "completed" },
+      });
+
+      return NextResponse.json({
+        ok: true,
+        locked: true,
+        editionCompleted: completedCount >= edition.nodes.length,
+      });
+    }
+
     const stars = computeStars(correctAnswers ?? 0, totalAnswers ?? 0);
 
     await prisma.userNodeProgress.upsert({
@@ -43,23 +60,21 @@ export async function POST(req: Request) {
       },
     });
 
-    const editionProgress = await prisma.userEditionProgress.findUnique({
-      where: { userId_editionId: { userId, editionId } },
+    const completedCount = await prisma.userNodeProgress.count({
+      where: { userId, editionId, status: "completed" },
     });
-    const nextNodeIndex = Math.max(editionProgress?.currentNodeIndex ?? 0, nodeIndex + 1);
-    const editionCompleted = nextNodeIndex >= edition.nodes.length;
+    const editionCompleted = completedCount >= edition.nodes.length;
 
     await prisma.userEditionProgress.upsert({
       where: { userId_editionId: { userId, editionId } },
       create: {
         userId, editionId, status: editionCompleted ? "completed" : "in_progress",
-        currentNodeIndex: nextNodeIndex,
+        currentNodeIndex: 0,
         score: score ?? 0, correctAnswers: correctAnswers ?? 0, totalAnswers: totalAnswers ?? 0,
         startedAt: new Date(), completedAt: editionCompleted ? new Date() : null,
       },
       update: {
         status: editionCompleted ? "completed" : "in_progress",
-        currentNodeIndex: nextNodeIndex,
         score: { increment: score ?? 0 },
         correctAnswers: { increment: correctAnswers ?? 0 },
         totalAnswers: { increment: totalAnswers ?? 0 },

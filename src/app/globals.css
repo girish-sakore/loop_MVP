@@ -237,6 +237,21 @@ input {
   }
 }
 
+@keyframes clue-shake {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+
+  25% {
+    margin-left: -6px;
+  }
+
+  75% {
+    margin-left: 6px;
+  }
+}
+
 @keyframes blink-animation {
   75% {
     visibility: hidden;

@@ -3,7 +3,7 @@ import { MobileContainer } from "@/components/layout/mobile-container";
 import { GameplayEngine } from "@/features/gameplay/engine/gameplay-engine";
 import { getEditionById } from "@/features/editions/edition-content";
 import { getAuthSession } from "@/lib/auth-session";
-import { getUserEditionProgress, getUserNodeProgress } from "@/lib/edition-progress";
+import { getUserNodeProgress } from "@/lib/edition-progress";
 import type { Stage, StageType } from "@/types/gameplay";
 
 type PageProps = { params: Promise<{ editionId: string; nodeId: string }> };
@@ -20,13 +20,9 @@ export default async function NodeGameplayPage({ params }: PageProps) {
   const nodeIndex = edition.nodes.findIndex((n) => n.id === nodeId);
   if (nodeIndex === -1) notFound();
 
-  const editionProgress = await getUserEditionProgress(session.user.id, editionId);
-
-  // Server-side gate — mirrors map-node.tsx's isTappable check, but authoritative
-  if (nodeIndex > editionProgress.currentNodeIndex) redirect("/map"); // locked
-  if (nodeIndex < editionProgress.currentNodeIndex) redirect("/map"); // already completed, no replay yet
-
   const nodeProgress = await getUserNodeProgress(session.user.id, editionId, nodeId);
+  if (nodeProgress.status === "completed") redirect("/map");
+
   const node = edition.nodes[nodeIndex];
   const nodeType = node.type as StageType;
   const stages = node.subStages.map((stage, index) => ({

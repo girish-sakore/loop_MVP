@@ -2,8 +2,10 @@ import { FillBlankInteraction } from "@/features/interactions/fill-blank/fill-bl
 import { ImageSelectInteraction } from "@/features/interactions/image-select/image-select-interaction";
 import { DragDropInteraction } from "@/features/interactions/drag-drop/drag-drop-interaction";
 import { SwipeInteractionPlaceholder } from "@/features/interactions/swipe/swipe-interaction";
+import { FourWaySwipeInteraction } from "@/features/interactions/four-way-swipe/four-way-swipe-interaction";
 import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeline-builder";
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
+import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
 
 import type { Stage } from "@/types/gameplay";
 
@@ -47,6 +49,17 @@ export function InteractionRenderer({
           onIntroComplete={onIntroComplete}
         />
       );
+    case "four-way-swipe":
+      return (
+        <FourWaySwipeInteraction
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
     case "fill-blank":
       return (
         <FillBlankInteraction
@@ -59,6 +72,18 @@ export function InteractionRenderer({
     case "drag-drop":
       return (
         <DragDropInteraction
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
+    case "clue-connect":
+      return (
+        <ClueConnectInteraction
+          key={`${stage.id}:${retryCount}`}
           stage={stage}
           onAnswer={onAnswer}
           disabled={disabled}
