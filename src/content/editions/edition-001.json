@@ -225,6 +225,9 @@
       "subStages": [
         {
           "id": "timeline-builder-001",
+          "question": "Put the events in chronological order",
+          "attemptsAllowed": 3,
+          "points": 100,
           "estimatedTime": "3 mins",
           "instructions": "Drag each historical event to its correct place on the timeline.",
           "events": [
@@ -260,6 +263,9 @@
         },
         {
           "id": "meme-timeline-001",
+          "question": "Put the memes in chronological order",
+          "attemptsAllowed": 3,
+          "points": 100,
           "estimatedTime": "3 mins",
           "instructions": "Drag each meme event to its correct place on the timeline.",
           "events": [
@@ -297,16 +303,322 @@
     },
     {
       "id": "node-5",
-      "type": "reorder",
-      "mapTitle": "Salt Mine",
-      "mapSubtitle": "Put it in order",
+      "type": "drag-drop",
+      "mapTitle": "Space Links",
+      "mapSubtitle": "Place each card on the clue map",
       "subStages": [
         {
-          "id": "node-5-stage-5",
-          "question": "Swipe interaction placeholder",
-          "attemptsAllowed": 2,
-          "points": 80,
-          "prompt": "Swipe variant is scaffolded for the renderer."
+          "id": "node-5-stage-1",
+          "question": "Build the space link map",
+          "attemptsAllowed": 3,
+          "points": 120,
+          "prompt": "Swipe through the cards, drag them onto the matching clue spots, then guess.",
+          "introLabel": "Links",
+          "map": {
+            "title": "Round 1 of 4",
+            "relations": [
+              {
+                "id": "went-space",
+                "label": "Really went to space",
+                "slotIds": ["strelka", "felicette", "enterprise"],
+                "x": 50,
+                "y": 31,
+                "color": "#c7a0ff"
+              },
+              {
+                "id": "program",
+                "label": "Not part of Soviet space program",
+                "slotIds": ["felicette", "endeavour"],
+                "x": 23,
+                "y": 62,
+                "color": "#ffb65c"
+              },
+              {
+                "id": "crewed",
+                "label": "Crewed spacecraft",
+                "slotIds": ["enterprise", "endeavour"],
+                "x": 20,
+                "y": 43,
+                "color": "#86ce5d"
+              },
+              {
+                "id": "fiction",
+                "label": "Named by children",
+                "slotIds": ["enterprise"],
+                "x": 80,
+                "y": 43,
+                "color": "#e4ded4"
+              },
+              {
+                "id": "pun",
+                "label": "Related to pupniks",
+                "slotIds": ["strelka"],
+                "x": 78,
+                "y": 20,
+                "color": "#86ce5d"
+              }
+            ],
+            "paths": [
+              {
+                "id": "center-up",
+                "points": [
+                  { "x": 50, "y": 31 },
+                  { "x": 50, "y": 51 }
+                ]
+              },
+              {
+                "id": "center-left",
+                "points": [
+                  { "x": 20, "y": 43 },
+                  { "x": 50, "y": 43 }
+                ]
+              },
+              {
+                "id": "center-right",
+                "points": [
+                  { "x": 50, "y": 43 },
+                  { "x": 80, "y": 43 }
+                ]
+              },
+              {
+                "id": "center-down",
+                "points": [
+                  { "x": 50, "y": 51 },
+                  { "x": 50, "y": 68 }
+                ]
+              },
+              {
+                "id": "left-column",
+                "points": [
+                  { "x": 20, "y": 30 },
+                  { "x": 20, "y": 79 }
+                ]
+              },
+              {
+                "id": "right-column",
+                "points": [
+                  { "x": 80, "y": 20 },
+                  { "x": 80, "y": 61 }
+                ]
+              },
+              {
+                "id": "lower-left-to-center",
+                "points": [
+                  { "x": 20, "y": 62 },
+                  { "x": 50, "y": 62 }
+                ]
+              },
+              {
+                "id": "lower-right-to-center",
+                "points": [
+                  { "x": 50, "y": 62 },
+                  { "x": 80, "y": 62 }
+                ]
+              }
+            ],
+            "slots": [
+              {
+                "id": "strelka",
+                "label": "Conceived offspring in space",
+                "answerCardId": "strelka-dog",
+                "x": 20,
+                "y": 30
+              },
+              {
+                "id": "felicette",
+                "label": "Former stray",
+                "answerCardId": "felicette-cat",
+                "x": 80,
+                "y": 61
+              },
+              {
+                "id": "enterprise",
+                "label": "Primary Star Trek setting",
+                "answerCardId": "starship-enterprise",
+                "x": 50,
+                "y": 51
+              },
+              {
+                "id": "endeavour",
+                "label": "Named after cartoon character",
+                "answerCardId": "space-shuttle-endeavour",
+                "x": 20,
+                "y": 79
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "starship-enterprise",
+              "title": "Starship Enterprise",
+              "image": "https://upload.wikimedia.org/wikipedia/en/4/4f/USS_Enterprise_%28NCC-1701-A%29.jpg",
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "space-shuttle-endeavour",
+              "title": "Space Shuttle Endeavour",
+              "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/STS-134_launch_2.jpg/640px-STS-134_launch_2.jpg",
+              "color": "#66cfd3"
+            },
+            {
+              "id": "strelka-dog",
+              "title": "Strelka the dog",
+              "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Belka_and_Strelka.JPG/640px-Belka_and_Strelka.JPG",
+              "color": "#86ce5d"
+            },
+            {
+              "id": "felicette-cat",
+              "title": "Felicette the cat",
+              "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/F%C3%A9licette%2C_spacecat.jpg/640px-F%C3%A9licette%2C_spacecat.jpg",
+              "color": "#ffb65c"
+            }
+          ],
+          "feedback": {
+            "correct": "Correct. Every card is linked to the right clue.",
+            "incorrect": "Not quite. Swap the mismatched cards and try again."
+          }
+        },
+        {
+          "id": "node-5-stage-2",
+          "question": "Build the invention link map",
+          "attemptsAllowed": 3,
+          "points": 120,
+          "prompt": "Use the placeholder cards to match each invention to the right cluster of clues.",
+          "introLabel": "Links",
+          "map": {
+            "title": "Round 2 of 4",
+            "relations": [
+              {
+                "id": "communication",
+                "label": "Changed communication",
+                "slotIds": ["telephone", "printing-press", "world-wide-web"],
+                "x": 50,
+                "y": 26,
+                "color": "#66cfd3"
+              },
+              {
+                "id": "electric",
+                "label": "Needs electricity",
+                "slotIds": ["light-bulb", "telephone", "world-wide-web"],
+                "x": 78,
+                "y": 50,
+                "color": "#ffb65c"
+              },
+              {
+                "id": "mass-media",
+                "label": "Made ideas travel faster",
+                "slotIds": ["printing-press", "world-wide-web"],
+                "x": 22,
+                "y": 48,
+                "color": "#c7a0ff"
+              },
+              {
+                "id": "home-life",
+                "label": "Changed daily life at home",
+                "slotIds": ["light-bulb", "telephone"],
+                "x": 52,
+                "y": 69,
+                "color": "#86ce5d"
+              }
+            ],
+            "paths": [
+              {
+                "id": "top-cross",
+                "points": [
+                  { "x": 22, "y": 30 },
+                  { "x": 78, "y": 30 }
+                ]
+              },
+              {
+                "id": "left-column",
+                "points": [
+                  { "x": 22, "y": 30 },
+                  { "x": 22, "y": 70 }
+                ]
+              },
+              {
+                "id": "right-column",
+                "points": [
+                  { "x": 78, "y": 30 },
+                  { "x": 78, "y": 70 }
+                ]
+              },
+              {
+                "id": "middle-cross",
+                "points": [
+                  { "x": 22, "y": 48 },
+                  { "x": 78, "y": 48 }
+                ]
+              },
+              {
+                "id": "bottom-cross",
+                "points": [
+                  { "x": 22, "y": 70 },
+                  { "x": 78, "y": 70 }
+                ]
+              }
+            ],
+            "slots": [
+              {
+                "id": "printing-press",
+                "label": "Movable type machine",
+                "answerCardId": "gutenberg-press",
+                "x": 22,
+                "y": 30
+              },
+              {
+                "id": "telephone",
+                "label": "Voice over distance",
+                "answerCardId": "telephone",
+                "x": 78,
+                "y": 30
+              },
+              {
+                "id": "light-bulb",
+                "label": "Bright indoor nights",
+                "answerCardId": "light-bulb",
+                "x": 22,
+                "y": 70
+              },
+              {
+                "id": "world-wide-web",
+                "label": "Hyperlinked information",
+                "answerCardId": "world-wide-web",
+                "x": 78,
+                "y": 70
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "gutenberg-press",
+              "title": "Printing Press",
+              "image": "/images/placeholders/printing-press.png",
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "telephone",
+              "title": "Telephone",
+              "image": "/images/placeholders/telephone.png",
+              "color": "#66cfd3"
+            },
+            {
+              "id": "light-bulb",
+              "title": "Light Bulb",
+              "image": "/images/placeholders/light-bulb.png",
+              "color": "#ffb65c"
+            },
+            {
+              "id": "world-wide-web",
+              "title": "World Wide Web",
+              "image": "/images/placeholders/world-wide-web.png",
+              "color": "#86ce5d"
+            }
+          ],
+          "feedback": {
+            "correct": "Correct. The invention links are all in place.",
+            "incorrect": "Not quite. Look for the card that shares the most clues, then swap again."
+          }
         }
       ]
     }

@@ -12,7 +12,7 @@ export default async function LandingPage() {
   const session = await getAuthSession();
   if (session?.user) redirect("/map");
   return (
-    <div className="bg-[#fcf8f7] text-[#1c1b1b] font-sans">
+    <div className="bg-[#b996f6] text-[#0b0b0f] font-sans">
       <HeroSection />
       <ThreeStepJourney />
       <WeeklyExperience />
@@ -23,4 +23,3 @@ export default async function LandingPage() {
     </div>
   );
 }
-

@@ -19,7 +19,7 @@ export default function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-xl">
+      <nav className="fixed bottom-0 left-1/2 z-50 flex w-full max-w-[520px] -translate-x-1/2 justify-around rounded-t-[28px] border-x-[4px] border-t-[4px] border-[#0b0b0f] bg-[#fffdf7] px-4 pb-6 pt-3 shadow-[0_-8px_0_rgba(11,11,15,0.18)]">
         {links.map(({ href, icon, label }) => {
           const isActive = pathname === href;
           return (
@@ -28,8 +28,8 @@ export default function BottomNav() {
               href={href}
               className={
                 isActive
-                  ? "flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-6 py-2 shadow-[0_2px_0_0_#3a6757] active:translate-y-0.5 transition-all duration-75"
-                  : "flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-variant rounded-xl active:translate-y-0.5 transition-all duration-75"
+                  ? "flex h-14 w-16 flex-col items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#f7d91f] text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] active:translate-y-0.5 transition-all duration-75"
+                  : "flex h-14 w-16 flex-col items-center justify-center rounded-full text-[#0b0b0f] hover:bg-[#f5f0e9] active:translate-y-0.5 transition-all duration-75"
               }
             >
               <span

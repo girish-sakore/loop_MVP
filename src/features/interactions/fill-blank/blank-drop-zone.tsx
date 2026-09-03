@@ -30,8 +30,8 @@ export function BlankDropZone({
         justify-center
         min-w-[110px]
         min-h-[48px]
-        rounded-xl
-        border-2
+        rounded-2xl
+        border-[3px]
         px-1
         py-1
         mx-1
@@ -44,8 +44,8 @@ export function BlankDropZone({
           ? "var(--secondary-container)"
           : "var(--surface-container-low)",
         borderColor: isOver
-          ? "var(--secondary)"
-          : "var(--outline-variant)",
+          ? "#0b0b0f"
+          : "#0b0b0f",
       }}
     >
       {option ? (
@@ -56,7 +56,7 @@ export function BlankDropZone({
         />
       ) : (
         <span
-          className="text-sm font-medium"
+          className="text-sm font-extrabold"
           style={{
             color: "var(--on-surface-variant)",
           }}

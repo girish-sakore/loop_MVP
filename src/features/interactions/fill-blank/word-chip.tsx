@@ -46,20 +46,21 @@ export function WordChip({
       {...attributes}
       style={{
         ...style,
-        background: "var(--surface-container-high)",
-        color: "var(--on-surface)",
-        border: "1px solid var(--outline-variant)",
+        background: isBank ? "#f7d91f" : "#85cb57",
+        color: "#0b0b0f",
+        border: "3px solid #0b0b0f",
+        boxShadow: isBank ? "0 5px 0 #0b0b0f" : "none",
       }}
       className={`
         rounded-full
-        font-semibold
+        font-extrabold
         transition-all
         duration-200
         active:cursor-grabbing
         ${
           isBank
-            ? "px-4 py-2 shadow-sm hover:shadow-md"
-            : "px-3 py-1 shadow-none"
+            ? "px-4 py-2 active:translate-y-1"
+            : "px-3 py-1"
         }
       `}
     >

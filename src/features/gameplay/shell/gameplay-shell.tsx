@@ -17,40 +17,35 @@ export function GameplayShell({
   children,
 }: GameplayShellProps) {
   return (
-    <div
-      className="flex min-h-[100dvh] flex-col"
-      style={{ backgroundColor: "var(--surface)" }}
-    >
-      {/* Header */}
+    <div className="flex min-h-[100dvh] flex-col bg-[#f6f2ec]">
       <header
-        className="flex items-center justify-between w-full px-6 h-16 flex-shrink-0"
-        style={{ backgroundColor: "var(--surface)" }}
+        className="flex h-[86px] w-full flex-shrink-0 items-center justify-between border-b-[3px] border-[#0b0b0f] bg-[#f6f2ec] px-4"
       >
-        {/* Left: close + progress bar */}
         <div className="flex items-center gap-4 flex-1">
-          <Link href="/map">
+          <Link
+            href="/map"
+            className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] transition active:scale-95"
+          >
             <span
-              className="material-symbols-outlined hover:opacity-70 transition-opacity"
-              style={{ color: "var(--on-surface-variant)" }}
+              className="material-symbols-outlined"
+              style={{ color: "var(--on-surface)" }}
             >
               close
             </span>
           </Link>
-          {/* Progress bar */}
           <div
-            className="flex-1 max-w-xs h-3 rounded-full overflow-hidden relative"
-            style={{ backgroundColor: "var(--surface-container)" }}
+            className="relative h-5 max-w-xs flex-1 overflow-hidden rounded-full border-[3px] border-[#0b0b0f]"
+            style={{ backgroundColor: "#f6f2ec" }}
           >
             <div
-              className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
+              className="absolute top-0 left-0 h-full transition-all duration-700 ease-out"
               style={{
                 width: `${progress}%`,
-                backgroundColor: "var(--secondary)",
+                backgroundColor: "#d8d0c3",
               }}
             >
-              {/* Shine */}
               <div
-                className="absolute inset-0 rounded-full"
+                className="absolute inset-0"
                 style={{
                   background:
                     "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%)",
@@ -60,7 +55,6 @@ export function GameplayShell({
           </div>
         </div>
 
-        {/* Right: hearts */}
         <div className="flex items-center gap-1.5 ml-4">
           {Array.from({ length: totalAttempts }).map((_, i) => (
             <span
@@ -70,7 +64,7 @@ export function GameplayShell({
                 fontSize: 22,
                 color:
                   i < attemptsRemaining
-                    ? "#e8614a"
+                    ? "#f05d5e"
                     : "var(--surface-variant)",
                 fontVariationSettings:
                   i < attemptsRemaining ? "'FILL' 1" : "'FILL' 0",
@@ -82,18 +76,9 @@ export function GameplayShell({
         </div>
       </header>
 
-      {/* Stage label */}
-      <div className="px-6 pb-2">
-        <span
-          className="text-[11px] font-bold tracking-widest uppercase"
-          style={{ color: "var(--secondary)" }}
-        >
-          {stageLabel}
-        </span>
-      </div>
+      <span className="sr-only">{stageLabel}</span>
 
-      {/* Content area */}
-      <main className="flex-1 px-6 pb-8 overflow-y-auto">
+      <main className="flex-1 px-0 pb-8 overflow-y-auto">
         {children}
       </main>
     </div>

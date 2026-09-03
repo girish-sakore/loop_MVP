@@ -30,13 +30,24 @@ export async function getUserEditionProgress(userId: string, editionId: string):
   if (!progress) {
     return { status: "not_started", currentNodeIndex: 0, score: 0, correctAnswers: 0, totalAnswers: 0, startedAt: null, completedAt: null };
   }
-  return progress;
+  return {
+    ...progress,
+    status: progress.status as ProgressStatus,
+  };
 }
 
 // Batch fetch — map-content.ts needs progress for every node in one query, not N queries
 export async function getAllUserNodeProgress(userId: string, editionId: string): Promise<Map<string, NodeProgress>> {
   const rows = await prisma.userNodeProgress.findMany({ where: { userId, editionId } });
-  return new Map(rows.map((r) => [r.nodeId, r]));
+  return new Map(
+    rows.map((r) => [
+      r.nodeId,
+      {
+        ...r,
+        status: r.status as ProgressStatus,
+      },
+    ]),
+  );
 }
 
 export async function getUserNodeProgress(userId: string, editionId: string, nodeId: string): Promise<NodeProgress> {
@@ -46,5 +57,8 @@ export async function getUserNodeProgress(userId: string, editionId: string, nod
   if (!progress) {
     return { status: "not_started", currentSubStage: 0, score: 0, correctAnswers: 0, totalAnswers: 0, stars: 0, startedAt: null, completedAt: null };
   }
-  return progress;
+  return {
+    ...progress,
+    status: progress.status as ProgressStatus,
+  };
 }

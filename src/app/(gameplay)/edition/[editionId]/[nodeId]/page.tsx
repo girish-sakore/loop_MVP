@@ -4,6 +4,7 @@ import { GameplayEngine } from "@/features/gameplay/engine/gameplay-engine";
 import { getEditionById } from "@/features/editions/edition-content";
 import { getAuthSession } from "@/lib/auth-session";
 import { getUserEditionProgress, getUserNodeProgress } from "@/lib/edition-progress";
+import type { Stage, StageType } from "@/types/gameplay";
 
 type PageProps = { params: Promise<{ editionId: string; nodeId: string }> };
 
@@ -27,12 +28,17 @@ export default async function NodeGameplayPage({ params }: PageProps) {
 
   const nodeProgress = await getUserNodeProgress(session.user.id, editionId, nodeId);
   const node = edition.nodes[nodeIndex];
-  // const stages = node.subStages.map((s) => ({ ...s, type: node.type }));
-  const stages = node.subStages.map((s) => {
-    const stageWithType = { ...s, type: node.type };
-    // console.log(node.id, stageWithType);
-    return stageWithType;
-  });
+  const nodeType = node.type as StageType;
+  const stages = node.subStages.map((stage, index) => ({
+    ...stage,
+    type: nodeType,
+    mapTitle: node.mapTitle,
+    mapSubtitle: node.mapSubtitle,
+    question: "question" in stage ? stage.question : node.mapTitle,
+    attemptsAllowed: "attemptsAllowed" in stage ? stage.attemptsAllowed : 3,
+    points: "points" in stage ? stage.points : 100,
+    id: stage.id ?? `${node.id}-stage-${index + 1}`,
+  })) as Stage[];
 
   return (
     <MobileContainer>

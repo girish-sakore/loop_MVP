@@ -1,46 +1,46 @@
 export default function PremiumBenefits() {
   const benefits = [
     {
-      title: "Expert Coaching",
-      desc: "Guided sessions from behavioral scientists.",
+      title: "Daily themes",
+      desc: "A fresh subject every day, from potatoes to planets.",
       icon: "verified",
     },
     {
-      title: "Unlimited Devices",
-      desc: "Sync seamlessly across your entire digital ecosystem.",
-      icon: "cloud_sync",
+      title: "Fast games",
+      desc: "Short rounds that fit between scrolls, breaks, and commutes.",
+      icon: "sports_esports",
     },
     {
-      title: "Deep Analytics",
-      desc: "Visualize your growth with advanced heatmaps.",
-      icon: "insights",
+      title: "Expert-made",
+      desc: "Questions and facts written with care, taste, and context.",
+      icon: "school",
     },
     {
-      title: "Private Circles",
-      desc: "Create exclusive habit groups with your family.",
-      icon: "group_work",
+      title: "Friend loops",
+      desc: "Invite people into themes and compare what everyone learned.",
+      icon: "diversity_3",
     },
   ];
 
   return (
-    <section className="py-24 px-6 max-w-7xl mx-auto">
-      <h2 className="text-4xl font-bold text-center mb-16">
-        Unlock your full potential
+    <section className="bg-[#c7a3f7] px-5 py-20 md:px-8 md:py-28">
+      <h2 className="font-display mx-auto mb-16 max-w-4xl text-center text-5xl leading-tight md:text-7xl">
+        Built for curiosity, not chores
       </h2>
-      <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-2">
         {benefits.map((benefit, index) => (
           <div
             key={index}
-            className="p-8 rounded-3xl border border-[#c6c7c0] hover:border-[#3a6757] transition-colors group"
+            className="loop-card p-7 transition-transform hover:-translate-y-1"
           >
             <span
-              className="material-symbols-outlined text-[#3a6757] text-3xl mb-4 block"
+              className="loop-icon mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#fffdf7] text-4xl"
               data-icon={benefit.icon}
             >
               {benefit.icon}
             </span>
-            <h5 className="text-xl font-bold mb-2">{benefit.title}</h5>
-            <p className="text-[#454742] text-sm">{benefit.desc}</p>
+            <h5 className="mb-2 text-3xl font-extrabold">{benefit.title}</h5>
+            <p className="text-lg leading-relaxed text-[#343238]">{benefit.desc}</p>
           </div>
         ))}
       </div>

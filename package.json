@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS=--max-old-space-size=2048 next dev",
-    "build": "next build",
+    "dev": "NODE_OPTIONS=--max-old-space-size=2048 next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",

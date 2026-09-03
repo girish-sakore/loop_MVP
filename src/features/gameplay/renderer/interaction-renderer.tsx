@@ -1,6 +1,6 @@
 import { FillBlankInteraction } from "@/features/interactions/fill-blank/fill-blank-interaction";
 import { ImageSelectInteraction } from "@/features/interactions/image-select/image-select-interaction";
-import { ComingSoonInteraction } from "@/features/interactions/shared/coming-soon-interaction";
+import { DragDropInteraction } from "@/features/interactions/drag-drop/drag-drop-interaction";
 import { SwipeInteractionPlaceholder } from "@/features/interactions/swipe/swipe-interaction";
 import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeline-builder";
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
@@ -12,7 +12,8 @@ type InteractionRendererProps = {
   disabled?: boolean;
   retryCount?: number;
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
-  onAutoContinue: () => void;
+  showIntro: boolean;
+  onIntroComplete: () => void;
 };
 
 export function InteractionRenderer({
@@ -20,7 +21,8 @@ export function InteractionRenderer({
   disabled,
   retryCount = 0,
   onAnswer,
-  onAutoContinue,
+  showIntro,
+  onIntroComplete,
 }: InteractionRendererProps) {
   switch (stage.type) {
     case "image-select":
@@ -30,6 +32,8 @@ export function InteractionRenderer({
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
         />
       );
     case "swipe":
@@ -39,6 +43,8 @@ export function InteractionRenderer({
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
         />
       );
     case "fill-blank":
@@ -52,10 +58,13 @@ export function InteractionRenderer({
       );
     case "drag-drop":
       return (
-        <ComingSoonInteraction
-          type={stage.type}
-          prompt={stage.prompt}
-          onContinue={onAutoContinue}
+        <DragDropInteraction
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
         />
       );
     case "timeline-builder":
@@ -64,6 +73,8 @@ export function InteractionRenderer({
                 onAnswer={onAnswer}
                 disabled={disabled}
                 retryCount={retryCount}
+                showIntro={showIntro}
+                onIntroComplete={onIntroComplete}
               />;
     case "reorder":
       return <ReorderInteractionPlaceholder

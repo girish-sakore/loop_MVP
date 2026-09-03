@@ -2,7 +2,7 @@
 
 import { useDroppable } from "@dnd-kit/core";
 
-import { TimelineEvent } from "./timeline-builder";
+import type { TimelineEvent } from "@/types/gameplay";
 
 type Props = {
   event: TimelineEvent;
@@ -26,9 +26,9 @@ export function TimelineSlot({
 
       <div className="flex flex-col items-center">
 
-        <div className="h-5 w-5 rounded-full border-2 border-neutral-500" />
+        <div className="h-6 w-6 rounded-full border-[3px] border-[#0b0b0f] bg-[#f7d91f]" />
 
-        <div className="h-20 w-[2px] bg-neutral-300" />
+        <div className="h-20 w-[4px] bg-[#0b0b0f]" />
 
       </div>
 
@@ -37,19 +37,19 @@ export function TimelineSlot({
         className={`
           flex-1
           rounded-xl
-          border-2
+          border-[3px]
           border-dashed
           p-4
           transition-all
 
           ${
             isOver
-              ? "border-green-500 bg-green-50"
-              : "border-neutral-300"
+              ? "border-[#0b0b0f] bg-[#d7e96c]"
+              : "border-[#0b0b0f] bg-[#fffdf7]"
           }
         `}
       >
-        <div className="text-xs text-neutral-500">
+        <div className="inline-block rounded-md border-[3px] border-[#0b0b0f] bg-[#f5f0e9] px-2 py-1 text-sm font-extrabold">
           {event.year}
         </div>
 
@@ -57,7 +57,7 @@ export function TimelineSlot({
 
           {placedEvent ? (
 
-            <div className="rounded-lg bg-green-100 p-3 font-medium">
+            <div className="rounded-lg border-[3px] border-[#0b0b0f] bg-[#85cb57] p-3 font-extrabold">
 
               {placedEvent.title}
 
@@ -65,9 +65,9 @@ export function TimelineSlot({
 
           ) : (
 
-            <div className="text-neutral-400">
+            <div className="font-bold text-[#343238]">
 
-              Drop event here...
+              Drop event here
 
             </div>
 

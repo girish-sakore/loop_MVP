@@ -2,6 +2,7 @@ export type StageType =
   | "image-select"
   | "swipe"
   | "fill-blank"
+  | "timeline-builder"
   | "reorder"
   | "drag-drop";
 
@@ -28,9 +29,59 @@ export type ImageSelectStage = StageBase & {
 };
 
 export type PlaceholderStage = StageBase & {
-  type: "fill-blank" |"reorder" | "drag-drop";
+  type: "reorder";
 
   prompt: string;
+};
+
+export type LinkMapCard = {
+  id: string;
+  title: string;
+  image?: string;
+  color?: string;
+};
+
+export type LinkMapSlot = {
+  id: string;
+  label: string;
+  answerCardId: string;
+  x: number;
+  y: number;
+};
+
+export type LinkMapRelation = {
+  id: string;
+  label: string;
+  slotIds: string[];
+  x: number;
+  y: number;
+  color?: string;
+};
+
+export type LinkMapPath = {
+  id: string;
+  points: Array<{
+    x: number;
+    y: number;
+  }>;
+};
+
+export type DragDropStage = StageBase & {
+  type: "drag-drop";
+
+  prompt: string;
+  introLabel?: string;
+  map: {
+    title: string;
+    slots: LinkMapSlot[];
+    relations: LinkMapRelation[];
+    paths?: LinkMapPath[];
+  };
+  cards: LinkMapCard[];
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
 };
 export type FillBlankStage = StageBase & {
   type: "fill-blank";
@@ -81,9 +132,23 @@ export type TimelineEvent = {
   year: string;
   description: string;
   order: number;
+  image?: string;
 };
 
-export type Stage = ImageSelectStage | PlaceholderStage | SwipeStage | FillBlankStage | TimelineEvent;
+export type TimelineBuilderStage = StageBase & {
+  type: "timeline-builder";
+  estimatedTime?: string;
+  instructions: string;
+  events: TimelineEvent[];
+};
+
+export type Stage =
+  | ImageSelectStage
+  | PlaceholderStage
+  | SwipeStage
+  | FillBlankStage
+  | TimelineBuilderStage
+  | DragDropStage;
 
 export interface EditionNode {
   id: string;

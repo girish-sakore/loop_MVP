@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -22,6 +22,10 @@ type Props = {
 };
 
 type Option = FillBlankStage["options"][number];
+type PlacementState = {
+  key: string;
+  placements: Record<string, Option | null>;
+};
 
 export function FillBlankInteraction({
   stage,
@@ -29,33 +33,27 @@ export function FillBlankInteraction({
   disabled,
   retryCount = 0,
 }: Props) {
-
-  // blankId -> option
-  const [placements, setPlacements] =
-
-    useState<Record<string, Option | null>>(() =>
-      Object.fromEntries(
-        stage.blanks.map((blank) => [blank.id, null])
-      )
-    );
+  const resetKey = `${retryCount}:${stage.id}:${stage.blanks
+    .map((blank) => blank.id)
+    .join("|")}`;
+  const [placementState, setPlacementState] = useState<PlacementState>(() =>
+    createPlacementState(resetKey, stage),
+  );
   const [activeOption, setActiveOption] =
     useState<Option | null>(null);
+  const placements =
+    placementState.key === resetKey
+      ? placementState.placements
+      : createPlacementState(resetKey, stage).placements;
   // console.log('stage.prompt:', stage.prompt);
   // console.log('parsed parts:', parsePrompt(stage.prompt));
   const parts = useMemo(
     () => parsePrompt(stage.prompt),
     [stage.prompt]
   );
-  useEffect(() => {
-    setPlacements(
-      Object.fromEntries(
-        stage.blanks.map((blank) => [blank.id, null])
-      )
-    );
-
-    setActiveOption(null);
-  }, [retryCount, stage]);
   function handleDragStart(event: DragStartEvent) {
+    if (disabled) return;
+
     const option = stage.options.find(
       (item) => item.id === event.active.id
     );
@@ -66,6 +64,7 @@ export function FillBlankInteraction({
   }
   function handleDragEnd(event: DragEndEvent) {
     setActiveOption(null);
+    if (disabled) return;
 
     const { active, over } = event;
 
@@ -79,7 +78,11 @@ export function FillBlankInteraction({
 
     if (!option) return;
 
-    setPlacements((current) => {
+    setPlacementState((currentState) => {
+      const current =
+        currentState.key === resetKey
+          ? currentState.placements
+          : createPlacementState(resetKey, stage).placements;
       const next = { ...current };
 
       // Remove from old blank
@@ -96,7 +99,7 @@ export function FillBlankInteraction({
       const complete = Object.values(next).every(Boolean);
 
       if (!complete) {
-        return next;
+        return { key: resetKey, placements: next };
       }
 
       const correct = stage.blanks.every((blank) => {
@@ -112,7 +115,7 @@ export function FillBlankInteraction({
         });
       }, 200);
 
-      return next;
+      return { key: resetKey, placements: next };
     });
   }
   return (
@@ -180,4 +183,16 @@ export function FillBlankInteraction({
       </DndContext>
     </div>
   );
+}
+
+function createPlacementState(
+  key: string,
+  stage: FillBlankStage,
+): PlacementState {
+  return {
+    key,
+    placements: Object.fromEntries(
+      stage.blanks.map((blank) => [blank.id, null]),
+    ),
+  };
 }

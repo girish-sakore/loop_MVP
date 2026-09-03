@@ -1,41 +1,63 @@
 export default function WeeklyExperience() {
+  const tiles = [
+    ["Mid-1500s", "Potatoes brought to Europe", "bg-[#c7a3f7]"],
+    ["1770s", "French potato fashion", "bg-[#f7d91f]"],
+    ["1960", "Mashed Potato dance craze", "bg-[#85cb57]"],
+    ["2018", "Raisin potato salad on SNL", "bg-[#f28ab2]"],
+  ];
+
   return (
-    <section className="py-12 px-6 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-1 md:grid-rows-2 gap-4">
-        {/* Large Feature: The Weekly Board */}
-        <div className="md:col-span-2 md:row-span-2 bg-[#3A6757] text-white rounded-4xl p-10 flex flex-col justify-between overflow-hidden relative">
-          <div className="z-10 space-y-4">
-            <span className="text-[12px] font-bold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">MOST POPULAR</span>
-            <h3 className="text-3xl font-bold">The Weekly Board</h3>
-            <p className="opacity-90 max-w-xs text-lg">A bird&apos;s eye view of your commitments. Clear, calming, and completely under your control.</p>
+    <section className="bg-[#85cb57] px-5 py-20 md:px-8 md:py-28">
+      <div className="mx-auto grid max-w-7xl items-start gap-12 lg:grid-cols-[0.8fr_1fr]">
+        <div className="relative">
+          <div className="loop-card px-7 py-10 md:px-10">
+            <h3 className="font-display text-5xl leading-[0.95] md:text-7xl">
+              Fun games crafted by experts, not AI
+            </h3>
           </div>
-          <div className="mt-8 z-10 bg-[url('/images/thepaintedsquare.jpg')] bg-cover bg-center rounded-2xl h-48 flex items-center justify-center text-white font-bold">
-            {/* Replace with your board screenshot */}
-            Weekly Board Preview
+          <div className="absolute -right-4 -top-8 flex h-20 w-20 items-center justify-center rounded-full border-[4px] border-[#0b0b0f] bg-[#4aa8ee]">
+            <span className="material-symbols-outlined text-5xl">science</span>
           </div>
         </div>
 
-        {/* Mini Card: Smart Reminders */}
-        <div className="md:col-span-2 bg-[#fafbff] rounded-4xl p-8 flex items-center gap-6">
-          <div className="flex-1 space-y-2">
-            <h4 className="text-xl font-bold text-[#30628a]">Smart Reminders</h4>
-            <p className="text-[#4778a0]">Gentle nudges that respect your flow and never overwhelm.</p>
+        <div className="loop-card min-h-[620px] p-6 md:p-10">
+          <div className="mb-12 flex items-center justify-between">
+            <span className="material-symbols-outlined text-5xl">arrow_back</span>
+            <div className="loop-icon flex h-14 w-14 items-center justify-center rounded-full bg-[#ffb75a]">
+              <span className="material-symbols-outlined text-4xl">campaign</span>
+            </div>
           </div>
-          <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-sm text-2xl">
-            <span className="material-symbols-outlined text-4xl text-[#30628a]" data-icon="notifications_active">notifications_active</span>
+          <div className="space-y-3">
+            {tiles.map(([date, title, color]) => (
+              <div
+                key={date}
+                className={`${color} grid grid-cols-[120px_1fr_44px] items-center overflow-hidden rounded-xl border-[3px] border-[#0b0b0f] text-[#0b0b0f]`}
+              >
+                <div className="flex h-28 items-center justify-center border-r-[3px] border-[#0b0b0f] bg-[#f5f0e9]">
+                  <span className="material-symbols-outlined text-5xl">image</span>
+                </div>
+                <div className="px-5">
+                  <span className="mb-3 inline-block rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] px-3 py-1 text-xl font-extrabold leading-none">
+                    {date}
+                  </span>
+                  <p className="text-xl font-extrabold leading-tight md:text-2xl">{title}</p>
+                </div>
+                <span className="material-symbols-outlined mr-3 rounded-full bg-[#fffdf7] text-4xl">
+                  check_circle
+                </span>
+              </div>
+            ))}
           </div>
-        </div>
-
-        {/* Mini Card: Completion Rate */}
-        <div className="md:col-span-1 bg-[#e5e2e1] rounded-4xl p-8 flex flex-col justify-center text-center space-y-2">
-          <div className="text-4xl font-bold text-[#3a6757]">98%</div>
-          <p className="text-[12px] font-bold text-[#454742] uppercase tracking-widest">COMPLETION RATE</p>
-        </div>
-
-        {/* Mini Card: Leaderboard */}
-        <div className="md:col-span-1 bg-[#fdfbf7] rounded-4xl p-8 flex flex-col justify-center items-center text-center space-y-2 border border-[#c6c7c0]/30">
-          <span className="material-symbols-outlined text-4xl font-bold text-[#3a6757]" data-icon="diversity_3">diversity_3</span>
-          <p className="text-[12px] font-bold text-[#747471] uppercase tracking-widest">FRIENDS LEADERBOARD</p>
+          <div className="mt-16 rotate-[-2deg] overflow-hidden rounded-xl border-[3px] border-[#0b0b0f] bg-[#fffdf7] shadow-[8px_10px_0_rgba(11,11,15,0.16)]">
+            <div className="grid grid-cols-[130px_1fr]">
+              <div className="flex h-32 items-center justify-center border-r-[3px] border-[#0b0b0f] bg-[#f7d91f]">
+                <span className="material-symbols-outlined text-6xl">fastfood</span>
+              </div>
+              <div className="flex items-center px-6 text-2xl font-extrabold leading-tight">
+                McDonald&apos;s adds fries to the menu
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

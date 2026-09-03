@@ -19,15 +19,17 @@ export function GameplayEngine({
   editionId, nodeId, stages, initialStage = 0 }: GameplayEngineProps) {
   const router = useRouter();
   const hasNavigated = useRef(false); // guard navigation
+  const initializedKey = useRef<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [feedback, setFeedback] = useState<{
     open: boolean;
     correct: boolean;
     message: string;
   }>({ open: false, correct: false, message: "" });
-
-  const [ready, setReady] = useState(false);
-
+  const [introState, setIntroState] = useState<{
+    key: string;
+    dismissed: boolean;
+  } | null>(null);
   const {
     currentStage,
     attemptsRemaining,
@@ -45,16 +47,33 @@ export function GameplayEngine({
   const stage = stages[currentStage];
   const totalAttempts = stage?.attemptsAllowed ?? 3;
   const progress = useMemo(() => (currentStage / stages.length) * 100, [currentStage, stages.length]);
+  const gameplayKey = `${editionId}:${nodeId}:${initialStage}`;
+  const introDismissed =
+    introState?.key === gameplayKey ? introState.dismissed : false;
 
   // initialize from DB progress, not always 0
   useEffect(() => {
+    let cancelled = false;
+    initializedKey.current = null;
+    hasNavigated.current = false;
     reset();
     setStage(initialStage);
     setAttempts(stages[initialStage]?.attemptsAllowed ?? stages[0]?.attemptsAllowed ?? 0);
-    setReady(true);
-  }, [stages, initialStage, reset, setStage, setAttempts]);
+    queueMicrotask(() => {
+      if (!cancelled) initializedKey.current = gameplayKey;
+    });
 
-  const syncProgress = useCallback(async (overrides) => {
+    return () => {
+      cancelled = true;
+    };
+  }, [stages, initialStage, reset, setStage, setAttempts, gameplayKey]);
+
+  const syncProgress = useCallback(async (overrides?: {
+    score?: number;
+    correctAnswers?: number;
+    totalAnswers?: number;
+    currentStage?: number;
+  }) => {
     await fetch("/api/progress/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -78,14 +97,14 @@ export function GameplayEngine({
 
   // Issue 2 fix — navigate in an effect, never during render
   useEffect(() => {
-    if (!ready) return;
+    if (initializedKey.current !== gameplayKey) return;
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
         router.push("/summary");
       });
     }
-  }, [ready, completed, stage, completeProgress, router]);
+  }, [gameplayKey, completed, stage, completeProgress, router]);
 
   function handleAnswer({
     correct,
@@ -96,15 +115,6 @@ export function GameplayEngine({
   }) {
     registerResult({ correct, points: stage?.points ?? 0 });
     setFeedback({ open: true, correct, message });
-  }
-
-  function handleAutoContinue() {
-    registerResult({ correct: true, points: stage?.points ?? 0 });
-    setFeedback({
-      open: true,
-      correct: true,
-      message: "Nice pace. Moving to the next challenge.",
-    });
   }
 
   function handleRetry() {
@@ -161,7 +171,10 @@ export function GameplayEngine({
               disabled={feedback.open}
               retryCount={retryCount}
               onAnswer={handleAnswer}
-              onAutoContinue={handleAutoContinue}
+              showIntro={!introDismissed}
+              onIntroComplete={() =>
+                setIntroState({ key: gameplayKey, dismissed: true })
+              }
             />
           </motion.div>
         </AnimatePresence>

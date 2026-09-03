@@ -23,90 +23,57 @@ export function StagePopup({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{
-          position: "absolute",
-          width: "93%",
-          inset: 0,
-          zIndex: 199,
-          background: "transparent",
-        }}
+        className="fixed inset-0 z-[199] bg-[#0b0b0f]/10"
       />
 
       {/* Popup */}
       <motion.div
-        initial={{ y: 120, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 120, opacity: 0 }}
+        initial={{ y: 112, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 112, opacity: 0, scale: 0.98 }}
         transition={{
-          duration: 0.25,
-          ease: "easeOut",
+          duration: 0.28,
+          ease: [0.2, 0.9, 0.2, 1],
         }}
         onClick={(e) => e.stopPropagation()}
-        style={{
-          position: "absolute",
-          left: 16,
-          right: 16,
-          bottom: 20,
-          zIndex: 200,
-        }}
+        className="fixed bottom-5 left-4 right-4 z-[200]"
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            background: "#F7F1E6",
-            borderRadius: 16,
-            padding: "12px 14px",
-            boxShadow: "0 12px 40px rgba(0,0,0,.2)",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                fontSize: 10,
-                textTransform: "uppercase",
-                color: "#888",
-                fontWeight: 700,
-              }}
-            >
-              Current Stop
+        <div className="relative mx-auto max-w-[480px] overflow-hidden rounded-md border-[4px] border-[#0b0b0f] bg-[#fffdf7] p-3 shadow-[0_10px_0_#0b0b0f]">
+          <div className="absolute -right-8 -top-10 h-24 w-24 rounded-full border-[4px] border-[#0b0b0f] bg-[#f7d91f]" />
+
+          <div className="relative flex items-center gap-3">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-[4px] border-[#0b0b0f] bg-[#f7d91f] text-[24px] font-black shadow-[0_5px_0_#0b0b0f]">
+              {node.nodeIndex + 1}
             </div>
 
-            <div
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-              }}
-            >
-              {node.title}
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#85cb57]" />
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#343238]">
+                  Current Stop
+                </span>
+              </div>
+
+              <h2 className="truncate text-[19px] font-extrabold leading-tight text-[#0b0b0f]">
+                {node.title}
+              </h2>
+
+              <p className="line-clamp-2 text-[12px] font-semibold leading-snug text-[#343238]">
+                {node.subtitle}
+              </p>
             </div>
 
-            <div
-              style={{
-                color: "#666",
-                fontSize: 12,
-              }}
+            <button
+              type="button"
+              onClick={() => router.push(`/edition/${editionId}/${node.nodeId}`)}
+              className="flex h-12 shrink-0 items-center gap-1.5 rounded-md border-[3px] border-[#0b0b0f] bg-[#85cb57] px-4 text-[12px] font-extrabold uppercase text-[#0b0b0f] shadow-[0_5px_0_#0b0b0f] transition active:translate-y-1 active:shadow-[0_1px_0_#0b0b0f]"
             >
-              {node.subtitle}
-            </div>
+              <span>Continue</span>
+              <span className="material-symbols-outlined text-[18px]">
+                arrow_forward
+              </span>
+            </button>
           </div>
-
-          <button
-            onClick={() => router.push(`/edition/${editionId}/${node.nodeId}`)}
-            style={{
-              border: "none",
-              borderRadius: 12,
-              padding: "12px 24px",
-              background: "#3a6757",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 12,
-              cursor: "pointer",
-            }}
-          >
-            CONTINUE →
-          </button>
         </div>
       </motion.div>
     </>

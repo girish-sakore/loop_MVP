@@ -21,26 +21,28 @@ export function MapNodeMarker({
         top: node.y,
         transform: "translate(-50%, -50%)",
         width: 60,
-        height: 50,
+        height: 60,
         borderRadius: "50%",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontWeight: 700,
+        fontWeight: 900,
+        fontSize: 22,
+        border: "4px solid #0b0b0f",
         backgroundColor:
           node.status === "completed"
-            ? "var(--secondary)"
+            ? "#85cb57"
             : node.status === "current"
-              ? "var(--secondary-fixed)"
-              : "var(--on-tertiary-container)",
-        color: "var(--card)",
+              ? "#f7d91f"
+              : "#fffdf7",
+        color: "#0b0b0f",
         boxShadow: isTappable
-          ? "0 8px 0 0 var(--secondary-shadow)"
+          ? "0 8px 0 0 #0b0b0f"
           : node.status === "completed"
-            ? "0 8px 0 0 var(--current-shadow)"
+            ? "0 8px 0 0 #0b0b0f"
             : node.status === "current"
-              ? "0 8px 0 0 var(--secondary-fixed-dim)"
-              : "0 8px 0 0 var(--on-tertiary-fixed-variant)",
+              ? "0 8px 0 0 #0b0b0f"
+              : "0 8px 0 0 rgba(11,11,15,0.35)",
         opacity: node.status === "locked" ? 0.4 : 1,
       }}
     >
