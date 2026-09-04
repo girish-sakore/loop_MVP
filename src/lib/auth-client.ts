@@ -6,7 +6,7 @@ export const authClient = createAuthClient({
         ? `https://${process.env.VERCEL_URL}`
         : process.env.VERCEL_ENV === "preview"
             ? `https://${process.env.VERCEL_BRANCH_URL}`
-            : process.env.NEXT_PUBLIC_APP_URL,
+            : `http://localhost:3000`,
     plugins: [
         magicLinkClient()
     ]
