@@ -9,6 +9,17 @@ import { prisma } from "@/lib/db";
 // Use the pool-based prisma instance you already created
 export const auth = betterAuth({
   appName: "Loop",
+
+  baseURL: process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000",
+
+  trustedOrigins: [
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000",
+  ],
+
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
