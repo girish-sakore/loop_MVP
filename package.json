@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS=--max-old-space-size=2048 next dev --webpack",
-    "build": "next build --webpack",
+    "postinstall": "prisma generate",
+    "dev": "NODE_OPTIONS=--max-old-space-size=2048 next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push"
   },
   "dependencies": {
