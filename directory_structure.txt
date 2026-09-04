@@ -6,7 +6,6 @@
 ├── AGENTS.md
 ├── CLAUDE.md
 ├── README.md
-├── data
 ├── directory_structure.txt
 ├── eslint.config.mjs
 ├── middleware.ts
@@ -33,6 +32,8 @@
 │   │   │   └── migration.sql
 │   │   ├── 20260516062941_add_user_edition_table
 │   │   │   └── migration.sql
+│   │   ├── 20260810085536_add_node_progress
+│   │   │   └── migration.sql
 │   │   └── migration_lock.toml
 │   └── schema.prisma
 ├── prisma.config.ts
@@ -42,8 +43,11 @@
 │   ├── images
 │   │   ├── books.jpg
 │   │   ├── healthy.jpg
+│   │   ├── papaer-effect.png
 │   │   ├── thepaintedsquare.jpg
-│   │   └── thepaintedsquare_1.jpg
+│   │   ├── thepaintedsquare_1.jpg
+│   │   └── villages
+│   │       └── salt-village-bg.png
 │   ├── next.svg
 │   ├── vercel.svg
 │   └── window.svg
@@ -51,11 +55,12 @@
 │   ├── app
 │   │   ├── (gameplay)
 │   │   │   ├── edition
-│   │   │   │   ├── [editionId]
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── current
-│   │   │   │       └── page.tsx
+│   │   │   │   └── [editionId]
+│   │   │   │       └── [nodeId]
+│   │   │   │           └── page.tsx
 │   │   │   ├── layout.tsx
+│   │   │   ├── map
+│   │   │   │   └── page.tsx
 │   │   │   ├── profile
 │   │   │   │   └── page.tsx
 │   │   │   └── summary
@@ -63,6 +68,8 @@
 │   │   ├── (marketing)
 │   │   │   ├── layout.tsx
 │   │   │   ├── login
+│   │   │   │   └── page.tsx
+│   │   │   ├── old_pricing
 │   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
 │   │   ├── (standalone)
@@ -118,6 +125,12 @@
 │   │   │   ├── mobile-container.tsx
 │   │   │   ├── navbar.tsx
 │   │   │   └── top-bar.tsx
+│   │   ├── map
+│   │   │   ├── map-canvas.tsx
+│   │   │   ├── map-nav-toggle.tsx
+│   │   │   ├── map-node.tsx
+│   │   │   ├── stage-popup.tsx
+│   │   │   └── village-title-card.tsx
 │   │   ├── motion
 │   │   │   └── fade-in.tsx
 │   │   ├── pricing
@@ -164,19 +177,32 @@
 │   │   │   │   └── gameplay-shell.tsx
 │   │   │   └── transitions
 │   │   │       └── index.ts
-│   │   └── interactions
-│   │       ├── drag-drop
-│   │       │   └── drag-drop-interaction.tsx
-│   │       ├── fill-blank
-│   │       │   └── fill-blank-interaction.tsx
-│   │       ├── image-select
-│   │       │   └── image-select-interaction.tsx
-│   │       ├── reorder
-│   │       │   └── reorder-interaction.tsx
-│   │       ├── shared
-│   │       │   └── coming-soon-interaction.tsx
-│   │       └── swipe
-│   │           └── swipe-interaction.tsx
+│   │   ├── interactions
+│   │   │   ├── drag-drop
+│   │   │   │   └── drag-drop-interaction.tsx
+│   │   │   ├── fill-blank
+│   │   │   │   ├── blank-drop-zone.tsx
+│   │   │   │   ├── fill-blank-interaction.tsx
+│   │   │   │   ├── parse-prompt.tsx
+│   │   │   │   ├── word-bank.tsx
+│   │   │   │   └── word-chip.tsx
+│   │   │   ├── image-select
+│   │   │   │   └── image-select-interaction.tsx
+│   │   │   ├── reorder
+│   │   │   │   └── reorder-interaction.tsx
+│   │   │   ├── shared
+│   │   │   │   └── coming-soon-interaction.tsx
+│   │   │   ├── swipe
+│   │   │   │   └── swipe-interaction.tsx
+│   │   │   └── timeline-builder
+│   │   │       ├── event-card.tsx
+│   │   │       ├── timeline-builder.tsx
+│   │   │       └── timeline-slot.tsx
+│   │   └── map
+│   │       ├── map-config.ts
+│   │       ├── map-content.ts
+│   │       ├── types.ts
+│   │       └── village-layouts.ts
 │   ├── hooks
 │   │   ├── use-edition.ts
 │   │   └── use-razorpay-checkout.ts
@@ -186,12 +212,14 @@
 │   │   ├── auth.ts
 │   │   ├── db.ts
 │   │   ├── edition-progress.ts
+│   │   ├── fonts.ts
 │   │   └── razorpay-server.ts
 │   ├── prototypes
 │   │   ├── design-code
 │   │   └── profile-screen.html
 │   ├── stores
-│   │   └── gameplay-store.ts
+│   │   ├── gameplay-store.ts
+│   │   └── ui-store.ts
 │   ├── theme
 │   │   └── tokens.ts
 │   └── types
@@ -200,4 +228,4 @@
 ├── tailwind.config.ts
 └── tsconfig.json
 
-73 directories, 127 files
+79 directories, 149 files

@@ -26,6 +26,7 @@ model User {
   accounts      Account[]
   subscriptions Subscription[]
   editionProgress UserEditionProgress[]
+  nodeProgress    UserNodeProgress[]
 
   @@map("user")
 }
@@ -101,7 +102,7 @@ model UserEditionProgress {
   status        String    @default("not_started")
   // "not_started" | "in_progress" | "completed"
   
-  currentStage  Int       @default(0)
+  currentNodeIndex Int       @default(0) @map("current_stage")
   score         Int       @default(0)
   correctAnswers Int      @default(0)
   totalAnswers  Int       @default(0)
@@ -116,3 +117,28 @@ model UserEditionProgress {
   @@unique([userId, editionId])  // one record per user per edition
   @@map("user_edition_progress")
 }
+
+model UserNodeProgress {
+  id              String    @id @default(cuid())
+  userId          String
+  editionId       String
+  nodeId          String                        // e.g. "node-1", matches EditionNode.id
+
+  status          String    @default("not_started") // not_started | in_progress | completed
+  currentSubStage Int       @default(0)
+  score           Int       @default(0)
+  correctAnswers  Int       @default(0)
+  totalAnswers    Int       @default(0)
+  stars           Int       @default(0)             // 0-3, computed server-side on completion
+
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, editionId, nodeId])
+  @@map("user_node_progress")
+}
+

@@ -4,24 +4,32 @@
 
 @layer components {
   .btn-tactile {
-    box-shadow: 0 4px 0 0 rgba(0,0,0,0.1);
+    box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.1);
     transition: all 0.1s ease;
   }
+
   .btn-tactile:active {
     transform: translateY(2px);
-    box-shadow: 0 2px 0 0 rgba(0,0,0,0.1);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
   }
+
   .soft-card-shadow {
     box-shadow: 0 30px 60px -12px rgba(94, 94, 92, 0.08);
   }
+
   .progress-shine {
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
   }
+
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 }
-
+.gameplay-theme{
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+}
 :root {
   /* Base */
   --background: #fcf8f7;
@@ -29,6 +37,7 @@
   --muted-foreground: #5a5a57;
   --card: #ffffff;
   --border: #c6c7c0;
+  --background-shadow: #555950;
 
   /* Primary */
   --primary: #5e5e5c;
@@ -38,9 +47,12 @@
   --primary-fixed-dim: #c8c6c3;
   --on-primary-fixed: #1b1c1a;
   --on-primary-fixed-variant: #474744;
+  --current-shadow: #415f57;
+  --on-surface-variant: #454742;
 
   /* Secondary */
   --secondary: #3a6757;
+  --secondary-shadow: #59614f;
   --secondary-foreground: #ffffff;
   --on-secondary: #ffffff;
   --secondary-container: #baead6;
@@ -160,4 +172,78 @@ body {
   color: var(--foreground);
   font-family: 'Plus Jakarta Sans', var(--font-geist-sans), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+
+/* keyframes  */
+
+@keyframes pressButton {
+
+  0%,
+  65%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0) rotate(0deg);
+    box-shadow: 0 10px 0 var(--current-shadow);
+  }
+
+  68% {
+    transform: translate(-50%, -50%) translateY(5px) rotate(-2deg);
+    box-shadow: 0 2px 0 var(--current-shadow);
+  }
+
+  70% {
+    transform: translate(-50%, -50%) translateY(0) rotate(0deg);
+    box-shadow: 0 10px 0 var(--current-shadow);
+  }
+
+  88% {
+    transform: translate(-50%, -50%) translateY(0) rotate(2deg);
+    box-shadow: 0 10px 0 var(--current-shadow);
+  }
+
+  90% {
+    transform: translate(-50%, -50%) translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes blink-animation {
+  75% {
+    visibility: hidden;
+  }
+}
+
+.map-node {
+  transform: translate(-50%, -50%);
+}
+
+.map-node.current {
+  animation: pressButton 2s ease-in-out infinite;
+}
+
+.ray {
+  position: absolute;
+  width: 4px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--secondary);
+  animation: blink-animation 2s steps(1, start) infinite;
+}
+
+.ray-1 {
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ray-2 {
+  top: -23px;
+  right: 9px;
+  transform: translateX(-50%);
+  rotate: 16deg;
+}
+
+.ray-3 {
+  top: -23px;
+  left: 11px;
+  transform: translateX(-50%) rotate3d(0, 0, 1, -23deg);
 }

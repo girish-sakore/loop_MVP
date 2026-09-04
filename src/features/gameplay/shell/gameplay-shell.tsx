@@ -28,7 +28,7 @@ export function GameplayShell({
       >
         {/* Left: close + progress bar */}
         <div className="flex items-center gap-4 flex-1">
-          <Link href="/edition/current">
+          <Link href="/map">
             <span
               className="material-symbols-outlined hover:opacity-70 transition-opacity"
               style={{ color: "var(--on-surface-variant)" }}

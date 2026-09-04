@@ -1,4 +1,11 @@
-export function ProgressBar({ label, progress, color, percent }: any) {
+interface ProgressBarProps {
+  label: string;
+  progress: string;
+  color: string;
+  percent: string;
+}
+
+export function ProgressBar({ label, progress, color, percent }: ProgressBarProps) {
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-[12px] font-bold tracking-widest">

@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 
 export default async function LandingPage() {
   const session = await getAuthSession();
-  if (session?.user) redirect("/edition/current");
+  if (session?.user) redirect("/map");
   return (
     <div className="bg-[#fcf8f7] text-[#1c1b1b] font-sans">
       <HeroSection />

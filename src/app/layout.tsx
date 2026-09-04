@@ -12,13 +12,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// const plusJakartaSans = Plus_Jakarta_Sans({
+//   variable: "--font-jakarta",
+//   subsets: ["latin"],
+//   weight: ["400", "500", "700", "800"],
+//   style: ["normal", "italic"],
+// });
+
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  style: ["normal", "italic"],
+  display: "swap",
 });
-
 export const metadata: Metadata = {
   title: "Loop",
   description: "Premium interactive weekly learning experience",

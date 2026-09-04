@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
+// import Image from "next/image";
 import type { ImageSelectStage } from "@/types/gameplay";
 
 type Props = {
@@ -20,10 +20,14 @@ export function ImageSelectInteraction({
 }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
 
-  // Reset selection whenever a retry is triggered
-  useEffect(() => {
+  // Track previous props to reset selection synchronously during render
+  const [resetKey, setResetKey] = useState({ stage, retryCount });
+
+  // Reset selection whenever retryCount or stage changes (removes useEffect warning)
+  if (resetKey.stage !== stage || resetKey.retryCount !== retryCount) {
+    setResetKey({ stage, retryCount });
     setSelected(null);
-  }, [retryCount]);
+  }
 
   function handleSelect(optionId: string, correct: boolean, feedback: string) {
     if (disabled || selected) return;
@@ -81,13 +85,13 @@ export function ImageSelectInteraction({
                 className="aspect-square w-full rounded-lg overflow-hidden"
                 style={{ backgroundColor: "var(--surface-container-high)" }}
               >
-                <Image
+                {/* <Image
                   src={option.image}
                   alt={option.label}
                   width={200}
                   height={200}
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                />
+                /> */}
               </div>
 
               <div className="flex items-center justify-between">

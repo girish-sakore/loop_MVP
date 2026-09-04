@@ -32,7 +32,7 @@ export function SummaryActions() {
         Share Your Result
       </button>
       <button
-        onClick={() => router.push("/edition/current")}
+        onClick={() => router.push("/map")}
         className="w-full h-14 rounded-xl text-[16px] font-bold flex items-center justify-center gap-2 transition-all duration-75 active:translate-y-0.5"
         style={{
           backgroundColor: "var(--surface-container-high)",

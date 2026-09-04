@@ -5,39 +5,26 @@ import { prisma } from "@/lib/db";
 export async function POST(req: Request) {
   try {
     const session = await getAuthSession();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const { editionId, nodeId, currentSubStage, score, correctAnswers, totalAnswers } = await req.json();
+    if (!editionId || !nodeId) {
+      return NextResponse.json({ error: "Missing editionId or nodeId." }, { status: 400 });
     }
 
-    const { editionId, currentStage, score, correctAnswers, totalAnswers } =
-      await req.json();
+    const userId = session.user.id;
 
-    if (!editionId || typeof editionId !== "string") {
-      return NextResponse.json({ error: "Missing editionId." }, { status: 400 });
-    }
-
-    await prisma.userEditionProgress.upsert({
-      where: {
-        userId_editionId: {
-          userId: session.user.id,
-          editionId,
-        },
-      },
+    await prisma.userNodeProgress.upsert({
+      where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
       create: {
-        userId: session.user.id,
-        editionId,
-        status: "in_progress",
-        currentStage: currentStage ?? 0,
-        score: score ?? 0,
-        correctAnswers: correctAnswers ?? 0,
-        totalAnswers: totalAnswers ?? 0,
+        userId, editionId, nodeId, status: "in_progress",
+        currentSubStage: currentSubStage ?? 0, score: score ?? 0,
+        correctAnswers: correctAnswers ?? 0, totalAnswers: totalAnswers ?? 0,
         startedAt: new Date(),
       },
       update: {
-        currentStage: currentStage ?? 0,
-        score: score ?? 0,
-        correctAnswers: correctAnswers ?? 0,
-        totalAnswers: totalAnswers ?? 0,
+        currentSubStage: currentSubStage ?? 0, score: score ?? 0,
+        correctAnswers: correctAnswers ?? 0, totalAnswers: totalAnswers ?? 0,
       },
     });
 

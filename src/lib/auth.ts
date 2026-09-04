@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { magicLink } from "better-auth/plugins";
-import nodemailer from "nodemailer";
+import { transporter } from "./nodemailer";
 
 import { prisma } from "@/lib/db";
 
@@ -56,21 +56,26 @@ export const auth = betterAuth({
     nextCookies(), 
     
     magicLink({
-      expiresIn: 60 * 10,
+      expiresIn: 60 * 10, // 10 minutes
       sendMagicLink: async ({ email, url }) => {
-        // const transporter = nodemailer.createTransport(process.env.EMAIL_SERVER);
-        
-        // Only log in dev to save resources, send email in production
+        // Log to console for quick debugging during development
         if (process.env.NODE_ENV !== "production") {
           console.info(`[Auth] Magic Link for ${email}: ${url}`);
-          return;
         }
 
+        // Send actual email via Nodemailer
         // await transporter.sendMail({
-        //   from: process.env.EMAIL_FROM ?? "no-reply@habitly.app",
+        //   from: `Loop <${process.env.EMAIL_FROM}>`,
         //   to: email,
-        //   subject: "Your Loop magic link",
-        //   html: `<p>Click <a href="${url}">here</a> to sign in.</p>`,
+        //   subject: "Sign in to Loop",
+        //   html: `
+        //     <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+        //       <h2>Sign in to Loop</h2>
+        //       <p>Click the button below to sign in to your account. This link will expire in 10 minutes.</p>
+        //       <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 6px; margin: 16px 0;">Sign In</a>
+        //       <p style="color: #666; font-size: 14px;">If you didn't request this email, you can safely ignore it.</p>
+        //     </div>
+        //   `,
         // });
       },
     }),
@@ -80,6 +85,6 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-    }
-  }
+    },
+  },
 });

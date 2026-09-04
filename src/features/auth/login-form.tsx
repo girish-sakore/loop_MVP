@@ -11,7 +11,7 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(false);
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/edition/current";
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/map";
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -103,7 +103,7 @@ export function LoginForm() {
             Magic Link Sent!
           </h2>
           <p style={{ color: "var(--on-surface-variant)" }}>
-            We've sent a login link to:
+            We&apos;ve sent a login link to:
           </p>
           {/* Email pill */}
           <div
@@ -159,7 +159,7 @@ export function LoginForm() {
               className="text-[11px] font-bold tracking-widest uppercase opacity-60"
               style={{ color: "var(--on-surface-variant)" }}
             >
-              Didn't receive it?
+              Didn&apos;t receive it?
             </p>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -226,7 +226,7 @@ export function LoginForm() {
               style={{ color: "var(--on-surface-variant)" }}
             >
               Check your spam folder or wait a few moments if the email
-              doesn't show up right away.
+              doesn&apos;t show up right away.
             </p>
           </div>
         </div>

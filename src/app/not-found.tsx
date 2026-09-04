@@ -37,13 +37,13 @@ export default function NotFound() {
             className="text-[16px] leading-relaxed"
             style={{ color: "var(--on-surface-variant)" }}
           >
-            This page doesn't exist or was moved.
+            This page doesn&apos;t exist or was moved.
           </p>
         </div>
 
         {/* CTA */}
         <Link
-          href="/edition/current"
+          href="/map"
           className="h-14 px-8 rounded-xl text-[16px] font-bold flex items-center justify-center gap-2 transition-all duration-75 active:translate-y-0.5"
           style={{
             backgroundColor: "var(--secondary)",
