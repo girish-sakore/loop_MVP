@@ -1,20 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import type { Edition, EditionNode, Stage } from "@/types/gameplay";
+import type { Edition, EditionNode, Stage, StageType } from "@/types/gameplay";
 
 const stageTypes = [
   "image-select", "swipe", "fill-blank", "timeline-builder",
   "reorder", "four-way-swipe", "drag-drop", "clue-connect",
 ] as const;
 
-type Props = { template: Edition };
+type Props = {
+  template: Edition;
+  initialEditionId?: string | null;
+  initialSlug?: string;
+  initialReleaseAt?: string;
+  readOnly?: boolean;
+};
 
-export function ProviderEditionEditor({ template }: Props) {
+export function ProviderEditionEditor({ template, initialEditionId = null, initialSlug, initialReleaseAt, readOnly = false }: Props) {
   const [edition, setEdition] = useState(() => structuredClone(template));
-  const [slug, setSlug] = useState(`${template.id}-copy`);
-  const [releaseAt, setReleaseAt] = useState("");
-  const [editionId, setEditionId] = useState<string | null>(null);
+  const [slug, setSlug] = useState(initialSlug ?? `${template.id}-copy`);
+  const [releaseAt, setReleaseAt] = useState(initialReleaseAt ? initialReleaseAt.slice(0, 16) : "");
+  const [editionId, setEditionId] = useState<string | null>(initialEditionId);
   const [message, setMessage] = useState("");
 
   function updateEdition(field: keyof Edition, value: string) {
@@ -25,6 +31,34 @@ export function ProviderEditionEditor({ template }: Props) {
     setEdition((current) => ({
       ...current,
       nodes: current.nodes.map((node, nodeIndex) => nodeIndex === index ? { ...node, ...changes } : node),
+    }));
+  }
+
+  function addNode() {
+    setEdition((current) => {
+      const usedTypes = new Set(current.nodes.map((node) => node.type));
+      const nextType = stageTypes.find((type) => !usedTypes.has(type));
+      const source = template.nodes.find((node) => node.type === nextType);
+      if (!nextType || !source || current.nodes.length >= stageTypes.length) return current;
+      const nodeId = `node-${Date.now()}`;
+      return {
+        ...current,
+        nodes: [...current.nodes, {
+          ...structuredClone(source),
+          id: nodeId,
+          subStages: source.subStages.map((stage, index) => ({
+            ...structuredClone(stage),
+            id: `${nodeId}-stage-${index + 1}`,
+          })),
+        }],
+      };
+    });
+  }
+
+  function removeNode(index: number) {
+    setEdition((current) => ({
+      ...current,
+      nodes: current.nodes.filter((_, nodeIndex) => nodeIndex !== index),
     }));
   }
 
@@ -56,7 +90,7 @@ export function ProviderEditionEditor({ template }: Props) {
   }
 
   return (
-    <main className="min-h-dvh bg-[#f6f2ec] px-6 py-10 text-[#0b0b0f]">
+    <div className={readOnly ? "pointer-events-none opacity-75" : ""}>
       <div className="mx-auto max-w-4xl">
         <header className="mb-8 flex items-end justify-between gap-4">
           <div>
@@ -67,7 +101,7 @@ export function ProviderEditionEditor({ template }: Props) {
         </header>
 
         <section className="space-y-4 rounded-2xl border border-[#d8d0c3] bg-[#fffdf7] p-5">
-          <Field label="Edition slug"><input value={slug} onChange={(event) => setSlug(event.target.value)} /></Field>
+          <Field label="Edition slug"><input value={slug} onChange={(event) => setSlug(event.target.value)} readOnly={readOnly} /></Field>
           <Field label="Title"><input value={edition.title} onChange={(event) => updateEdition("title", event.target.value)} /></Field>
           <Field label="Description"><textarea value={edition.description} onChange={(event) => updateEdition("description", event.target.value)} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -77,14 +111,15 @@ export function ProviderEditionEditor({ template }: Props) {
         </section>
 
         <section className="mt-6 space-y-4">
-          <div className="flex items-center justify-between"><h2 className="text-2xl font-extrabold">Games</h2><span className="text-sm text-[#6d6963]">{edition.nodes.length} nodes</span></div>
+          <div className="flex items-center justify-between gap-4"><div><h2 className="text-2xl font-extrabold">Games</h2><p className="text-sm text-[#6d6963]">Choose 3 to 8 different game types. Each node can contain multiple games.</p></div><button type="button" onClick={addNode} disabled={edition.nodes.length >= stageTypes.length} className="shrink-0 rounded-full bg-[#0b0b0f] px-4 py-2 text-sm font-bold text-white disabled:opacity-40">Add type</button></div>
           {edition.nodes.map((node, nodeIndex) => (
             <article key={node.id} className="rounded-2xl border border-[#d8d0c3] bg-[#fffdf7] p-5">
               <div className="grid gap-4 sm:grid-cols-[1fr_1fr_180px]">
                 <Field label="Map title"><input value={node.mapTitle} onChange={(event) => updateNode(nodeIndex, { mapTitle: event.target.value })} /></Field>
                 <Field label="Map subtitle"><input value={node.mapSubtitle} onChange={(event) => updateNode(nodeIndex, { mapSubtitle: event.target.value })} /></Field>
-                <Field label="Game type"><select value={node.type} onChange={(event) => updateNode(nodeIndex, { type: event.target.value })}>{stageTypes.map((type) => <option key={type}>{type}</option>)}</select></Field>
+                <Field label="Game type"><select value={node.type} onChange={(event) => updateNode(nodeIndex, { type: event.target.value as StageType })}>{stageTypes.filter((type) => type === node.type || !edition.nodes.some((candidate) => candidate.type === type)).map((type) => <option key={type}>{type}</option>)}</select></Field>
               </div>
+              <div className="mt-3 flex justify-end"><button type="button" onClick={() => removeNode(nodeIndex)} className="text-xs font-extrabold text-[#a33d32] underline">Remove node</button></div>
               <div className="mt-4 space-y-3 border-t border-[#e4ddd2] pt-4">
                 {node.subStages.map((stage, stageIndex) => (
                   <StageEditor
@@ -101,10 +136,10 @@ export function ProviderEditionEditor({ template }: Props) {
 
         <footer className="sticky bottom-0 mt-8 flex items-center justify-between gap-4 border-t border-[#d8d0c3] bg-[#f6f2ec]/95 py-4 backdrop-blur">
           <p className="text-sm font-bold text-[#6d6963]">{message}</p>
-          <div className="flex gap-3"><button onClick={() => save("save")} className="rounded-full border border-[#0b0b0f] px-5 py-3 font-bold">Save draft</button><button onClick={() => save("schedule")} className="rounded-full bg-[#0b0b0f] px-5 py-3 font-bold text-white">Schedule edition</button></div>
+          {!readOnly ? <div className="flex gap-3"><button onClick={() => save("save")} className="rounded-full border border-[#0b0b0f] px-5 py-3 font-bold">Save draft</button><button onClick={() => save("schedule")} className="rounded-full bg-[#0b0b0f] px-5 py-3 font-bold text-white">Schedule edition</button></div> : null}
         </footer>
       </div>
-    </main>
+    </div>
   );
 }
 
