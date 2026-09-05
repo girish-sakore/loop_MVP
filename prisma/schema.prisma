@@ -21,14 +21,32 @@ model User {
   plan              String?       // "monthly" | "yearly"
   subscriptionStart DateTime?
   subscriptionEnd   DateTime?
+  role              String          @default("user") // user | provider
 
   sessions      Session[]
   accounts      Account[]
   subscriptions Subscription[]
   editionProgress UserEditionProgress[]
   nodeProgress    UserNodeProgress[]
+  editions        Edition[]
 
   @@map("user")
+}
+
+model Edition {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  status      String    @default("draft") // draft | scheduled | published | archived
+  releaseAt   DateTime?
+  publishedAt DateTime?
+  content     Json
+  createdById String?
+  createdBy   User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, releaseAt])
+  @@map("edition")
 }
 
 model Subscription {

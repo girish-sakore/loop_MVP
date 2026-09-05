@@ -4,7 +4,7 @@ import { getNodePosition } from "./village-layouts";
 import type { VillageMapData, MapNodeStatus } from "./types";
 
 export async function buildVillageMapData(userId: string): Promise<VillageMapData[]> {
-  const editions = getAllEditions();
+  const editions = await getAllEditions();
   const villages: VillageMapData[] = [];
   let previousCompleted = true;
 

@@ -13,7 +13,7 @@ export default async function LibraryPage() {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const editions = getAllEditions();
+  const editions = await getAllEditions();
   const pastThemes = editions.slice().sort(compareByDateDesc);
   const recommended = editions.slice().sort((a, b) => a.order - b.order).slice(0, 6);
   const categories = buildCategories(editions);

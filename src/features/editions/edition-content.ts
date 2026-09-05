@@ -2,39 +2,62 @@ import fs from "node:fs";
 import path from "node:path";
 
 import type { ClueConnectStage, Edition, EditionNode, Stage } from "@/types/gameplay";
+import { prisma } from "@/lib/db";
 
 const editionsDirectory = path.join(process.cwd(), "src/content/editions");
 
-let editionCache: Edition[] | null = null;
+let fileEditionCache: Edition[] | null = null;
 
-function loadEditions(): Edition[] {
-  if (editionCache) return editionCache;
+function loadFileEditions(): Edition[] {
+  if (fileEditionCache) return fileEditionCache;
 
   const files = fs
     .readdirSync(editionsDirectory)
     .filter((file) => file.endsWith(".json"))
     .sort();
 
-  editionCache = files
+  fileEditionCache = files
     .map((file) => {
       const content = fs.readFileSync(path.join(editionsDirectory, file), "utf8");
       return normalizeEdition(JSON.parse(content) as Edition);
     })
     .sort((a, b) => a.order - b.order);
 
-  return editionCache;
+  return fileEditionCache;
 }
 
-export function getEditionById(editionId: string): Edition | null {
-  return loadEditions().find((edition) => edition.id === editionId) ?? null;
+export async function getEditionById(editionId: string): Promise<Edition | null> {
+  const now = new Date();
+  const stored = await prisma.edition.findFirst({
+    where: {
+      slug: editionId,
+      OR: [{ status: "published" }, { status: "scheduled", releaseAt: { lte: now } }],
+    },
+    orderBy: { releaseAt: "desc" },
+  });
+  return stored ? normalizeEdition(stored.content as unknown as Edition) : loadFileEditions().find((edition) => edition.id === editionId) ?? null;
 }
 
-export function getFeaturedEdition(): Edition {
-  return loadEditions()[0];
+export async function getFeaturedEdition(): Promise<Edition> {
+  const now = new Date();
+  const stored = await prisma.edition.findFirst({
+    where: { status: { in: ["scheduled", "published"] }, releaseAt: { lte: now } },
+    orderBy: { releaseAt: "desc" },
+  });
+  return stored ? normalizeEdition(stored.content as unknown as Edition) : loadFileEditions()[0];
 }
 
-export function getAllEditions(): Edition[] {
-  return loadEditions();
+export async function getAllEditions(): Promise<Edition[]> {
+  const now = new Date();
+  const stored = await prisma.edition.findMany({
+    where: {
+      OR: [{ status: "published" }, { status: "scheduled", releaseAt: { lte: now } }],
+    },
+    orderBy: [{ releaseAt: "desc" }, { createdAt: "desc" }],
+  });
+  return stored.length > 0
+    ? stored.map((edition) => normalizeEdition(edition.content as unknown as Edition))
+    : loadFileEditions();
 }
 
 function normalizeEdition(edition: Edition): Edition {

@@ -14,7 +14,7 @@ export default async function NodeGameplayPage({ params }: PageProps) {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const edition = getEditionById(editionId);
+  const edition = await getEditionById(editionId);
   if (!edition) notFound();
 
   const nodeIndex = edition.nodes.findIndex((n) => n.id === nodeId);

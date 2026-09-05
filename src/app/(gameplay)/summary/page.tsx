@@ -5,8 +5,8 @@ import { SummaryStats } from "@/components/summary/summary-stats";
 import { SummaryActions } from "@/components/summary/summary-actions";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 
-export default function SummaryPage() {
-  const edition = getFeaturedEdition();
+export default async function SummaryPage() {
+  const edition = await getFeaturedEdition();
 
   return (
     <MobileContainer>

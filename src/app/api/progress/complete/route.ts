@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing editionId or nodeId." }, { status: 400 });
     }
 
-    const edition = getEditionById(editionId);
+    const edition = await getEditionById(editionId);
     if (!edition) return NextResponse.json({ error: "Unknown edition." }, { status: 400 });
 
     if (!edition.nodes.some((node) => node.id === nodeId)) {

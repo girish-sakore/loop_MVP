@@ -11,7 +11,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "db:seed-editions": "node --import dotenv/config scripts/seed-editions.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

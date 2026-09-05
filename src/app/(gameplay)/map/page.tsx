@@ -98,7 +98,7 @@ export default async function MapPage() {
       village.nodes.some((node) => node.status === "current"),
     ) ?? villages[0];
   const currentEdition = currentVillage
-    ? getEditionById(currentVillage.editionId)
+    ? await getEditionById(currentVillage.editionId)
     : null;
   const gameTiles = buildGameTiles(currentVillage, currentEdition?.nodes ?? []);
 
