@@ -64,22 +64,21 @@ export const auth = betterAuth({
 
   plugins: [
     // nextCookies must be included for Next.js Server Actions/Middleware
-    nextCookies(), 
-    
+    nextCookies(),
+
     magicLink({
       expiresIn: 60 * 10, // 10 minutes
       sendMagicLink: async ({ email, url }) => {
         // Log to console for quick debugging during development
         if (process.env.NODE_ENV !== "production") {
           console.info(`[Auth] Magic Link for ${email}: ${url}`);
-        }
-
-        // Send actual email via Nodemailer
-        await transporter.sendMail({
-          from: `Loop <${process.env.EMAIL_FROM}>`,
-          to: email,
-          subject: "Sign in to Loop",
-          html: `
+        } else {
+          // Send actual email via Nodemailer
+          await transporter.sendMail({
+            from: `Loop <${process.env.EMAIL_FROM}>`,
+            to: email,
+            subject: "Sign in to Loop",
+            html: `
             <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
               <h2>Sign in to Loop</h2>
               <p>Click the button below to sign in to your account. This link will expire in 10 minutes.</p>
@@ -87,7 +86,9 @@ export const auth = betterAuth({
               <p style="color: #666; font-size: 14px;">If you didn't request this email, you can safely ignore it.</p>
             </div>
           `,
-        });
+          });
+        }
+
       },
     }),
   ],
