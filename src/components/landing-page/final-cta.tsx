@@ -84,7 +84,7 @@ export default function FinalCTA() {
               md:text-xl
             "
           >
-            Start today's game
+            Start today&apos;s game
           </button>
 
           <p className="mt-6 text-[11px] font-extrabold uppercase md:text-[12px]">
