@@ -109,14 +109,16 @@ function ReorderInteractionContent({
         ))}
       </div>
 
-      <button
-        type="button"
-        disabled={disabled || items.length === 0}
-        onClick={submitAnswer}
-        className="mt-5 h-14 rounded-full bg-[#0b0b0f] text-[17px] font-extrabold text-[#fffdf7] transition active:translate-y-0.5 disabled:opacity-40"
-      >
-        Check order
-      </button>
+      <div className="mx-auto w-full max-w-[366px] pt-4 pb-2">
+        <button
+          type="button"
+          disabled={disabled || items.length === 0}
+          onClick={submitAnswer}
+          className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+        >
+          Guess
+        </button>
+      </div>
     </div>
   );
 }

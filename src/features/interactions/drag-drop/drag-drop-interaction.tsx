@@ -121,6 +121,23 @@ export function DragDropInteraction({
     setActiveIndex(0);
   }
 
+  function returnCardToHand(slotId: string) {
+    if (disabled) return;
+    setState((latest) => {
+      const base = latest.key === resetKey ? latest : currentState;
+      const cardId = base.slotCardIds[slotId];
+      if (!cardId) return base;
+      return {
+        ...base,
+        handIds: [...base.handIds, cardId],
+        slotCardIds: {
+          ...base.slotCardIds,
+          [slotId]: null,
+        },
+      };
+    });
+  }
+
   function checkGuess() {
     if (disabled || !allPlaced) return;
 
@@ -158,6 +175,7 @@ export function DragDropInteraction({
             slotCardIds={currentState.slotCardIds}
             cardsById={cardsById}
             disabled={disabled}
+            onReturnCard={returnCardToHand}
           />
         </div>
 
@@ -286,16 +304,18 @@ function LinkMap({
   slotCardIds,
   cardsById,
   disabled,
+  onReturnCard,
 }: {
   stage: DragDropStage;
   slotCardIds: Record<string, string | null>;
   cardsById: Map<string, LinkMapCard>;
   disabled?: boolean;
+  onReturnCard?: (slotId: string) => void;
 }) {
   const paths = stage.map.paths ?? createFallbackPaths(stage.map.relations);
 
   return (
-    <div className="relative mx-auto h-[min(58dvh,470px)] min-h-[390px] w-full max-w-[390px]">
+    <div className="relative mx-auto h-[min(50dvh,420px)] min-h-[300px] w-full max-w-[390px]">
       <svg
         className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-visible"
         viewBox="0 0 100 100"
@@ -327,6 +347,7 @@ function LinkMap({
             slot={slot}
             card={cardId ? cardsById.get(cardId) : undefined}
             disabled={disabled}
+            onReturnCard={onReturnCard}
           />
         );
       })}
@@ -356,10 +377,12 @@ function MapSlot({
   slot,
   card,
   disabled,
+  onReturnCard,
 }: {
   slot: LinkMapSlot;
   card?: LinkMapCard;
   disabled?: boolean;
+  onReturnCard?: (slotId: string) => void;
 }) {
   const { isOver, setNodeRef } = useDroppable({
     id: `slot:${slot.id}`,
@@ -374,7 +397,22 @@ function MapSlot({
       style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
     >
       {card ? (
-        <LinkCard card={card} disabled={disabled} compact slotId={slot.id} />
+        <div className="relative h-full w-full">
+          <LinkCard card={card} disabled={disabled} compact slotId={slot.id} />
+          {!disabled && onReturnCard ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onReturnCard(slot.id);
+              }}
+              className="absolute -right-2 -top-2 z-30 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] text-[#0b0b0f] shadow-sm transition hover:bg-[#ffb1bd] active:scale-95"
+              aria-label={`Remove ${card.title} from slot`}
+            >
+              <span className="material-symbols-outlined text-[15px]">close</span>
+            </button>
+          ) : null}
+        </div>
       ) : (
         <div className="flex h-full w-full items-center justify-center rounded-md border-[3px] border-dashed border-[#0b0b0f] bg-[#fffdf7]/80 shadow-[0_3px_0_rgba(11,11,15,0.08)]">
           <span className="sr-only">{slot.label}</span>

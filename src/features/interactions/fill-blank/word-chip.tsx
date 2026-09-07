@@ -8,6 +8,7 @@ type Props = {
   word: string;
   variant?: "bank" | "blank";
   disabled?: boolean;
+  onClick?: () => void;
 };
 
 export function WordChip({
@@ -15,6 +16,7 @@ export function WordChip({
   word,
   variant = "bank",
   disabled = false,
+  onClick,
 }: Props) {
   const {
     attributes,
@@ -44,6 +46,7 @@ export function WordChip({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
+      onClick={onClick}
       style={{
         ...style,
         background: isBank ? "#f7d91f" : "#85cb57",

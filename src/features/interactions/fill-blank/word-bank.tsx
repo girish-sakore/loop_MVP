@@ -9,13 +9,16 @@ type Option = {
 
 type Props = {
     options: Option[];
-
     placedWords: Record<string, Option | null>;
+    disabled?: boolean;
+    onSelectWord?: (option: Option) => void;
 };
 
 export function WordBank({
     options,
     placedWords,
+    disabled = false,
+    onSelectWord,
 }: Props) {
     const usedIds = new Set(
         Object.values(placedWords)
@@ -47,6 +50,8 @@ export function WordBank({
                     id={option.id}
                     word={option.word}
                     variant="bank"
+                    disabled={disabled}
+                    onClick={disabled ? undefined : () => onSelectWord?.(option)}
                 />
             ))}
         </div>

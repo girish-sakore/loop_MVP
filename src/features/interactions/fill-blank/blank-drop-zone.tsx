@@ -11,14 +11,19 @@ type Option = {
 type Props = {
   id: string;
   option?: Option;
+  disabled?: boolean;
+  onRemove?: () => void;
 };
 
 export function BlankDropZone({
   id,
   option,
+  disabled = false,
+  onRemove,
 }: Props) {
   const { isOver, setNodeRef } = useDroppable({
     id,
+    disabled,
   });
 
   return (
@@ -53,6 +58,8 @@ export function BlankDropZone({
           id={option.id}
           word={option.word}
           variant="blank"
+          disabled={disabled}
+          onClick={disabled ? undefined : onRemove}
         />
       ) : (
         <span

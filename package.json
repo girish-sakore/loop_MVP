@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "dev": "NODE_OPTIONS=--max-old-space-size=2048 next dev",
+    "dev": "NODE_OPTIONS=--max-old-space-size=2048 next dev -H 0.0.0.0",
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",

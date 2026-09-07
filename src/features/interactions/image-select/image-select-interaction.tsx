@@ -24,19 +24,30 @@ export function ImageSelectInteraction({
   const [selection, setSelection] = useState<{
     retryCount: number;
     optionId: string | null;
-  }>({ retryCount, optionId: null });
+    submitted: boolean;
+  }>({ retryCount, optionId: null, submitted: false });
   const selected =
     selection.retryCount === retryCount ? selection.optionId : null;
+  const isSubmitted =
+    selection.retryCount === retryCount ? selection.submitted : false;
 
   function startGame() {
     if (disabled) return;
     onIntroComplete?.();
   }
 
-  function handleSelect(optionId: string, correct: boolean, feedback: string) {
-    if (disabled || selected) return;
-    setSelection({ retryCount, optionId });
-    onAnswer({ correct, feedback });
+  function handleSelect(optionId: string) {
+    if (disabled || isSubmitted) return;
+    setSelection({ retryCount, optionId, submitted: false });
+  }
+
+  function handleCheckGuess() {
+    if (disabled || !selected || isSubmitted) return;
+    const option = stage.options.find((opt) => opt.id === selected);
+    if (!option) return;
+
+    setSelection({ retryCount, optionId: selected, submitted: true });
+    onAnswer({ correct: option.isCorrect, feedback: option.feedback });
   }
 
   if (showIntro) {
@@ -69,7 +80,7 @@ export function ImageSelectInteraction({
       <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 pt-4">
         {stage.options.map((option, index) => {
           const isSelected = selected === option.id;
-          const showResult = isSelected;
+          const showResult = isSubmitted && isSelected;
           const isOddLast =
             stage.options.length % 2 === 1 && index === stage.options.length - 1;
 
@@ -77,10 +88,8 @@ export function ImageSelectInteraction({
             <motion.button
               key={option.id}
               whileTap={{ scale: 0.97 }}
-              onClick={() =>
-                handleSelect(option.id, option.isCorrect, option.feedback)
-              }
-              disabled={disabled || !!selected}
+              onClick={() => handleSelect(option.id)}
+              disabled={disabled || isSubmitted}
               className={`relative min-h-0 overflow-hidden rounded-md border border-[#0b0b0f] text-left shadow-[0_5px_0_rgba(11,11,15,0.16)] transition-all duration-200 ${
                 isOddLast
                   ? "col-span-2 grid grid-cols-[44%_minmax(0,1fr)]"
@@ -92,12 +101,16 @@ export function ImageSelectInteraction({
                     ? "var(--secondary-container)"
                     : showResult && !option.isCorrect
                     ? "var(--error-container)"
+                    : isSelected
+                    ? "#eef6dd"
                     : "var(--surface-container-lowest)",
                 boxShadow:
                   showResult && option.isCorrect
                     ? "0 6px 0 #0b0b0f, 0 0 0 4px var(--secondary)"
                     : showResult && !option.isCorrect
                     ? "0 6px 0 #0b0b0f, 0 0 0 4px var(--error)"
+                    : isSelected
+                    ? "0 6px 0 #0b0b0f, 0 0 0 3px #0b0b0f"
                     : "0 6px 0 #0b0b0f",
               }}
             >
@@ -136,21 +149,36 @@ export function ImageSelectInteraction({
                         ? "var(--secondary)"
                         : showResult && !option.isCorrect
                         ? "var(--error)"
+                        : isSelected
+                        ? "#0b0b0f"
                         : "var(--outline)",
                     fontVariationSettings:
-                      showResult ? "'FILL' 1" : "'FILL' 0",
+                      showResult || isSelected ? "'FILL' 1" : "'FILL' 0",
                   }}
                 >
                   {showResult && option.isCorrect
                     ? "check_circle"
                     : showResult && !option.isCorrect
                     ? "cancel"
+                    : isSelected
+                    ? "radio_button_checked"
                     : "radio_button_unchecked"}
                 </span>
               </div>
             </motion.button>
           );
         })}
+      </div>
+
+      <div className="mx-auto w-full max-w-[366px] pt-3 pb-1 shrink-0">
+        <button
+          type="button"
+          onClick={handleCheckGuess}
+          disabled={disabled || !selected || isSubmitted}
+          className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+        >
+          Guess
+        </button>
       </div>
     </div>
   );

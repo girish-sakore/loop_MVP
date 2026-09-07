@@ -112,43 +112,55 @@ export function TimelineBuilder({
   function placeCurrentEvent(insertIndex: number) {
     if (disabled || !currentCandidate || currentState.submitted) return;
 
-    const beforeEvent = currentState.placedEvents[insertIndex - 1];
-    const afterEvent = currentState.placedEvents[insertIndex];
-    const lowerOrder = beforeEvent?.order ?? Number.NEGATIVE_INFINITY;
-    const upperOrder = afterEvent?.order ?? Number.POSITIVE_INFINITY;
-    const isCorrect =
-      currentCandidate.order > lowerOrder && currentCandidate.order < upperOrder;
-
-    if (!isCorrect) {
-      onAnswer({
-        correct: false,
-        feedback: `${currentCandidate.title} belongs ${describeCorrectPlacement(
-          currentCandidate,
-          currentState.placedEvents,
-        )}.`,
-      });
-      return;
-    }
-
     const placedEvents = [
       ...currentState.placedEvents.slice(0, insertIndex),
       currentCandidate,
       ...currentState.placedEvents.slice(insertIndex),
     ];
     const pending = currentState.pendingEvents.slice(1);
-    const allPlaced = pending.length === 0;
 
     setTimelineState({
       ...currentState,
-      submitted: allPlaced,
+      submitted: false,
       placedEvents,
       pendingEvents: pending,
       hasDropped: true,
     });
+  }
 
-    if (allPlaced) {
-      onAnswer({ correct: true, feedback: "Timeline restored correctly." });
-    }
+  function removePlacedEvent(eventId: string) {
+    if (disabled || currentState.submitted || eventId === starterEvent?.id) return;
+    const event = currentState.placedEvents.find((e) => e.id === eventId);
+    if (!event) return;
+
+    const placedEvents = currentState.placedEvents.filter((e) => e.id !== eventId);
+    const pending = [event, ...currentState.pendingEvents];
+
+    setTimelineState({
+      ...currentState,
+      placedEvents,
+      pendingEvents: pending,
+    });
+  }
+
+  function checkGuess() {
+    if (disabled || currentState.pendingEvents.length > 0 || currentState.submitted) return;
+
+    const isCorrect = currentState.placedEvents.every(
+      (event, index, arr) => index === 0 || event.order > arr[index - 1].order,
+    );
+
+    setTimelineState((prev) => ({
+      ...prev,
+      submitted: true,
+    }));
+
+    onAnswer({
+      correct: isCorrect,
+      feedback: isCorrect
+        ? "Timeline restored correctly."
+        : "Not quite. Check the dates and try again.",
+    });
   }
 
   if (!starterEvent) return null;
@@ -198,6 +210,11 @@ export function TimelineBuilder({
                   event={event}
                   index={index}
                   onOpen={() => setSelectedEvent(event)}
+                  onRemove={
+                    event.id !== starterEvent.id
+                      ? () => removePlacedEvent(event.id)
+                      : undefined
+                  }
                 />
               </div>
             ))}
@@ -222,7 +239,7 @@ export function TimelineBuilder({
                 <span className="material-symbols-outlined text-[15px]">
                   style
                 </span>
-                <span>{currentState.pendingEvents.length}</span>
+                <span>{currentState.pendingEvents.length} left</span>
               </div>
               <EventCard
                 event={currentCandidate}
@@ -230,8 +247,18 @@ export function TimelineBuilder({
               />
             </>
           ) : (
-            <div className="rounded-md border-[3px] border-[#0b0b0f] bg-[#85cb57] p-3 text-center text-[15px] font-extrabold shadow-[0_4px_0_#0b0b0f]">
-              Timeline complete
+            <div className="flex flex-col gap-2 pt-1 pb-2">
+              <p className="text-center text-[12px] font-extrabold text-[#343238]">
+                All events placed. Ready to check?
+              </p>
+              <button
+                type="button"
+                onClick={checkGuess}
+                disabled={disabled || currentState.submitted}
+                className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+              >
+                Guess
+              </button>
             </div>
           )}
         </div>
@@ -373,18 +400,27 @@ function TimelineRow({
   event,
   index,
   onOpen,
+  onRemove,
 }: {
   event: TimelineEvent;
   index: number;
   onOpen: () => void;
+  onRemove?: () => void;
 }) {
   const colors = ["bg-[#fffdf7]", "bg-[#f5f0e9]", "bg-[#eadfd1]", "bg-[#fffdf7]"];
 
   return (
-    <button
-      type="button"
+    <div
       onClick={onOpen}
-      className={`${colors[index % colors.length]} relative grid min-h-[70px] w-full min-w-0 grid-cols-[70px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] text-left transition active:scale-[0.99]`}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
+      className={`${colors[index % colors.length]} relative grid min-h-[70px] w-full min-w-0 cursor-pointer grid-cols-[70px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] text-left transition active:scale-[0.99]`}
     >
       <EventImage event={event} className="h-full border-r-[3px] border-[#0b0b0f]" />
       <div className="min-w-0 px-3 py-2 pr-8">
@@ -395,10 +431,24 @@ function TimelineRow({
           {event.title}
         </span>
       </div>
-      <span className="material-symbols-outlined absolute right-1.5 top-2 rounded-full bg-[#fffdf7] text-[22px] text-[#85cb57]">
-        check_circle
-      </span>
-    </button>
+      {onRemove ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="absolute right-1.5 top-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] text-[#0b0b0f] transition hover:bg-[#ffb1bd] active:scale-95"
+          aria-label="Remove event from timeline"
+        >
+          <span className="material-symbols-outlined text-[16px]">close</span>
+        </button>
+      ) : (
+        <span className="material-symbols-outlined absolute right-1.5 top-2 rounded-full bg-[#fffdf7] text-[22px] text-[#85cb57]">
+          check_circle
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -461,18 +511,3 @@ function EventInfoModal({
   );
 }
 
-function describeCorrectPlacement(
-  draggedEvent: TimelineEvent,
-  placedEvents: TimelineEvent[],
-) {
-  const sortedPlaced = [...placedEvents].sort((a, b) => a.order - b.order);
-  const before = [...sortedPlaced]
-    .reverse()
-    .find((event) => event.order < draggedEvent.order);
-  const after = sortedPlaced.find((event) => event.order > draggedEvent.order);
-
-  if (!before && after) return `before ${after.title}`;
-  if (before && !after) return `after ${before.title}`;
-  if (before && after) return `between ${before.title} and ${after.title}`;
-  return "in the timeline";
-}
