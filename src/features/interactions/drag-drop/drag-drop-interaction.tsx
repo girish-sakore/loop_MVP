@@ -145,19 +145,76 @@ export function DragDropInteraction({
       };
     });
   }
+  const allCorrect =
+    allPlaced &&
+    stage.map.slots.every(
+      (slot) => currentState.slotCardIds[slot.id] === slot.answerCardId,
+    );
+
   function applyHint() {
-    if (disabled || hintsRemaining <= 0) return;
+    if (disabled || hintsRemaining <= 0 || allCorrect) return;
+
     setState((latest) => {
       const base = latest.key === resetKey ? latest : currentState;
-
+      const slotCardIds = { ...base.slotCardIds };
+      let handIds = [...base.handIds];
       const feedback: Record<string, boolean> = {};
+
+      // 1. Evaluate all currently placed cards
       stage.map.slots.forEach((slot) => {
-        const placedId = base.slotCardIds[slot.id];
-        if (placedId) feedback[slot.id] = placedId === slot.answerCardId;
+        const placedId = slotCardIds[slot.id];
+        if (placedId) {
+          feedback[slot.id] = placedId === slot.answerCardId;
+        }
       });
 
-      return { ...base, hintFeedback: feedback };
+      // 2. Find a slot that needs a hint:
+      // Priority A: First empty slot
+      // Priority B: First incorrectly placed slot
+      const emptySlot = stage.map.slots.find((slot) => !slotCardIds[slot.id]);
+      const incorrectSlot = stage.map.slots.find(
+        (slot) => slotCardIds[slot.id] && slotCardIds[slot.id] !== slot.answerCardId,
+      );
+
+      const targetSlot = emptySlot ?? incorrectSlot;
+
+      if (targetSlot) {
+        const correctCardId = targetSlot.answerCardId;
+
+        // If target slot already has a wrong card, return it to hand
+        const existingCardId = slotCardIds[targetSlot.id];
+        if (existingCardId && existingCardId !== correctCardId) {
+          if (!handIds.includes(existingCardId)) {
+            handIds.push(existingCardId);
+          }
+          slotCardIds[targetSlot.id] = null;
+        }
+
+        // If the correct card is currently placed in another slot, clear it from there
+        const otherSlotEntry = Object.entries(slotCardIds).find(
+          ([sId, cId]) => sId !== targetSlot.id && cId === correctCardId,
+        );
+        if (otherSlotEntry) {
+          slotCardIds[otherSlotEntry[0]] = null;
+          delete feedback[otherSlotEntry[0]];
+        } else {
+          // Remove from hand tray
+          handIds = handIds.filter((id) => id !== correctCardId);
+        }
+
+        // Place the correct card into targetSlot and mark it correct
+        slotCardIds[targetSlot.id] = correctCardId;
+        feedback[targetSlot.id] = true;
+      }
+
+      return {
+        ...base,
+        handIds,
+        slotCardIds,
+        hintFeedback: feedback,
+      };
     });
+
     onUseHint?.();
   }
 

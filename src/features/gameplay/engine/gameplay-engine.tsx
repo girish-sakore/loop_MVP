@@ -11,8 +11,8 @@ import type { Stage } from "@/types/gameplay";
 
 const DEFAULT_HINT_BUDGET = 3;
 
-function useSessionHints(editionId: string, nodeId: string, initialBudget = DEFAULT_HINT_BUDGET) {
-  const storageKey = `loop_hints_${editionId}_${nodeId}`;
+function useSessionHints(userId: string,editionId: string, nodeId: string, initialBudget = DEFAULT_HINT_BUDGET) {
+  const storageKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
@@ -41,7 +41,7 @@ function useSessionHints(editionId: string, nodeId: string, initialBudget = DEFA
           return parsed;
         }
       }
-    } catch {}
+    } catch { }
     return initialBudget;
   }, [storageKey, initialBudget]);
 
@@ -57,14 +57,14 @@ function useSessionHints(editionId: string, nodeId: string, initialBudget = DEFA
       const next = Math.max(validCurrent - 1, 0);
       localStorage.setItem(storageKey, String(next));
       window.dispatchEvent(new Event("loop_hints_change"));
-    } catch {}
+    } catch { }
   }, [storageKey, initialBudget]);
 
   const resetHints = useCallback(() => {
     try {
       localStorage.removeItem(storageKey);
       window.dispatchEvent(new Event("loop_hints_change"));
-    } catch {}
+    } catch { }
   }, [storageKey]);
 
   return { hintsRemaining, consumeHint, resetHints };
@@ -75,9 +75,10 @@ interface GameplayEngineProps {
   nodeId: string;
   stages: Stage[];
   initialStage?: number;
+  userId: string;
 }
 export function GameplayEngine({
-  editionId, nodeId, stages, initialStage = 0 }: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0 }: GameplayEngineProps) {
   const router = useRouter();
   const hasNavigated = useRef(false); // guard navigation
   const initializedKey = useRef<string | null>(null);
@@ -111,7 +112,7 @@ export function GameplayEngine({
   const gameplayKey = `${editionId}:${nodeId}:${initialStage}`;
   const introDismissed =
     introState?.key === gameplayKey ? introState.dismissed : false;
-  const { hintsRemaining, consumeHint, resetHints } = useSessionHints(editionId, nodeId);
+  const { hintsRemaining, consumeHint, resetHints } = useSessionHints(userId,editionId, nodeId);
 
   // initialize from DB progress, not always 0
   useEffect(() => {
@@ -146,7 +147,7 @@ export function GameplayEngine({
         correctAnswers: overrides?.correctAnswers ?? correctAnswers,
         totalAnswers: overrides?.totalAnswers ?? totalAnswers,
       }),
-    }).catch(() => {});
+    }).catch(() => { });
   }, [editionId, nodeId, currentStage, score, correctAnswers, totalAnswers]);
 
   const completeProgress = useCallback(async () => {
@@ -155,7 +156,7 @@ export function GameplayEngine({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
-    }).catch(() => {});
+    }).catch(() => { });
   }, [editionId, nodeId, score, correctAnswers, totalAnswers, resetHints]);
 
   // Issue 2 fix — navigate in an effect, never during render

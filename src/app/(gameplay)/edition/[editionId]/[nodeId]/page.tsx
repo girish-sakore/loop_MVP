@@ -43,6 +43,7 @@ export default async function NodeGameplayPage({ params }: PageProps) {
         nodeId={node.id}
         stages={stages}
         initialStage={nodeProgress.currentSubStage}
+        userId={session.user.id}
       />
     </MobileContainer>
   );
