@@ -19,9 +19,12 @@
       "subStages": [
         {
           "id": "node-1-stage-1",
-          "question": "Who is Marie Curie?",
+          "question": "Who is Marie Curie? GFHGFHGFHGF",
           "attemptsAllowed": 3,
           "points": 100,
+          "hint":[
+            "qwerty","qwerty",""
+          ],
           "options": [
             {
               "id": "opt-1",
@@ -113,6 +116,7 @@
           "question": "Swipe left or right",
           "attemptsAllowed": 3,
           "points": 80,
+          "hint":["khgk"],
           "statement": "Kya aap Memes Review krna chahte hai??",
           "card": {
             "title": "Meme Quiz",
@@ -140,8 +144,7 @@
       "type": "fill-blank",
       "mapTitle": "Salt Mine",
       "mapSubtitle": "Learn a famous phrase",
-      "subStages": 
-      [
+      "subStages": [
         {
           "id": "node-3-stage-1",
           "question": "Fill in the missing words",
@@ -313,315 +316,243 @@
       "mapSubtitle": "Place each card on the clue map",
       "subStages": [
         {
-          "id": "node-5-stage-1",
-          "question": "Build the space link map",
+          "id": "salt-ancient-rome-stage",
+          "type": "drag-drop",
+          "mapTitle": "Word Origin Links",
+          "question": "Build the etymology link map",
           "attemptsAllowed": 3,
-          "points": 120,
-          "prompt": "Swipe through the cards, drag them onto the matching clue spots, then guess.",
+          "points": 110,
+          "prompt": "Drag cards into slots matching the clues.",
           "introLabel": "Links",
           "map": {
-            "title": "Round 1 of 4",
-            "relations": [
-              {
-                "id": "went-space",
-                "label": "Really went to space",
-                "slotIds": ["strelka", "felicette", "enterprise"],
-                "x": 50,
-                "y": 31,
-                "color": "#c7a0ff"
-              },
-              {
-                "id": "program",
-                "label": "Not part of Soviet space program",
-                "slotIds": ["felicette", "endeavour"],
-                "x": 23,
-                "y": 62,
-                "color": "#ffb65c"
-              },
-              {
-                "id": "crewed",
-                "label": "Crewed spacecraft",
-                "slotIds": ["enterprise", "endeavour"],
-                "x": 20,
-                "y": 43,
-                "color": "#86ce5d"
-              },
-              {
-                "id": "fiction",
-                "label": "Named by children",
-                "slotIds": ["enterprise"],
-                "x": 80,
-                "y": 43,
-                "color": "#e4ded4"
-              },
-              {
-                "id": "pun",
-                "label": "Related to pupniks",
-                "slotIds": ["strelka"],
-                "x": 78,
-                "y": 20,
-                "color": "#86ce5d"
-              }
-            ],
-            "paths": [
-              {
-                "id": "center-up",
-                "points": [
-                  { "x": 50, "y": 31 },
-                  { "x": 50, "y": 51 }
-                ]
-              },
-              {
-                "id": "center-left",
-                "points": [
-                  { "x": 20, "y": 43 },
-                  { "x": 50, "y": 43 }
-                ]
-              },
-              {
-                "id": "center-right",
-                "points": [
-                  { "x": 50, "y": 43 },
-                  { "x": 80, "y": 43 }
-                ]
-              },
-              {
-                "id": "center-down",
-                "points": [
-                  { "x": 50, "y": 51 },
-                  { "x": 50, "y": 68 }
-                ]
-              },
-              {
-                "id": "left-column",
-                "points": [
-                  { "x": 20, "y": 30 },
-                  { "x": 20, "y": 79 }
-                ]
-              },
-              {
-                "id": "right-column",
-                "points": [
-                  { "x": 80, "y": 20 },
-                  { "x": 80, "y": 61 }
-                ]
-              },
-              {
-                "id": "lower-left-to-center",
-                "points": [
-                  { "x": 20, "y": 62 },
-                  { "x": 50, "y": 62 }
-                ]
-              },
-              {
-                "id": "lower-right-to-center",
-                "points": [
-                  { "x": 50, "y": 62 },
-                  { "x": 80, "y": 62 }
-                ]
-              }
-            ],
+            "title": "Round 1",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
             "slots": [
               {
-                "id": "strelka",
-                "label": "Conceived offspring in space",
-                "answerCardId": "strelka-dog",
-                "x": 20,
-                "y": 30
+                "id": "slot-salt",
+                "label": "Latin word for this is 'sal'",
+                "answerCardId": "salt",
+                "anchor": "r1c1"
               },
               {
-                "id": "felicette",
-                "label": "Former stray",
-                "answerCardId": "felicette-cat",
-                "x": 80,
-                "y": 61
+                "id": "slot-salad",
+                "label": "Romans ate salted vegetables and herbs",
+                "answerCardId": "salad",
+                "anchor": "r2c2"
               },
               {
-                "id": "enterprise",
-                "label": "Primary Star Trek setting",
-                "answerCardId": "starship-enterprise",
-                "x": 50,
-                "y": 51
-              },
-              {
-                "id": "endeavour",
-                "label": "Named after cartoon character",
-                "answerCardId": "space-shuttle-endeavour",
-                "x": 20,
-                "y": 79
+                "id": "slot-salary",
+                "label": "Given as a special allowance",
+                "answerCardId": "salary",
+                "anchor": "r3c1"
               }
-            ]
-          },
-          "cards": [
-            {
-              "id": "starship-enterprise",
-              "title": "Starship Enterprise",
-              "image": "https://upload.wikimedia.org/wikipedia/en/4/4f/USS_Enterprise_%28NCC-1701-A%29.jpg",
-              "color": "#c7a0ff"
-            },
-            {
-              "id": "space-shuttle-endeavour",
-              "title": "Space Shuttle Endeavour",
-              "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/STS-134_launch_2.jpg/640px-STS-134_launch_2.jpg",
-              "color": "#66cfd3"
-            },
-            {
-              "id": "strelka-dog",
-              "title": "Strelka the dog",
-              "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Belka_and_Strelka.JPG/640px-Belka_and_Strelka.JPG",
-              "color": "#86ce5d"
-            },
-            {
-              "id": "felicette-cat",
-              "title": "Felicette the cat",
-              "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/F%C3%A9licette%2C_spacecat.jpg/640px-F%C3%A9licette%2C_spacecat.jpg",
-              "color": "#ffb65c"
-            }
-          ],
-          "feedback": {
-            "correct": "Correct. Every card is linked to the right clue.",
-            "incorrect": "Not quite. Swap the mismatched cards and try again."
-          }
-        },
-        {
-          "id": "node-5-stage-2",
-          "question": "Build the invention link map",
-          "attemptsAllowed": 3,
-          "points": 120,
-          "prompt": "Use the placeholder cards to match each invention to the right cluster of clues.",
-          "introLabel": "Links",
-          "map": {
-            "title": "Round 2 of 4",
+            ],
             "relations": [
               {
-                "id": "communication",
-                "label": "Changed communication",
-                "slotIds": ["telephone", "printing-press", "world-wide-web"],
-                "x": 50,
-                "y": 26,
+                "id": "roman-food",
+                "label": "Named for salted vegetables",
+                "anchor": "r1c2",
+                "slotIds": [
+                  "slot-salad"
+                ],
                 "color": "#66cfd3"
               },
               {
-                "id": "electric",
-                "label": "Needs electricity",
-                "slotIds": ["light-bulb", "telephone", "world-wide-web"],
-                "x": 78,
-                "y": 50,
-                "color": "#ffb65c"
-              },
-              {
-                "id": "mass-media",
-                "label": "Made ideas travel faster",
-                "slotIds": ["printing-press", "world-wide-web"],
-                "x": 22,
-                "y": 48,
+                "id": "root-word",
+                "label": "Comes from Latin word for salt (sal)",
+                "anchor": "r2c1",
+                "slotIds": [
+                  "slot-salt",
+                  "slot-salad",
+                  "slot-salary"
+                ],
                 "color": "#c7a0ff"
               },
               {
-                "id": "home-life",
-                "label": "Changed daily life at home",
-                "slotIds": ["light-bulb", "telephone"],
-                "x": 52,
-                "y": 69,
+                "id": "still-eaten",
+                "label": "Still eaten as a dish today",
+                "anchor": "r2c3",
+                "slotIds": [
+                  "slot-salad"
+                ],
+                "color": "#ffb65c"
+              },
+              {
+                "id": "soldier-allowance",
+                "label": "Given as a Roman soldier's allowance",
+                "anchor": "r3c2",
+                "slotIds": [
+                  "slot-salary"
+                ],
                 "color": "#86ce5d"
-              }
-            ],
-            "paths": [
-              {
-                "id": "top-cross",
-                "points": [
-                  { "x": 22, "y": 30 },
-                  { "x": 78, "y": 30 }
-                ]
               },
               {
-                "id": "left-column",
-                "points": [
-                  { "x": 22, "y": 30 },
-                  { "x": 22, "y": 70 }
-                ]
-              },
-              {
-                "id": "right-column",
-                "points": [
-                  { "x": 78, "y": 30 },
-                  { "x": 78, "y": 70 }
-                ]
-              },
-              {
-                "id": "middle-cross",
-                "points": [
-                  { "x": 22, "y": 48 },
-                  { "x": 78, "y": 48 }
-                ]
-              },
-              {
-                "id": "bottom-cross",
-                "points": [
-                  { "x": 22, "y": 70 },
-                  { "x": 78, "y": 70 }
-                ]
-              }
-            ],
-            "slots": [
-              {
-                "id": "printing-press",
-                "label": "Movable type machine",
-                "answerCardId": "gutenberg-press",
-                "x": 22,
-                "y": 30
-              },
-              {
-                "id": "telephone",
-                "label": "Voice over distance",
-                "answerCardId": "telephone",
-                "x": 78,
-                "y": 30
-              },
-              {
-                "id": "light-bulb",
-                "label": "Bright indoor nights",
-                "answerCardId": "light-bulb",
-                "x": 22,
-                "y": 70
-              },
-              {
-                "id": "world-wide-web",
-                "label": "Hyperlinked information",
-                "answerCardId": "world-wide-web",
-                "x": 78,
-                "y": 70
+                "id": "salarium",
+                "label": "This allowance was called 'salarium'",
+                "anchor": "r4c1",
+                "slotIds": [
+                  "slot-salary"
+                ],
+                "color": "#ffb1bd"
               }
             ]
           },
           "cards": [
             {
-              "id": "gutenberg-press",
-              "title": "Printing Press",
-              "image": "/images/placeholders/printing-press.png",
+              "id": "salt",
+              "title": "Salt",
+              "image": "/images/placeholders/salt.png",
               "color": "#c7a0ff"
             },
             {
-              "id": "telephone",
-              "title": "Telephone",
-              "image": "/images/placeholders/telephone.png",
+              "id": "salad",
+              "title": "Salad",
+              "image": "/images/placeholders/salad.png",
               "color": "#66cfd3"
             },
             {
-              "id": "light-bulb",
-              "title": "Light Bulb",
-              "image": "/images/placeholders/light-bulb.png",
-              "color": "#ffb65c"
-            },
-            {
-              "id": "world-wide-web",
-              "title": "World Wide Web",
-              "image": "/images/placeholders/world-wide-web.png",
-              "color": "#86ce5d"
+              "id": "salary",
+              "title": "Salary",
+              "image": "/images/placeholders/salary.png",
+              "color": "#ffb1bd"
             }
           ],
           "feedback": {
-            "correct": "Correct. The invention links are all in place.",
+            "correct": "Correct. All three words trace back to the same root.",
+            "incorrect": "Not quite. Check which clue actually matches each word's history."
+          }
+        },
+        {
+          "id": "descendants-of-salsa-stage",
+          "type": "drag-drop",
+          "mapTitle": "Word Origin Links",
+          "question": "Build the etymology link map",
+          "attemptsAllowed": 3,
+          "points": 120,
+          "prompt": "Drag cards into slots matching the clues.",
+          "introLabel": "Links",
+          "map": {
+            "title": "Round 2",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
+            "slots": [
+              {
+                "id": "slot-salsa",
+                "label": "Spanish word meaning 'salted'",
+                "answerCardId": "salsa",
+                "anchor": "r1c1"
+              },
+              {
+                "id": "slot-sauce",
+                "label": "French word for a savory condiment",
+                "answerCardId": "sauce",
+                "anchor": "r2c2"
+              },
+              {
+                "id": "slot-salami",
+                "label": "Italian cured, salted meat",
+                "answerCardId": "salami",
+                "anchor": "r3c1"
+              },
+              {
+                "id": "slot-sausage",
+                "label": "Preserved by curing with salt",
+                "answerCardId": "sausage",
+                "anchor": "r3c3"
+              }
+            ],
+            "relations": [
+              {
+                "id": "salsus-root",
+                "label": "Ultimately from Latin 'salsus' (salted)",
+                "anchor": "r1c2",
+                "slotIds": [
+                  "slot-salsa",
+                  "slot-sauce"
+                ],
+                "color": "#c7a0ff"
+              },
+              {
+                "id": "shared-root",
+                "label": "All trace back to the same Latin root for salt",
+                "anchor": "r2c1",
+                "slotIds": [
+                  "slot-salsa",
+                  "slot-sauce",
+                  "slot-salami"
+                ],
+                "color": "#66cfd3"
+              },
+              {
+                "id": "savory-flavoring",
+                "label": "Both are savory, salt-based flavorings",
+                "anchor": "r2c3",
+                "slotIds": [
+                  "slot-sauce",
+                  "slot-sausage"
+                ],
+                "color": "#ffb65c"
+              },
+              {
+                "id": "preservative",
+                "label": "Made using salt as a preservative",
+                "anchor": "r3c2",
+                "slotIds": [
+                  "slot-sauce",
+                  "slot-salami",
+                  "slot-sausage"
+                ],
+                "color": "#86ce5d"
+              },
+              {
+                "id": "name-meaning",
+                "label": "The name literally means 'salted'",
+                "anchor": "r4c1",
+                "slotIds": [
+                  "slot-salami"
+                ],
+                "color": "#ffb1bd"
+              },
+              {
+                "id": "moisture-draw",
+                "label": "Salt draws out moisture to help preserve it",
+                "anchor": "r4c3",
+                "slotIds": [
+                  "slot-sausage"
+                ],
+                "color": "#fff27a"
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "salsa",
+              "title": "Salsa",
+              "image": "/images/placeholders/salsa.png",
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "sauce",
+              "title": "Sauce",
+              "image": "/images/placeholders/sauce.png",
+              "color": "#ffb65c"
+            },
+            {
+              "id": "salami",
+              "title": "Salami",
+              "image": "/images/placeholders/salami.png",
+              "color": "#86ce5d"
+            },
+            {
+              "id": "sausage",
+              "title": "Sausage",
+              "image": "/images/placeholders/sausage.png",
+              "color": "#fff27a"
+            }
+          ],
+          "feedback": {
+            "correct": "Correct. All four words descend from the same Latin root.",
             "incorrect": "Not quite. Look for the card that shares the most clues, then swap again."
           }
         }
@@ -742,12 +673,30 @@
               "answer": "Marie Curie",
               "fact": "She was the first person to win Nobel Prizes in two different scientific fields.",
               "clueSlots": [
-                { "x": 18, "y": 19 },
-                { "x": 82, "y": 18 },
-                { "x": 15, "y": 50 },
-                { "x": 85, "y": 53 },
-                { "x": 23, "y": 83 },
-                { "x": 78, "y": 84 }
+                {
+                  "x": 18,
+                  "y": 19
+                },
+                {
+                  "x": 82,
+                  "y": 18
+                },
+                {
+                  "x": 15,
+                  "y": 50
+                },
+                {
+                  "x": 85,
+                  "y": 53
+                },
+                {
+                  "x": 23,
+                  "y": 83
+                },
+                {
+                  "x": 78,
+                  "y": 84
+                }
               ],
               "clues": [
                 {
@@ -788,12 +737,30 @@
               "answer": "Japan",
               "fact": "Japan is an island nation in the Pacific with Tokyo as its capital.",
               "clueSlots": [
-                { "x": 18, "y": 19 },
-                { "x": 82, "y": 18 },
-                { "x": 15, "y": 50 },
-                { "x": 85, "y": 53 },
-                { "x": 23, "y": 83 },
-                { "x": 78, "y": 84 }
+                {
+                  "x": 18,
+                  "y": 19
+                },
+                {
+                  "x": 82,
+                  "y": 18
+                },
+                {
+                  "x": 15,
+                  "y": 50
+                },
+                {
+                  "x": 85,
+                  "y": 53
+                },
+                {
+                  "x": 23,
+                  "y": 83
+                },
+                {
+                  "x": 78,
+                  "y": 84
+                }
               ],
               "clues": [
                 {

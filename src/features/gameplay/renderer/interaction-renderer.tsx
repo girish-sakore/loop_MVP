@@ -16,6 +16,8 @@ type InteractionRendererProps = {
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
   showIntro: boolean;
   onIntroComplete: () => void;
+  hintsRemaining?: number;
+  onUseHint?: () => void;
 };
 
 export function InteractionRenderer({
@@ -25,6 +27,8 @@ export function InteractionRenderer({
   onAnswer,
   showIntro,
   onIntroComplete,
+  hintsRemaining,
+  onUseHint,
 }: InteractionRendererProps) {
   switch (stage.type) {
     case "image-select":
@@ -78,6 +82,8 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
+          hintsRemaining={hintsRemaining}
+          onUseHint={onUseHint}
         />
       );
     case "clue-connect":

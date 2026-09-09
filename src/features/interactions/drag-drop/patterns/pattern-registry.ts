@@ -208,6 +208,26 @@ export const PATTERN_REGISTRY: Record<string, PatternDefinition> = {
       "center": { x: 50, y: 50 },
     },
   },
+  "lattice-3x4": {
+    id: "lattice-3x4",
+    name: "Lattice (3x4 Grid)",
+    description: "Flexible checkerboard grid — any cell can be a card slot or a relation bubble, supports 2-6 slots",
+    defaultPathStyle: "orthogonal",
+    cardSize: { width: 84, height: 112 },
+    bubbleSize: 112,
+    slotAnchors: {
+      r1c1: { x: 14, y: 6 }, r1c2: { x: 50, y: 6 }, r1c3: { x: 86, y: 6 },
+      r2c1: { x: 14, y: 35 }, r2c2: { x: 50, y: 35 }, r2c3: { x: 86, y: 35 },
+      r3c1: { x: 14, y: 65 }, r3c2: { x: 50, y: 65 }, r3c3: { x: 86, y: 65 },
+      r4c1: { x: 14, y: 94 }, r4c2: { x: 50, y: 94 }, r4c3: { x: 86, y: 94 },
+    },
+    relationAnchors: {
+      r1c1: { x: 14, y: 6 }, r1c2: { x: 50, y: 6 }, r1c3: { x: 86, y: 6 },
+      r2c1: { x: 14, y: 35 }, r2c2: { x: 50, y: 35 }, r2c3: { x: 86, y: 35 },
+      r3c1: { x: 14, y: 65 }, r3c2: { x: 50, y: 65 }, r3c3: { x: 86, y: 65 },
+      r4c1: { x: 14, y: 94 }, r4c2: { x: 50, y: 94 }, r4c3: { x: 86, y: 94 },
+    },
+  },
 };
 
 // Aliases

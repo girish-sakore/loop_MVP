@@ -14,7 +14,7 @@ import {
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { AnimatePresence, motion, PanInfo } from "framer-motion";
-
+import { resolveLinkMapStage } from "./patterns/pattern-resolver";
 import type {
   DragDropStage,
   LinkMapCard,
@@ -30,6 +30,8 @@ type Props = {
   retryCount?: number;
   showIntro?: boolean;
   onIntroComplete?: () => void;
+  hintsRemaining?: number;
+  onUseHint?: () => void;
 };
 
 type CardLocation =
@@ -40,10 +42,12 @@ type PlacementState = {
   key: string;
   handIds: string[];
   slotCardIds: Record<string, string | null>;
+  hintFeedback: Record<string, boolean>; // slotId -> isCorrect, only for filled slots
 };
 
 const CARD_COLORS = ["#fffdf7", "#f5f0e9", "#eadfd1", "#d7e96c"];
 const SWIPE_DISTANCE = 64;
+const DEFAULT_HINTS = 3;
 
 export function DragDropInteraction({
   stage,
@@ -52,6 +56,8 @@ export function DragDropInteraction({
   retryCount = 0,
   showIntro = true,
   onIntroComplete,
+  hintsRemaining = DEFAULT_HINTS,
+  onUseHint,
 }: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -62,6 +68,7 @@ export function DragDropInteraction({
     () => new Map(stage.cards.map((card) => [card.id, card])),
     [stage.cards],
   );
+  const resolvedStage = useMemo(() => resolveLinkMapStage(stage), [stage]);
   const resetKey = `${retryCount}:${stage.id}:${stage.cards
     .map((card) => card.id)
     .join("|")}`;
@@ -116,7 +123,7 @@ export function DragDropInteraction({
 
     setState((latest) => {
       const base = latest.key === resetKey ? latest : currentState;
-      return moveCard(base, activeId, source, targetSlotId);
+      return { ...moveCard(base, activeId, source, targetSlotId), hintFeedback: {} };
     });
     setActiveIndex(0);
   }
@@ -134,10 +141,27 @@ export function DragDropInteraction({
           ...base.slotCardIds,
           [slotId]: null,
         },
+        hintFeedback: {},
       };
     });
   }
+  function applyHint() {
+    if (disabled || hintsRemaining <= 0) return;
+    setState((latest) => {
+      const base = latest.key === resetKey ? latest : currentState;
 
+      const feedback: Record<string, boolean> = {};
+      stage.map.slots.forEach((slot) => {
+        const placedId = base.slotCardIds[slot.id];
+        if (placedId) feedback[slot.id] = placedId === slot.answerCardId;
+      });
+
+      return { ...base, hintFeedback: feedback };
+    });
+    onUseHint?.();
+  }
+
+  const hasFilledSlot = Object.values(currentState.slotCardIds).some(Boolean);
   function checkGuess() {
     if (disabled || !allPlaced) return;
 
@@ -171,8 +195,9 @@ export function DragDropInteraction({
       <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden bg-[#f6f2ec] text-[#0b0b0f]">
         <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-2 pt-2">
           <LinkMap
-            stage={stage}
+            stage={resolvedStage}
             slotCardIds={currentState.slotCardIds}
+            hintFeedback={currentState.hintFeedback}
             cardsById={cardsById}
             disabled={disabled}
             onReturnCard={returnCardToHand}
@@ -277,10 +302,16 @@ export function DragDropInteraction({
             </button>
             <button
               type="button"
-              disabled={disabled}
-              className="h-12 w-[64px] rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-[15px] font-extrabold transition active:scale-95 disabled:opacity-50"
+              onClick={applyHint}
+              disabled={disabled || hintsRemaining <= 0 || !hasFilledSlot}
+              className="relative h-12 w-[64px] rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-[15px] font-extrabold transition active:scale-95 disabled:opacity-50"
             >
               Hint
+              {hintsRemaining > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#ffb1bd] text-[10px] font-extrabold">
+                  {hintsRemaining}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -299,19 +330,14 @@ export function DragDropInteraction({
   );
 }
 
-function LinkMap({
+export function LinkMap({
   stage,
   slotCardIds,
+  hintFeedback,
   cardsById,
   disabled,
   onReturnCard,
-}: {
-  stage: DragDropStage;
-  slotCardIds: Record<string, string | null>;
-  cardsById: Map<string, LinkMapCard>;
-  disabled?: boolean;
-  onReturnCard?: (slotId: string) => void;
-}) {
+}: { stage: DragDropStage; slotCardIds: Record<string, string | null>; hintFeedback?: Record<string, boolean>; cardsById: Map<string, LinkMapCard>; disabled?: boolean; onReturnCard?: (slotId: string) => void; }) {
   const paths = stage.map.paths ?? createFallbackPaths(stage.map.relations);
 
   return (
@@ -336,7 +362,7 @@ function LinkMap({
       </svg>
 
       {stage.map.relations.map((relation) => (
-        <RelationBubble key={relation.id} relation={relation} />
+        <RelationBubble key={relation.id} relation={relation} size={stage.map.bubbleSize} />
       ))}
 
       {stage.map.slots.map((slot) => {
@@ -348,6 +374,8 @@ function LinkMap({
             card={cardId ? cardsById.get(cardId) : undefined}
             disabled={disabled}
             onReturnCard={onReturnCard}
+            size={stage.map.cardSize}
+            feedback={hintFeedback?.[slot.id]}
           />
         );
       })}
@@ -355,14 +383,23 @@ function LinkMap({
   );
 }
 
-function RelationBubble({ relation }: { relation: LinkMapRelation }) {
+function RelationBubble({
+  relation,
+  size = 78,
+}: {
+  relation: LinkMapRelation;
+  size?: number;
+}) {
   return (
     <motion.div
-      className="absolute z-10 flex h-[78px] w-[78px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[3px] bg-[#fffdf7] px-2 text-center text-[13px] font-extrabold leading-[1.04] shadow-[0_3px_0_rgba(11,11,15,0.12)]"
+      className="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[3px] bg-[#fffdf7] px-2 text-center font-extrabold leading-[1.1] shadow-[0_3px_0_rgba(11,11,15,0.12)]"
       style={{
         left: `${relation.x}%`,
         top: `${relation.y}%`,
         borderColor: relation.color ?? "#85cb57",
+        width: size,
+        height: size,
+        fontSize: size >= 100 ? 14 : 13,
       }}
       initial={{ opacity: 0, scale: 0.86 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -373,15 +410,12 @@ function RelationBubble({ relation }: { relation: LinkMapRelation }) {
   );
 }
 
-function MapSlot({
-  slot,
-  card,
-  disabled,
-  onReturnCard,
-}: {
+function MapSlot({ slot, card, disabled, onReturnCard, size = { width: 72, height: 96 }, feedback, }: {
   slot: LinkMapSlot;
   card?: LinkMapCard;
   disabled?: boolean;
+  size?: { width: number; height: number };
+  feedback?: boolean;
   onReturnCard?: (slotId: string) => void;
 }) {
   const { isOver, setNodeRef } = useDroppable({
@@ -392,13 +426,26 @@ function MapSlot({
   return (
     <div
       ref={setNodeRef}
-      className={`absolute z-20 h-[96px] w-[72px] -translate-x-1/2 -translate-y-1/2 rounded-md transition ${isOver ? "scale-105 ring-4 ring-[#0b0b0f]/20" : ""
-        }`}
-      style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
+      className={`absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-md transition ${isOver ? "..." : ""}`}
+      style={{ left: `${slot.x}%`, top: `${slot.y}%`, width: size.width, height: size.height }}
     >
       {card ? (
         <div className="relative h-full w-full">
           <LinkCard card={card} disabled={disabled} compact slotId={slot.id} />
+          {/* {feedback !== undefined && (
+            <div
+              className={`pointer-events-none absolute inset-0 rounded-md border-[3px] ${feedback ? "border-[#4d8a2c]" : "border-[#c94f4f]"
+                }`}
+            />
+          )} */}
+          {feedback !== undefined && (
+            <span
+              className={`absolute -left-2 -top-2 z-30 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0b0b0f] text-[13px] font-extrabold ${feedback ? "bg-[#85cb57]" : "bg-[#ffb1bd]"
+                }`}
+            >
+              {feedback ? "✓" : "✕"}
+            </span>
+          )}
           {!disabled && onReturnCard ? (
             <button
               type="button"
@@ -454,7 +501,7 @@ function LinkCard({
         opacity: isDragging ? 0.4 : 1,
         touchAction: "none",
       }}
-      className="cursor-grab active:cursor-grabbing"
+      className={`cursor-grab active:cursor-grabbing ${compact ? "h-full w-full" : ""}`}
     >
       <CardFace
         card={card}
@@ -466,7 +513,7 @@ function LinkCard({
   );
 }
 
-function CardFace({
+export function CardFace({
   card,
   color,
   compact = false,
@@ -484,10 +531,10 @@ function CardFace({
   return (
     <div
       className={`grid overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_5px_0_rgba(11,11,15,0.16)] ${compact
-          ? "h-[96px] w-[72px] grid-rows-[34px_minmax(0,1fr)]"
-          : tray
-            ? "h-[112px] w-[92px] grid-rows-[48px_minmax(0,1fr)]"
-            : "h-[148px] w-[120px] grid-rows-[62px_minmax(0,1fr)]"
+        ? "h-full w-full grid-rows-[34px_minmax(0,1fr)]"
+        : tray
+          ? "h-[112px] w-[92px] grid-rows-[48px_minmax(0,1fr)]"
+          : "h-[148px] w-[120px] grid-rows-[62px_minmax(0,1fr)]"
         } ${overlay ? "rotate-[-2deg] shadow-[0_10px_0_rgba(11,11,15,0.18)]" : ""}`}
     >
       <div
@@ -583,7 +630,6 @@ function DragDropIntro({
     </div>
   );
 }
-
 function createInitialState(key: string, stage: DragDropStage): PlacementState {
   return {
     key,
@@ -591,6 +637,7 @@ function createInitialState(key: string, stage: DragDropStage): PlacementState {
     slotCardIds: Object.fromEntries(
       stage.map.slots.map((slot) => [slot.id, null]),
     ),
+    hintFeedback: {},
   };
 }
 
@@ -629,15 +676,17 @@ function moveCard(
 }
 
 function createFallbackPaths(relations: LinkMapRelation[]): LinkMapPath[] {
-  return relations.flatMap((relation) =>
-    relation.slotIds.map((slotId, index) => ({
+  return relations.flatMap((relation) => {
+    const rx = relation.x ?? 50;
+    const ry = relation.y ?? 50;
+    return relation.slotIds.map((slotId, index) => ({
       id: `${relation.id}:${slotId}:${index}`,
       points: [
-        { x: relation.x - 7, y: relation.y },
-        { x: relation.x + 7, y: relation.y },
+        { x: rx - 7, y: ry },
+        { x: rx + 7, y: ry },
       ],
-    })),
-  );
+    }));
+  });
 }
 
 function getCardColor(card: LinkMapCard | undefined, index: number) {

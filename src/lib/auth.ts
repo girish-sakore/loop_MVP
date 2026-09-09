@@ -12,11 +12,11 @@ export const auth = betterAuth({
 
   baseURL: process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : "http://192.168.31.185:3000",
+    : "http://localhost:3000",
 
   trustedOrigins: [
     "http://localhost:3000",
-    "http://192.168.31.185:3000",
+    // "http://192.168.31.185:3000",
     ...(process.env.VERCEL_URL
       ? [`https://${process.env.VERCEL_URL}`]
       : []),

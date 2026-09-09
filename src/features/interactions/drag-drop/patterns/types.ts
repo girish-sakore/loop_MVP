@@ -17,6 +17,8 @@ export type PatternDefinition = {
   slotAnchors: Record<string, Point>;
   relationAnchors: Record<string, Point>;
   defaultPathStyle?: "orthogonal" | "direct" | "curved";
+  cardSize?: { width: number; height: number }; // px, overrides default 72x96
+  bubbleSize?: number; // px diameter, overrides default 78
 };
 
 export type ResolvedLinkMapSlot = LinkMapSlot & {

@@ -52,16 +52,18 @@ export type LinkMapSlot = {
   id: string;
   label: string;
   answerCardId: string;
-  x: number;
-  y: number;
+  x?: number;
+  y?: number;
+  anchor?: string;
 };
 
 export type LinkMapRelation = {
   id: string;
   label: string;
   slotIds: string[];
-  x: number;
-  y: number;
+  x?: number;
+  y?: number;
+  anchor?: string;
   color?: string;
 };
 
@@ -78,8 +80,13 @@ export type DragDropStage = StageBase & {
 
   prompt: string;
   introLabel?: string;
+  hintsAllowed?: number;
   map: {
     title: string;
+    pattern?: string;
+    pathStyle?: "orthogonal" | "direct" | "curved";
+    cardSize?: { width: number; height: number };
+    bubbleSize?: number;
     slots: LinkMapSlot[];
     relations: LinkMapRelation[];
     paths?: LinkMapPath[];

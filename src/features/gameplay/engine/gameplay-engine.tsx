@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { FeedbackModal } from "@/components/feedback/feedback-modal";
@@ -8,6 +8,67 @@ import { InteractionRenderer } from "@/features/gameplay/renderer/interaction-re
 import { GameplayShell } from "@/features/gameplay/shell/gameplay-shell";
 import { useGameplayStore } from "@/stores/gameplay-store";
 import type { Stage } from "@/types/gameplay";
+
+const DEFAULT_HINT_BUDGET = 3;
+
+function useSessionHints(editionId: string, nodeId: string, initialBudget = DEFAULT_HINT_BUDGET) {
+  const storageKey = `loop_hints_${editionId}_${nodeId}`;
+
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const handleStorage = (e: StorageEvent) => {
+        if (e.key === storageKey || e.key === null) {
+          onStoreChange();
+        }
+      };
+      window.addEventListener("storage", handleStorage);
+      const handleCustom = () => onStoreChange();
+      window.addEventListener("loop_hints_change", handleCustom);
+      return () => {
+        window.removeEventListener("storage", handleStorage);
+        window.removeEventListener("loop_hints_change", handleCustom);
+      };
+    },
+    [storageKey],
+  );
+
+  const getSnapshot = useCallback(() => {
+    try {
+      const val = localStorage.getItem(storageKey);
+      if (val !== null) {
+        const parsed = parseInt(val, 10);
+        if (!isNaN(parsed) && parsed >= 0 && parsed <= initialBudget) {
+          return parsed;
+        }
+      }
+    } catch {}
+    return initialBudget;
+  }, [storageKey, initialBudget]);
+
+  const getServerSnapshot = useCallback(() => initialBudget, [initialBudget]);
+
+  const hintsRemaining = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  const consumeHint = useCallback(() => {
+    try {
+      const val = localStorage.getItem(storageKey);
+      const current = val !== null ? parseInt(val, 10) : initialBudget;
+      const validCurrent = !isNaN(current) ? current : initialBudget;
+      const next = Math.max(validCurrent - 1, 0);
+      localStorage.setItem(storageKey, String(next));
+      window.dispatchEvent(new Event("loop_hints_change"));
+    } catch {}
+  }, [storageKey, initialBudget]);
+
+  const resetHints = useCallback(() => {
+    try {
+      localStorage.removeItem(storageKey);
+      window.dispatchEvent(new Event("loop_hints_change"));
+    } catch {}
+  }, [storageKey]);
+
+  return { hintsRemaining, consumeHint, resetHints };
+}
 
 interface GameplayEngineProps {
   editionId: string;
@@ -50,6 +111,7 @@ export function GameplayEngine({
   const gameplayKey = `${editionId}:${nodeId}:${initialStage}`;
   const introDismissed =
     introState?.key === gameplayKey ? introState.dismissed : false;
+  const { hintsRemaining, consumeHint, resetHints } = useSessionHints(editionId, nodeId);
 
   // initialize from DB progress, not always 0
   useEffect(() => {
@@ -88,12 +150,13 @@ export function GameplayEngine({
   }, [editionId, nodeId, currentStage, score, correctAnswers, totalAnswers]);
 
   const completeProgress = useCallback(async () => {
+    resetHints();
     await fetch("/api/progress/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
     }).catch(() => {});
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers]);
+  }, [editionId, nodeId, score, correctAnswers, totalAnswers, resetHints]);
 
   // Issue 2 fix — navigate in an effect, never during render
   useEffect(() => {
@@ -143,6 +206,10 @@ export function GameplayEngine({
     }
   }
 
+  const handleUseHint = useCallback(() => {
+    consumeHint();
+  }, [consumeHint]);
+
   // While navigating away, render nothing
   if ((completed || !stage) && hasNavigated.current) {
     return null;
@@ -175,6 +242,8 @@ export function GameplayEngine({
               onIntroComplete={() =>
                 setIntroState({ key: gameplayKey, dismissed: true })
               }
+              hintsRemaining={hintsRemaining}
+              onUseHint={handleUseHint}
             />
           </motion.div>
         </AnimatePresence>
