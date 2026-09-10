@@ -6,20 +6,28 @@ import { transporter } from "./nodemailer";
 
 import { prisma } from "@/lib/db";
 
+const localURL = "http://localhost:3000";
+const deploymentURL = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : undefined;
+const productionURL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : deploymentURL;
+const authBaseURL =
+  process.env.VERCEL_ENV === "production"
+    ? productionURL ?? localURL
+    : deploymentURL ?? localURL;
+
 // Use the pool-based prisma instance you already created
 export const auth = betterAuth({
   appName: "Loop",
 
-  baseURL: process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000",
+  baseURL: authBaseURL,
 
   trustedOrigins: [
-    "http://localhost:3000",
+    localURL,
     // "http://192.168.31.185:3000",
-    ...(process.env.VERCEL_URL
-      ? [`https://${process.env.VERCEL_URL}`]
-      : []),
+    ...(authBaseURL === localURL ? [] : [authBaseURL]),
   ],
 
   database: prismaAdapter(prisma, {
