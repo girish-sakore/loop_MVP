@@ -2,15 +2,18 @@ export type StageType =
   | "image-select"
   | "swipe"
   | "fill-blank"
+  | "timeline-builder"
   | "reorder"
+  | "four-way-swipe"
   | "drag-drop"
-  | "timeline-builder";
+  | "clue-connect";
 
 export type StageBase = {
   id: string;
   // Map metadata
   mapTitle: string;
   mapSubtitle: string;
+  type: StageType;
   question: string;
   attemptsAllowed: number;
   points: number;
@@ -28,10 +31,106 @@ export type ImageSelectStage = StageBase & {
 };
 
 export type PlaceholderStage = StageBase & {
-  type: "fill-blank" |"reorder" | "drag-drop";
+  type: "reorder";
 
   prompt: string;
+  items?: Array<{
+    id: string;
+    label: string;
+    order: number;
+  }>;
 };
+
+export type LinkMapCard = {
+  id: string;
+  title: string;
+  image?: string;
+  color?: string;
+};
+
+export type LinkMapSlot = {
+  id: string;
+  label: string;
+  answerCardId: string;
+  x?: number;
+  y?: number;
+  anchor?: string;
+};
+
+export type LinkMapRelation = {
+  id: string;
+  label: string;
+  slotIds: string[];
+  x?: number;
+  y?: number;
+  anchor?: string;
+  color?: string;
+};
+
+export type LinkMapPath = {
+  id: string;
+  points: Array<{
+    x: number;
+    y: number;
+  }>;
+};
+
+export type DragDropStage = StageBase & {
+  type: "drag-drop";
+
+  prompt: string;
+  introLabel?: string;
+  hintsAllowed?: number;
+  map: {
+    title: string;
+    pattern?: string;
+    pathStyle?: "orthogonal" | "direct" | "curved";
+    cardSize?: { width: number; height: number };
+    bubbleSize?: number;
+    slots: LinkMapSlot[];
+    relations: LinkMapRelation[];
+    paths?: LinkMapPath[];
+  };
+  cards: LinkMapCard[];
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
+
+export type ClueConnectClue = {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+};
+
+export type ClueConnectSlot = {
+  x: number;
+  y: number;
+};
+
+export type ClueConnectCase = {
+  id: string;
+  category: string;
+  answer: string;
+  icon?: string;
+  fact: string;
+  clueSlots: ClueConnectSlot[];
+  clues: ClueConnectClue[];
+};
+
+export type ClueConnectStage = StageBase & {
+  type: "clue-connect";
+  prompt: string;
+  introLabel?: string;
+  maxMistakes?: number;
+  cases: ClueConnectCase[];
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
+
 export type FillBlankStage = StageBase & {
   type: "fill-blank";
 
@@ -76,30 +175,54 @@ export type SwipeStage = StageBase & {
   };
 };
 
-export type TimelineBuilder = StageBase & TimelineBuilderStage;
+export type FourWaySwipeDirection = "up" | "down" | "left" | "right";
 
+export type FourWaySwipeStage = StageBase & {
+  type: "four-way-swipe";
+  category?: string;
+  prompt?: string;
+  answers: Record<FourWaySwipeDirection, {
+    label: string;
+    icon?: string;
+  }>;
+  correctDirection: FourWaySwipeDirection;
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
 export type TimelineEvent = {
   id: string;
   title: string;
   year: string;
   description: string;
   order: number;
+  image?: string;
 };
 
-export type TimelineBuilderStage = {
+export type TimelineBuilderStage = StageBase & {
   type: "timeline-builder";
+  estimatedTime?: string;
+  instructions: string;
   events: TimelineEvent[];
 };
 
-
-export type Stage = ImageSelectStage | SwipeStage | FillBlankStage | TimelineBuilder;
+export type Stage =
+  | ImageSelectStage
+  | PlaceholderStage
+  | SwipeStage
+  | FourWaySwipeStage
+  | FillBlankStage
+  | TimelineBuilderStage
+  | DragDropStage
+  | ClueConnectStage;
 
 export interface EditionNode {
   id: string;
-  type: StageType; // or your existing StageType union, e.g. "image-select" | "swipe" | "fill-blank" | "timeline-builder" | "reorder"
+  type: string; // or your existing StageType union, e.g. "image-select" | "swipe" | "fill-blank" | "timeline-builder" | "reorder"
   mapTitle: string;
   mapSubtitle: string;
-  subStages: Stage[]; // Stage = your existing per-question union type
+  subStages: Stage[]; // Stage = your existing per-question union type — unchanged
 }
 
 export type Edition = {
@@ -110,4 +233,9 @@ export type Edition = {
   nodes: EditionNode[];
   order: number;        // NEW — position on the map path
   theme: string;         // NEW — e.g. "salt-village", drives background image + node art
+  category?: string;
+  publishedAt?: string;
+  weekLabel?: string;
+  author?: string;
+  coverImage?: string;
 };

@@ -22,6 +22,10 @@ type Props = {
 };
 
 type Option = FillBlankStage["options"][number];
+type PlacementState = {
+  key: string;
+  placements: Record<string, Option | null>;
+};
 
 export function FillBlankInteraction({
   stage,
@@ -29,31 +33,74 @@ export function FillBlankInteraction({
   disabled,
   retryCount = 0,
 }: Props) {
-  // Track previous prop values to reset state synchronously during render
-  const [resetKey, setResetKey] = useState({ stage, retryCount });
-
-  // blankId -> option
-  const [placements, setPlacements] = useState<Record<string, Option | null>>(
-    () => Object.fromEntries(stage.blanks.map((blank) => [blank.id, null]))
+  const resetKey = `${retryCount}:${stage.id}:${stage.blanks
+    .map((blank) => blank.id)
+    .join("|")}`;
+  const [placementState, setPlacementState] = useState<PlacementState>(() =>
+    createPlacementState(resetKey, stage),
   );
-  const [activeOption, setActiveOption] = useState<Option | null>(null);
-
-  // Sync state during render when stage or retryCount changes (removes useEffect warning)
-  if (resetKey.stage !== stage || resetKey.retryCount !== retryCount) {
-    setResetKey({ stage, retryCount });
-    setPlacements(
-      Object.fromEntries(stage.blanks.map((blank) => [blank.id, null]))
-    );
-    setActiveOption(null);
-  }
-
+  const [activeOption, setActiveOption] =
+    useState<Option | null>(null);
+  const placements =
+    placementState.key === resetKey
+      ? placementState.placements
+      : createPlacementState(resetKey, stage).placements;
+  // console.log('stage.prompt:', stage.prompt);
+  // console.log('parsed parts:', parsePrompt(stage.prompt));
   const parts = useMemo(
     () => parsePrompt(stage.prompt),
     [stage.prompt]
   );
+  const allFilled = stage.blanks.every((blank) => Boolean(placements[blank.id]));
+
+  function handleCheckGuess() {
+    if (disabled || !allFilled) return;
+
+    const correct = stage.blanks.every((blank) => {
+      return placements[blank.id]?.word === blank.answer;
+    });
+
+    onAnswer({
+      correct,
+      feedback: correct
+        ? "Correct!"
+        : "Not quite. Try again!",
+    });
+  }
+
+  function handleRemoveWord(blankId: string) {
+    if (disabled) return;
+    setPlacementState((currentState) => {
+      const current =
+        currentState.key === resetKey
+          ? currentState.placements
+          : createPlacementState(resetKey, stage).placements;
+      return {
+        key: resetKey,
+        placements: { ...current, [blankId]: null },
+      };
+    });
+  }
+
+  function handleSelectWordFromBank(option: Option) {
+    if (disabled) return;
+    setPlacementState((currentState) => {
+      const current =
+        currentState.key === resetKey
+          ? currentState.placements
+          : createPlacementState(resetKey, stage).placements;
+      const firstEmptyBlank = stage.blanks.find((blank) => !current[blank.id]);
+      if (!firstEmptyBlank) return currentState;
+      return {
+        key: resetKey,
+        placements: { ...current, [firstEmptyBlank.id]: option },
+      };
+    });
+  }
 
   function handleDragStart(event: DragStartEvent) {
     if (disabled) return;
+
     const option = stage.options.find(
       (item) => item.id === event.active.id
     );
@@ -79,7 +126,11 @@ export function FillBlankInteraction({
 
     if (!option) return;
 
-    setPlacements((current) => {
+    setPlacementState((currentState) => {
+      const current =
+        currentState.key === resetKey
+          ? currentState.placements
+          : createPlacementState(resetKey, stage).placements;
       const next = { ...current };
 
       // Remove from old blank
@@ -92,32 +143,12 @@ export function FillBlankInteraction({
       // Place into new blank
       next[blankId] = option;
 
-      // Check if every blank has been filled
-      const complete = Object.values(next).every(Boolean);
-
-      if (!complete) {
-        return next;
-      }
-
-      const correct = stage.blanks.every((blank) => {
-        return next[blank.id]?.word === blank.answer;
-      });
-
-      setTimeout(() => {
-        onAnswer({
-          correct,
-          feedback: correct
-            ? "Correct!"
-            : "Not quite. Try again!",
-        });
-      }, 200);
-
-      return next;
+      return { key: resetKey, placements: next };
     });
   }
 
   return (
-    <div className="flex flex-col gap-8 pt-2">
+    <div className="flex flex-col gap-6 pt-2">
       {/* Header */}
       <div className="text-center">
         <span
@@ -161,6 +192,8 @@ export function FillBlankInteraction({
                 key={part.id}
                 id={part.id}
                 option={placements[part.id] ?? undefined}
+                disabled={disabled}
+                onRemove={() => handleRemoveWord(part.id)}
               />
             );
           })}
@@ -170,7 +203,22 @@ export function FillBlankInteraction({
         <WordBank
           options={stage.options}
           placedWords={placements}
+          disabled={disabled}
+          onSelectWord={handleSelectWordFromBank}
         />
+
+        {/* Guess Button */}
+        <div className="mx-auto w-full max-w-[366px] pt-1 pb-4">
+          <button
+            type="button"
+            onClick={handleCheckGuess}
+            disabled={disabled || !allFilled}
+            className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+          >
+            Guess
+          </button>
+        </div>
+
         <DragOverlay>
           {activeOption ? (
             <WordChip
@@ -182,4 +230,16 @@ export function FillBlankInteraction({
       </DndContext>
     </div>
   );
+}
+
+function createPlacementState(
+  key: string,
+  stage: FillBlankStage,
+): PlacementState {
+  return {
+    key,
+    placements: Object.fromEntries(
+      stage.blanks.map((blank) => [blank.id, null]),
+    ),
+  };
 }

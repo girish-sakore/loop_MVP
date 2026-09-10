@@ -5,6 +5,11 @@
   "estimatedTime": "5 mins",
   "order": 1,
   "theme": "salt-village",
+  "category": "History",
+  "publishedAt": "2026-09-02",
+  "weekLabel": "Wednesday, September 2",
+  "author": "Loop Studio",
+  "coverImage": "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=480&q=80",
   "nodes": [
     {
       "id": "node-1",
@@ -14,7 +19,7 @@
       "subStages": [
         {
           "id": "node-1-stage-1",
-          "question": "Who is Marie Curie?",
+          "question": "Who is Marie Curie? GFHGFHGFHGF",
           "attemptsAllowed": 3,
           "points": 100,
           "options": [
@@ -135,8 +140,7 @@
       "type": "fill-blank",
       "mapTitle": "Salt Mine",
       "mapSubtitle": "Learn a famous phrase",
-      "subStages": 
-      [
+      "subStages": [
         {
           "id": "node-3-stage-1",
           "question": "Fill in the missing words",
@@ -225,6 +229,9 @@
       "subStages": [
         {
           "id": "timeline-builder-001",
+          "question": "Put the events in chronological order",
+          "attemptsAllowed": 3,
+          "points": 100,
           "estimatedTime": "3 mins",
           "instructions": "Drag each historical event to its correct place on the timeline.",
           "events": [
@@ -260,6 +267,9 @@
         },
         {
           "id": "meme-timeline-001",
+          "question": "Put the memes in chronological order",
+          "attemptsAllowed": 3,
+          "points": 100,
           "estimatedTime": "3 mins",
           "instructions": "Drag each meme event to its correct place on the timeline.",
           "events": [
@@ -297,16 +307,768 @@
     },
     {
       "id": "node-5",
-      "type": "reorder",
-      "mapTitle": "Salt Mine",
-      "mapSubtitle": "Put it in order",
+      "type": "drag-drop",
+      "mapTitle": "Space Links",
+      "mapSubtitle": "Discover how everyday words connect to salt",
       "subStages": [
         {
-          "id": "node-5-stage-5",
-          "question": "Swipe interaction placeholder",
-          "attemptsAllowed": 2,
+          "id": "salt-foundation-stage",
+          "type": "drag-drop",
+          "mapTitle": "Start With Salt",
+          "question": "Discover the root behind these words",
+          "attemptsAllowed": 3,
+          "points": 50,
+          "prompt": "Find the word connected to the Latin root.",
+          "introLabel": "Discover 1",
+          "learning": {
+            "title": "Start with the root",
+            "message": "The Latin word 'sal' means salt. Remember this connection because it will help you discover other words.",
+            "takeaway": "SAL = LATIN FOR SALT"
+          },
+          "map": {
+            "title": "Step 1",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
+            "slots": [
+              {
+                "id": "slot-salt",
+                "label": "Latin word for salt",
+                "answerCardId": "salt",
+                "anchor": "r2c2"
+              }
+            ],
+            "relations": [
+              {
+                "id": "latin-sal",
+                "label": "Means salt in Latin",
+                "anchor": "r1c2",
+                "slotIds": [
+                  "slot-salt"
+                ],
+                "color": "#c7a0ff"
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "salt",
+              "title": "Salt",
+              "image": "/images/placeholders/salt.png",
+              "color": "#c7a0ff"
+            }
+          ],
+          "feedback": {
+            "correct": "Exactly. 'Sal' is the Latin word for salt.",
+            "incorrect": "Think about the Latin root 'sal'. What does it mean?"
+          }
+        },
+        {
+          "id": "salt-salad-stage",
+          "type": "drag-drop",
+          "mapTitle": "Follow the Root",
+          "question": "Discover how SAL became part of another everyday word",
+          "attemptsAllowed": 3,
+          "points": 60,
+          "prompt": "Use what you just learned to find the next connection.",
+          "introLabel": "Discover 2",
+          "learning": {
+            "title": "Follow SAL",
+            "message": "Romans ate vegetables and herbs that were salted. This helped give rise to the word 'salad'.",
+            "takeaway": "SAL → SALTED VEGETABLES → SALAD"
+          },
+          "map": {
+            "title": "Step 2",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
+            "slots": [
+              {
+                "id": "slot-salt",
+                "label": "Latin word for salt",
+                "answerCardId": "salt",
+                "anchor": "r1c1"
+              },
+              {
+                "id": "slot-salad",
+                "label": "Named for salted vegetables and herbs",
+                "answerCardId": "salad",
+                "anchor": "r3c1"
+              }
+            ],
+            "relations": [
+              {
+                "id": "latin-root",
+                "label": "Latin root meaning salt",
+                "anchor": "r1c2",
+                "slotIds": [
+                  "slot-salt",
+                  "slot-salad"
+                ],
+                "color": "#c7a0ff"
+              },
+              {
+                "id": "salted-vegetables",
+                "label": "Romans ate vegetables and herbs prepared with salt",
+                "anchor": "r2c2",
+                "slotIds": [
+                  "slot-salad"
+                ],
+                "color": "#66cfd3"
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "salt",
+              "title": "Sal",
+              "image": "/images/placeholders/salt.png",
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "salad",
+              "title": "Salad",
+              "image": "/images/placeholders/salad.png",
+              "color": "#66cfd3"
+            }
+          ],
+          "feedback": {
+            "correct": "Nice. You discovered the connection between sal and salad.",
+            "incorrect": "Remember: sal means salt, and salad is connected to salted vegetables."
+          }
+        },
+        {
+          "id": "salarium-salary-stage",
+          "type": "drag-drop",
+          "mapTitle": "From Salt to Salary",
+          "question": "Discover the Roman connection",
+          "attemptsAllowed": 3,
+          "points": 70,
+          "prompt": "Follow the clues from salt to a modern word.",
+          "introLabel": "Discover 3",
+          "learning": {
+            "title": "Salt became an allowance",
+            "message": "Roman soldiers received a special allowance associated with salt. This allowance was called 'salarium'. The modern word 'salary' developed from this word.",
+            "takeaway": "SAL → SALARIUM → SALARY"
+          },
+          "map": {
+            "title": "Step 3",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
+            "slots": [
+              {
+                "id": "slot-salt",
+                "label": "Latin word for salt",
+                "answerCardId": "salt",
+                "anchor": "r1c1"
+              },
+              {
+                "id": "slot-salary",
+                "label": "Modern word connected to a Roman allowance",
+                "answerCardId": "salary",
+                "anchor": "r3c1"
+              }
+            ],
+            "relations": [
+              {
+                "id": "root-sal",
+                "label": "Comes from the Latin word for salt",
+                "anchor": "r2c1",
+                "slotIds": [
+                  "slot-salt",
+                  "slot-salary"
+                ],
+                "color": "#c7a0ff"
+              },
+              {
+                "id": "roman-allowance",
+                "label": "Given as a special Roman soldier's allowance",
+                "anchor": "r2c2",
+                "slotIds": [
+                  "slot-salary"
+                ],
+                "color": "#86ce5d"
+              },
+              {
+                "id": "salarium",
+                "label": "This allowance was called 'salarium'",
+                "anchor": "r3c2",
+                "slotIds": [
+                  "slot-salary"
+                ],
+                "color": "#ffb1bd"
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "salt",
+              "title": "Sal",
+              "image": "/images/placeholders/salt.png",
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "salary",
+              "title": "Salary",
+              "image": "/images/placeholders/salary.png",
+              "color": "#ffb1bd"
+            }
+          ],
+          "feedback": {
+            "correct": "You found the chain: sal → salarium → salary.",
+            "incorrect": "Think about the Roman soldier's special allowance. What was it called?"
+          }
+        },
+        {
+          "id": "salsus-descendants-stage",
+          "type": "drag-drop",
+          "mapTitle": "The SALS Family",
+          "question": "Discover words connected to the idea of 'salted'",
+          "attemptsAllowed": 3,
           "points": 80,
-          "prompt": "Swipe variant is scaffolded for the renderer."
+          "prompt": "Find the words connected to the Latin idea of 'salted'.",
+          "introLabel": "Discover 4",
+          "learning": {
+            "title": "Meet SALSUS",
+            "message": "The Latin word 'salsus' meant salted. Several food-related words developed from this Latin root.",
+            "takeaway": "SALSUS = SALTED"
+          },
+          "map": {
+            "title": "Step 4",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
+            "slots": [
+              {
+                "id": "slot-salsa",
+                "label": "Spanish word meaning 'salted'",
+                "answerCardId": "salsa",
+                "anchor": "r1c1"
+              },
+              {
+                "id": "slot-sauce",
+                "label": "French word for a savory condiment",
+                "answerCardId": "sauce",
+                "anchor": "r3c1"
+              }
+            ],
+            "relations": [
+              {
+                "id": "salsus-root",
+                "label": "Ultimately comes from Latin 'salsus' meaning salted",
+                "anchor": "r1c2",
+                "slotIds": [
+                  "slot-salsa",
+                  "slot-sauce"
+                ],
+                "color": "#c7a0ff"
+              },
+              {
+                "id": "savory-flavoring",
+                "label": "Both are savory, salt-based flavorings",
+                "anchor": "r2c2",
+                "slotIds": [
+                  "slot-salsa",
+                  "slot-sauce"
+                ],
+                "color": "#ffb65c"
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "salsa",
+              "title": "Salsa",
+              "image": "/images/placeholders/salsa.png",
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "sauce",
+              "title": "Sauce",
+              "image": "/images/placeholders/sauce.png",
+              "color": "#ffb65c"
+            }
+          ],
+          "feedback": {
+            "correct": "Good. You discovered another branch of the salt-related word family.",
+            "incorrect": "Look for the words connected to the Latin idea of 'salted'."
+          }
+        },
+        {
+          "id": "salt-preservation-stage",
+          "type": "drag-drop",
+          "mapTitle": "Why Salt Preserves Food",
+          "question": "Discover how salt helps preserve food",
+          "attemptsAllowed": 3,
+          "points": 90,
+          "prompt": "Connect salt with the way it preserves food.",
+          "introLabel": "Discover 5",
+          "learning": {
+            "title": "Salt does more than add flavor",
+            "message": "Salt draws moisture out of food. Reducing moisture helps preserve food, which is why salt has long been used when curing meat.",
+            "takeaway": "SALT → DRAWS OUT MOISTURE → HELPS PRESERVE FOOD"
+          },
+          "map": {
+            "title": "Step 5",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
+            "slots": [
+              {
+                "id": "slot-salami",
+                "label": "Italian cured, salted meat",
+                "answerCardId": "salami",
+                "anchor": "r2c1"
+              },
+              {
+                "id": "slot-sausage",
+                "label": "Food preserved by curing with salt",
+                "answerCardId": "sausage",
+                "anchor": "r3c3"
+              }
+            ],
+            "relations": [
+              {
+                "id": "salt-preservative",
+                "label": "Made using salt as a preservative",
+                "anchor": "r2c2",
+                "slotIds": [
+                  "slot-salami",
+                  "slot-sausage"
+                ],
+                "color": "#86ce5d"
+              },
+              {
+                "id": "moisture",
+                "label": "Salt draws out moisture to help preserve food",
+                "anchor": "r3c2",
+                "slotIds": [
+                  "slot-salami",
+                  "slot-sausage"
+                ],
+                "color": "#fff27a"
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "salami",
+              "title": "Salami",
+              "image": "/images/placeholders/salami.png",
+              "color": "#86ce5d"
+            },
+            {
+              "id": "sausage",
+              "title": "Sausage",
+              "image": "/images/placeholders/sausage.png",
+              "color": "#fff27a"
+            }
+          ],
+          "feedback": {
+            "correct": "Exactly. Salt can help preserve food by drawing out moisture.",
+            "incorrect": "Think about what salt does to moisture in food."
+          }
+        },
+        {
+          "id": "full-salt-network-stage",
+          "type": "drag-drop",
+          "mapTitle": "Connect the Whole Story",
+          "question": "Connect everything you've discovered",
+          "attemptsAllowed": 3,
+          "points": 120,
+          "prompt": "Use everything you have learned to complete the final map.",
+          "introLabel": "Final Challenge",
+          "learning": {
+            "title": "Put the whole story together",
+            "message": "You've discovered how salt connects language, history, food, and preservation. Now connect the ideas yourself.",
+            "takeaway": "SAL → SALAD and SALARIUM → SALARY. SALSUS → SALSA and SAUCE. Salt also helps preserve food by drawing out moisture."
+          },
+          "map": {
+            "title": "Final Map",
+            "pattern": "lattice-3x4",
+            "pathStyle": "orthogonal",
+            "slots": [
+              {
+                "id": "slot-sal",
+                "label": "Latin word for salt",
+                "answerCardId": "sal",
+                "anchor": "r1c1"
+              },
+              {
+                "id": "slot-salsa",
+                "label": "Spanish word meaning 'salted'",
+                "answerCardId": "salsa",
+                "anchor": "r1c3"
+              },
+              {
+                "id": "slot-salad",
+                "label": "Named for salted vegetables",
+                "answerCardId": "salad",
+                "anchor": "r2c2"
+              },
+              {
+                "id": "slot-salary",
+                "label": "Modern word connected to a Roman allowance",
+                "answerCardId": "salary",
+                "anchor": "r3c1"
+              },
+              {
+                "id": "slot-salami",
+                "label": "Italian cured, salted meat",
+                "answerCardId": "salami",
+                "anchor": "r3c3"
+              },
+              {
+                "id": "slot-sausage",
+                "label": "Food preserved by curing with salt",
+                "answerCardId": "sausage",
+                "anchor": "r4c2"
+              }
+            ],
+            "relations": [
+              {
+                "id": "sal-root",
+                "label": "Latin root connected to salt",
+                "anchor": "r1c2",
+                "slotIds": [
+                  "slot-sal",
+                  "slot-salad",
+                  "slot-salary"
+                ],
+                "color": "#c7a0ff"
+              },
+              {
+                "id": "salsus-root",
+                "label": "Ultimately from Latin 'salsus' meaning salted",
+                "anchor": "r2c1",
+                "slotIds": [
+                  "slot-salsa"
+                ],
+                "color": "#66cfd3"
+              },
+              {
+                "id": "salad-connection",
+                "label": "Salted vegetables and herbs",
+                "anchor": "r2c3",
+                "slotIds": [
+                  "slot-salad"
+                ],
+                "color": "#ffb65c"
+              },
+              {
+                "id": "salary-connection",
+                "label": "Roman soldiers received a special allowance",
+                "anchor": "r3c2",
+                "slotIds": [
+                  "slot-salary"
+                ],
+                "color": "#86ce5d"
+              },
+              {
+                "id": "preservation",
+                "label": "Salt used as a preservative",
+                "anchor": "r4c1",
+                "slotIds": [
+                  "slot-salami",
+                  "slot-sausage"
+                ],
+                "color": "#ffb1bd"
+              },
+              {
+                "id": "moisture",
+                "label": "Salt draws out moisture to help preserve food",
+                "anchor": "r4c3",
+                "slotIds": [
+                  "slot-salami",
+                  "slot-sausage"
+                ],
+                "color": "#fff27a"
+              }
+            ]
+          },
+          "cards": [
+            {
+              "id": "sal",
+              "title": "Sal",
+              "image": "/images/placeholders/salt.png",
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "salsa",
+              "title": "Salsa",
+              "image": "/images/placeholders/salsa.png",
+              "color": "#66cfd3"
+            },
+            {
+              "id": "salad",
+              "title": "Salad",
+              "image": "/images/placeholders/salad.png",
+              "color": "#ffb65c"
+            },
+            {
+              "id": "salary",
+              "title": "Salary",
+              "image": "/images/placeholders/salary.png",
+              "color": "#86ce5d"
+            },
+            {
+              "id": "salami",
+              "title": "Salami",
+              "image": "/images/placeholders/salami.png",
+              "color": "#ffb1bd"
+            },
+            {
+              "id": "sausage",
+              "title": "Sausage",
+              "image": "/images/placeholders/sausage.png",
+              "color": "#fff27a"
+            }
+          ],
+          "feedback": {
+            "correct": "Brilliant. You connected the complete salt network.",
+            "incorrect": "You've learned the pieces. Now look for the relationships between salt, word origins, history, and preservation."
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-6",
+      "type": "reorder",
+      "mapTitle": "Salt Sequence",
+      "mapSubtitle": "Put the clues in order.",
+      "subStages": [
+        {
+          "id": "node-6-stage-1",
+          "question": "Arrange the salt story",
+          "attemptsAllowed": 3,
+          "points": 80,
+          "prompt": "Place these moments from earliest to latest.",
+          "items": [
+            {
+              "id": "salt-springs",
+              "label": "People boil brine from natural salt springs",
+              "order": 1
+            },
+            {
+              "id": "salt-trade",
+              "label": "Salt becomes a valuable trade good",
+              "order": 2
+            },
+            {
+              "id": "modern-table",
+              "label": "Iodized table salt becomes common at home",
+              "order": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-7",
+      "type": "four-way-swipe",
+      "mapTitle": "Salt Compass",
+      "mapSubtitle": "Swipe toward the answer.",
+      "subStages": [
+        {
+          "id": "node-7-stage-1",
+          "question": "Which mineral is common table salt mostly made from?",
+          "attemptsAllowed": 3,
+          "points": 80,
+          "category": "Science",
+          "prompt": "Choose the chemical pairing.",
+          "answers": {
+            "up": {
+              "label": "Iron + Oxygen"
+            },
+            "down": {
+              "label": "Sodium + Chlorine"
+            },
+            "left": {
+              "label": "Carbon + Hydrogen"
+            },
+            "right": {
+              "label": "Calcium + Carbon"
+            }
+          },
+          "correctDirection": "down",
+          "feedback": {
+            "correct": "Correct. Table salt is sodium chloride.",
+            "incorrect": "Not quite. Table salt is sodium chloride."
+          }
+        },
+        {
+          "id": "node-7-stage-2",
+          "question": "Which direction did salt caravans often cross in the Sahara?",
+          "attemptsAllowed": 3,
+          "points": 80,
+          "category": "History",
+          "prompt": "Follow the old trade routes.",
+          "answers": {
+            "up": {
+              "label": "North and south"
+            },
+            "down": {
+              "label": "Only east"
+            },
+            "left": {
+              "label": "Only west"
+            },
+            "right": {
+              "label": "Underwater"
+            }
+          },
+          "correctDirection": "up",
+          "feedback": {
+            "correct": "Correct. Salt moved along north-south desert trade routes.",
+            "incorrect": "Not this one. Think of desert routes connecting North and West Africa."
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-8",
+      "type": "clue-connect",
+      "mapTitle": "Clue Board",
+      "mapSubtitle": "Connect every true clue.",
+      "subStages": [
+        {
+          "id": "node-8-stage-1",
+          "question": "Connect the Clues",
+          "attemptsAllowed": 1,
+          "points": 150,
+          "prompt": "Drag a string from the mystery card to each clue that truly belongs. Tap clues if you prefer.",
+          "introLabel": "Clue Board",
+          "maxMistakes": 3,
+          "cases": [
+            {
+              "id": "marie-curie",
+              "category": "History",
+              "answer": "Marie Curie",
+              "fact": "She was the first person to win Nobel Prizes in two different scientific fields.",
+              "clueSlots": [
+                {
+                  "x": 18,
+                  "y": 19
+                },
+                {
+                  "x": 82,
+                  "y": 18
+                },
+                {
+                  "x": 15,
+                  "y": 50
+                },
+                {
+                  "x": 85,
+                  "y": 53
+                },
+                {
+                  "x": 23,
+                  "y": 83
+                },
+                {
+                  "x": 78,
+                  "y": 84
+                }
+              ],
+              "clues": [
+                {
+                  "id": "curie-polonium-radium",
+                  "text": "Discovered polonium and radium",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-two-nobels",
+                  "text": "Won Nobel Prizes in Physics and Chemistry",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-radioactivity",
+                  "text": "Pioneered radioactivity research",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-radiation",
+                  "text": "Illness was linked to radiation exposure",
+                  "isCorrect": true
+                },
+                {
+                  "id": "curie-light-bulb",
+                  "text": "Invented the light bulb",
+                  "isCorrect": false
+                },
+                {
+                  "id": "curie-first-space",
+                  "text": "Was the first woman in space",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "id": "japan",
+              "category": "Geography",
+              "answer": "Japan",
+              "fact": "Japan is an island nation in the Pacific with Tokyo as its capital.",
+              "clueSlots": [
+                {
+                  "x": 18,
+                  "y": 19
+                },
+                {
+                  "x": 82,
+                  "y": 18
+                },
+                {
+                  "x": 15,
+                  "y": 50
+                },
+                {
+                  "x": 85,
+                  "y": 53
+                },
+                {
+                  "x": 23,
+                  "y": 83
+                },
+                {
+                  "x": 78,
+                  "y": 84
+                }
+              ],
+              "clues": [
+                {
+                  "id": "japan-islands",
+                  "text": "Made up of thousands of Pacific islands",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-fuji",
+                  "text": "Home to Mount Fuji",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-tokyo",
+                  "text": "Its capital is Tokyo",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-yen",
+                  "text": "Uses the yen as currency",
+                  "isCorrect": true
+                },
+                {
+                  "id": "japan-china-border",
+                  "text": "Shares a land border with China",
+                  "isCorrect": false
+                },
+                {
+                  "id": "japan-seoul",
+                  "text": "Its capital is Seoul",
+                  "isCorrect": false
+                }
+              ]
+            }
+          ],
+          "feedback": {
+            "correct": "Every clue is connected. The board is solved.",
+            "incorrect": "Too many decoys were connected. Look for clues that all point to the same answer."
+          }
         }
       ]
     }

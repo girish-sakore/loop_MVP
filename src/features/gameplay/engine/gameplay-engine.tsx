@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { FeedbackModal } from "@/components/feedback/feedback-modal";
@@ -9,37 +9,89 @@ import { GameplayShell } from "@/features/gameplay/shell/gameplay-shell";
 import { useGameplayStore } from "@/stores/gameplay-store";
 import type { Stage } from "@/types/gameplay";
 
+const DEFAULT_HINT_BUDGET = 3;
+
+function useSessionHints(userId: string,editionId: string, nodeId: string, initialBudget = DEFAULT_HINT_BUDGET) {
+  const storageKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
+
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const handleStorage = (e: StorageEvent) => {
+        if (e.key === storageKey || e.key === null) {
+          onStoreChange();
+        }
+      };
+      window.addEventListener("storage", handleStorage);
+      const handleCustom = () => onStoreChange();
+      window.addEventListener("loop_hints_change", handleCustom);
+      return () => {
+        window.removeEventListener("storage", handleStorage);
+        window.removeEventListener("loop_hints_change", handleCustom);
+      };
+    },
+    [storageKey],
+  );
+
+  const getSnapshot = useCallback(() => {
+    try {
+      const val = localStorage.getItem(storageKey);
+      if (val !== null) {
+        const parsed = parseInt(val, 10);
+        if (!isNaN(parsed) && parsed >= 0 && parsed <= initialBudget) {
+          return parsed;
+        }
+      }
+    } catch { }
+    return initialBudget;
+  }, [storageKey, initialBudget]);
+
+  const getServerSnapshot = useCallback(() => initialBudget, [initialBudget]);
+
+  const hintsRemaining = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  const consumeHint = useCallback(() => {
+    try {
+      const val = localStorage.getItem(storageKey);
+      const current = val !== null ? parseInt(val, 10) : initialBudget;
+      const validCurrent = !isNaN(current) ? current : initialBudget;
+      const next = Math.max(validCurrent - 1, 0);
+      localStorage.setItem(storageKey, String(next));
+      window.dispatchEvent(new Event("loop_hints_change"));
+    } catch { }
+  }, [storageKey, initialBudget]);
+
+  const resetHints = useCallback(() => {
+    try {
+      localStorage.removeItem(storageKey);
+      window.dispatchEvent(new Event("loop_hints_change"));
+    } catch { }
+  }, [storageKey]);
+
+  return { hintsRemaining, consumeHint, resetHints };
+}
+
 interface GameplayEngineProps {
   editionId: string;
   nodeId: string;
   stages: Stage[];
   initialStage?: number;
+  userId: string;
 }
-
-type ProgressOverrides = {
-  currentStage?: number;
-  score?: number;
-  correctAnswers?: number;
-  totalAnswers?: number;
-};
-
 export function GameplayEngine({
-  editionId,
-  nodeId,
-  stages,
-  initialStage = 0,
-}: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0 }: GameplayEngineProps) {
   const router = useRouter();
-  const hasNavigated = useRef(false);
+  const hasNavigated = useRef(false); // guard navigation
+  const initializedKey = useRef<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [isReady, setIsReady] = useState(false);
-
   const [feedback, setFeedback] = useState<{
     open: boolean;
     correct: boolean;
     message: string;
   }>({ open: false, correct: false, message: "" });
-
+  const [introState, setIntroState] = useState<{
+    key: string;
+    dismissed: boolean;
+  } | null>(null);
   const {
     currentStage,
     attemptsRemaining,
@@ -54,79 +106,69 @@ export function GameplayEngine({
     reset,
   } = useGameplayStore();
 
-  // Reset store synchronously when nodeId, editionId, or stages change
-  const currentKey = `${editionId}-${nodeId}`;
-  const [loadedKey, setLoadedKey] = useState(currentKey);
-
-  if (loadedKey !== currentKey) {
-    setLoadedKey(currentKey);
-    setIsReady(false);
-    hasNavigated.current = false;
-    reset(); // Reset store completed flag and score
-    setStage(initialStage);
-    setAttempts(
-      stages[initialStage]?.attemptsAllowed ?? stages[0]?.attemptsAllowed ?? 3
-    );
-  }
-
   const stage = stages[currentStage];
   const totalAttempts = stage?.attemptsAllowed ?? 3;
-  const progress = useMemo(
-    () => (currentStage / stages.length) * 100,
-    [currentStage, stages.length]
-  );
+  const progress = useMemo(() => (currentStage / stages.length) * 100, [currentStage, stages.length]);
+  const gameplayKey = `${editionId}:${nodeId}:${initialStage}`;
+  const introDismissed =
+    introState?.key === gameplayKey ? introState.dismissed : false;
+  const { hintsRemaining, consumeHint, resetHints } = useSessionHints(userId,editionId, nodeId);
 
   // initialize from DB progress, not always 0
   useEffect(() => {
+    let cancelled = false;
+    initializedKey.current = null;
+    hasNavigated.current = false;
     reset();
     setStage(initialStage);
     setAttempts(stages[initialStage]?.attemptsAllowed ?? stages[0]?.attemptsAllowed ?? 0);
-  }, [stages, initialStage, reset, setStage, setAttempts]);
+    queueMicrotask(() => {
+      if (!cancelled) initializedKey.current = gameplayKey;
+    });
 
+    return () => {
+      cancelled = true;
+    };
+  }, [stages, initialStage, reset, setStage, setAttempts, gameplayKey]);
 
-  const syncProgress = useCallback(
-    async (overrides?: ProgressOverrides) => {
-      await fetch("/api/progress/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          editionId,
-          nodeId,
-          currentSubStage: overrides?.currentStage ?? currentStage,
-          score: overrides?.score ?? score,
-          correctAnswers: overrides?.correctAnswers ?? correctAnswers,
-          totalAnswers: overrides?.totalAnswers ?? totalAnswers,
-        }),
-      }).catch(() => {});
-    },
-    [editionId, nodeId, currentStage, score, correctAnswers, totalAnswers]
-  );
-
-  const completeProgress = useCallback(async () => {
-    await fetch("/api/progress/complete", {
+  const syncProgress = useCallback(async (overrides?: {
+    score?: number;
+    correctAnswers?: number;
+    totalAnswers?: number;
+    currentStage?: number;
+  }) => {
+    await fetch("/api/progress/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        editionId,
-        nodeId,
-        score,
-        correctAnswers,
-        totalAnswers,
+        editionId, nodeId,
+        currentSubStage: overrides?.currentStage ?? currentStage,
+        score: overrides?.score ?? score,
+        correctAnswers: overrides?.correctAnswers ?? correctAnswers,
+        totalAnswers: overrides?.totalAnswers ?? totalAnswers,
       }),
-    }).catch(() => {});
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers]);
+    }).catch(() => { });
+  }, [editionId, nodeId, currentStage, score, correctAnswers, totalAnswers]);
 
-  // Handle auto-redirection ONLY after engine is ready
+  const completeProgress = useCallback(async () => {
+    resetHints();
+    await fetch("/api/progress/complete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
+    }).catch(() => { });
+  }, [editionId, nodeId, score, correctAnswers, totalAnswers, resetHints]);
+
+  // Issue 2 fix — navigate in an effect, never during render
   useEffect(() => {
-    if (!isReady) return;
-
-    if ((completed || currentStage >= stages.length) && !hasNavigated.current) {
+    if (initializedKey.current !== gameplayKey) return;
+    if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
         router.push("/summary");
       });
     }
-  }, [isReady, completed, currentStage, stages.length, completeProgress, router]);
+  }, [gameplayKey, completed, stage, completeProgress, router]);
 
   function handleAnswer({
     correct,
@@ -137,15 +179,6 @@ export function GameplayEngine({
   }) {
     registerResult({ correct, points: stage?.points ?? 0 });
     setFeedback({ open: true, correct, message });
-  }
-
-  function handleAutoContinue() {
-    registerResult({ correct: true, points: stage?.points ?? 0 });
-    setFeedback({
-      open: true,
-      correct: true,
-      message: "Nice pace. Moving to the next challenge.",
-    });
   }
 
   function handleRetry() {
@@ -163,9 +196,7 @@ export function GameplayEngine({
     const nextIndex = currentStage + 1;
     const nextAttempts = stages[nextIndex]?.attemptsAllowed ?? 0;
     nextStage(stages.length, nextAttempts);
-    if (nextIndex < stages.length) {
-      syncProgress({ currentStage: nextIndex });
-    }
+    if (nextIndex < stages.length) syncProgress({ currentStage: nextIndex });
   }
 
   async function handleContinue() {
@@ -176,10 +207,16 @@ export function GameplayEngine({
     }
   }
 
-  // Prevent premature renders before initialization finishes
-  if (!isReady || !stage) {
+  const handleUseHint = useCallback(() => {
+    consumeHint();
+  }, [consumeHint]);
+
+  // While navigating away, render nothing
+  if ((completed || !stage) && hasNavigated.current) {
     return null;
   }
+
+  if (!stage) return null;
 
   return (
     <>
@@ -191,7 +228,7 @@ export function GameplayEngine({
       >
         <AnimatePresence mode="wait">
           <motion.div
-            key={`${stage.id}-${retryCount}`}
+            key={stage.id}
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
@@ -202,7 +239,12 @@ export function GameplayEngine({
               disabled={feedback.open}
               retryCount={retryCount}
               onAnswer={handleAnswer}
-              onAutoContinue={handleAutoContinue}
+              showIntro={!introDismissed}
+              onIntroComplete={() =>
+                setIntroState({ key: gameplayKey, dismissed: true })
+              }
+              hintsRemaining={hintsRemaining}
+              onUseHint={handleUseHint}
             />
           </motion.div>
         </AnimatePresence>

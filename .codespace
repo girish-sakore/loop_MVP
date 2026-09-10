@@ -1,0 +1,8 @@
+docker run --name pg_container \
+  -e POSTGRES_USER=myuser \
+  -e POSTGRES_PASSWORD=mypassword \
+  -e POSTGRES_DB=mydatabase \
+  -p 5432:5432 \
+  -d postgres:15
+
+# DATABASE_URL="postgresql://myuser:mypassword@localhost:5432/mydatabase"

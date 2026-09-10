@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    preloadEntriesOnStart: false,
-  },
+  allowedDevOrigins: [
+    "192.168.31.185",
+    "192.168.31.185:3000",
+  ],
   logging: {
     fetches: {
       fullUrl: false,

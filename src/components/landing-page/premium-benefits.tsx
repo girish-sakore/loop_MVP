@@ -1,46 +1,92 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleCheck,
+  faGamepad,
+  faGraduationCap,
+  faPeopleGroup,
+} from "@fortawesome/free-solid-svg-icons";
+
 export default function PremiumBenefits() {
   const benefits = [
     {
-      title: "Expert Coaching",
-      desc: "Guided sessions from behavioral scientists.",
-      icon: "verified",
+      title: "Daily themes",
+      desc: "A fresh subject every day, from potatoes to planets.",
+      icon: faCircleCheck,
+      color: "bg-[#D8F05A]",
     },
     {
-      title: "Unlimited Devices",
-      desc: "Sync seamlessly across your entire digital ecosystem.",
-      icon: "cloud_sync",
+      title: "Fast games",
+      desc: "Short rounds that fit between scrolls, breaks, and commutes.",
+      icon: faGamepad,
+      color: "bg-[#FFD84D]",
     },
     {
-      title: "Deep Analytics",
-      desc: "Visualize your growth with advanced heatmaps.",
-      icon: "insights",
+      title: "Expert-made",
+      desc: "Questions and facts written with care, taste, and context.",
+      icon: faGraduationCap,
+      color: "bg-[#50A9E8]",
     },
     {
-      title: "Private Circles",
-      desc: "Create exclusive habit groups with your family.",
-      icon: "group_work",
+      title: "Friend loops",
+      desc: "Invite people into themes and compare what everyone learned.",
+      icon: faPeopleGroup,
+      color: "bg-[#D8F05A]",
     },
   ];
 
   return (
-    <section className="py-24 px-6 max-w-7xl mx-auto">
-      <h2 className="text-4xl font-bold text-center mb-16">
-        Unlock your full potential
+    <section className="bg-[#B28AEF] px-5 py-20 md:px-8 md:py-28">
+      <h2 className="font-display mx-auto mb-16 max-w-4xl text-center text-5xl leading-[0.95] md:text-7xl">
+        Built for curiosity, not chores
       </h2>
-      <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <div className="mx-auto grid max-w-7xl gap-7 md:grid-cols-2">
         {benefits.map((benefit, index) => (
           <div
             key={index}
-            className="p-8 rounded-3xl border border-[#c6c7c0] hover:border-[#3a6757] transition-colors group"
+            className="
+              rounded-[2rem]
+              border-[3px]
+              border-black
+              bg-[#FFFDF7]
+              p-7
+              shadow-[8px_8px_0px_#000]
+              transition-all
+              duration-200
+              hover:-translate-y-1
+              hover:shadow-[10px_10px_0px_#000]
+            "
           >
-            <span
-              className="material-symbols-outlined text-[#3a6757] text-3xl mb-4 block"
-              data-icon={benefit.icon}
+            {/* Icon circle */}
+            <div
+              className={`
+                mb-6
+                flex
+                h-16
+                w-16
+                items-center
+                justify-center
+                rounded-full
+                border-[3px]
+                border-black
+                ${benefit.color}
+                shadow-[3px_3px_0px_#000]
+              `}
             >
-              {benefit.icon}
-            </span>
-            <h5 className="text-xl font-bold mb-2">{benefit.title}</h5>
-            <p className="text-[#454742] text-sm">{benefit.desc}</p>
+              {/* Inner icon with fixed dimensions */}
+              <FontAwesomeIcon
+                icon={benefit.icon}
+                className="h-8 w-8"
+              />
+            </div>
+
+            <h5 className="mb-3 text-3xl font-extrabold">
+              {benefit.title}
+            </h5>
+
+            <p className="text-lg leading-relaxed text-[#343238]">
+              {benefit.desc}
+            </p>
           </div>
         ))}
       </div>

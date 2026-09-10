@@ -2,31 +2,32 @@ import StepCard from './step-card';
 
 export default function ThreeStepJourney() {
   return (
-    <section className="bg-[#f7f3f2] py-24 px-6">
+    <section className="bg-[#4aa8ee] px-5 py-20 md:px-8 md:py-28">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl font-bold">A 3-step journey to mastery</h2>
-          <p className="text-lg text-[#454742]">Simple to start, impossible to quit.</p>
+        <div className="mx-auto mb-16 max-w-4xl loop-card px-6 py-10 text-center md:px-12">
+          <h2 className="font-display text-5xl leading-tight md:text-7xl">
+            Learn something new every day
+          </h2>
         </div>
-        <div className="grid md:grid-cols-1 gap-8">
+        <div className="grid gap-6 lg:grid-cols-3">
           <StepCard 
             number="1" 
-            title="Define Your Focus" 
-            desc="Choose from our curated habits or build your own. We focus on small, manageable actions."
-            color="bg-[#baead6]"
+            title="Pick a theme" 
+            desc="Start with a topic like food, nature, language, geography, or ancient history."
+            color="bg-[#f7d91f]"
           />
           <StepCard 
             number="2" 
-            title="Tactile Tracking" 
-            desc="Experience the satisfaction of checking off tasks with our squishy, physics-based interface."
-            color="bg-[#fafbff]"
+            title="Play the lesson" 
+            desc="Sort timelines, match clues, spot images, and make tiny discoveries as you go."
+            color="bg-[#f28ab2]"
             translate
           />
           <StepCard 
             number="3" 
-            title="Grow Your World" 
-            desc="Watch your digital garden bloom as you maintain your streaks. Every habit fuels your ecosystem."
-            color="bg-[#e4e2de]"
+            title="Remember it" 
+            desc="Each round teaches the answer in context, so the fact sticks after the game ends."
+            color="bg-[#85cb57]"
           />
         </div>
       </div>

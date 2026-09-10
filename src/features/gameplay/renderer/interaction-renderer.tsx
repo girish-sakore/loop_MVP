@@ -1,9 +1,11 @@
 import { FillBlankInteraction } from "@/features/interactions/fill-blank/fill-blank-interaction";
 import { ImageSelectInteraction } from "@/features/interactions/image-select/image-select-interaction";
-import { ComingSoonInteraction } from "@/features/interactions/shared/coming-soon-interaction";
+import { DragDropInteraction } from "@/features/interactions/drag-drop/drag-drop-interaction";
 import { SwipeInteractionPlaceholder } from "@/features/interactions/swipe/swipe-interaction";
+import { FourWaySwipeInteraction } from "@/features/interactions/four-way-swipe/four-way-swipe-interaction";
 import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeline-builder";
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
+import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
 
 import type { Stage } from "@/types/gameplay";
 
@@ -12,7 +14,10 @@ type InteractionRendererProps = {
   disabled?: boolean;
   retryCount?: number;
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
-  onAutoContinue: () => void;
+  showIntro: boolean;
+  onIntroComplete: () => void;
+  hintsRemaining?: number;
+  onUseHint?: () => void;
 };
 
 export function InteractionRenderer({
@@ -20,7 +25,10 @@ export function InteractionRenderer({
   disabled,
   retryCount = 0,
   onAnswer,
-  onAutoContinue,
+  showIntro,
+  onIntroComplete,
+  hintsRemaining,
+  onUseHint,
 }: InteractionRendererProps) {
   switch (stage.type) {
     case "image-select":
@@ -30,6 +38,8 @@ export function InteractionRenderer({
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
         />
       );
     case "swipe":
@@ -39,6 +49,19 @@ export function InteractionRenderer({
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
+    case "four-way-swipe":
+      return (
+        <FourWaySwipeInteraction
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
         />
       );
     case "fill-blank":
@@ -50,30 +73,47 @@ export function InteractionRenderer({
           retryCount={retryCount}
         />
       );
-    // case "drag-drop":
-    //   return (
-    //     <ComingSoonInteraction
-    //       type={stage.type}
-    //       prompt={stage.prompt}
-    //       onContinue={onAutoContinue}
-    //     />
-    //   );
-    case "timeline-builder":
+    case "drag-drop":
       return (
-        <TimelineBuilder
+        <DragDropInteraction
           stage={stage}
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+          hintsRemaining={hintsRemaining}
+          onUseHint={onUseHint}
         />
       );
-    // case "reorder":
-    //   return <ReorderInteractionPlaceholder
-    //             stage={stage}
-    //             onAnswer={onAnswer}
-    //             disabled={disabled}
-    //             retryCount={retryCount}
-    //           />;
+    case "clue-connect":
+      return (
+        <ClueConnectInteraction
+          key={`${stage.id}:${retryCount}`}
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
+    case "timeline-builder":
+      return <TimelineBuilder
+                stage={stage}
+                onAnswer={onAnswer}
+                disabled={disabled}
+                retryCount={retryCount}
+                showIntro={showIntro}
+                onIntroComplete={onIntroComplete}
+              />;
+    case "reorder":
+      return <ReorderInteractionPlaceholder
+                stage={stage}
+                onAnswer={onAnswer}
+                disabled={disabled}
+                retryCount={retryCount}
+              />;
     default:
       return null;
   }

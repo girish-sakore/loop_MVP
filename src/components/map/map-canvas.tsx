@@ -82,14 +82,16 @@ export function MapCanvas({ villages }: { villages: VillageMapData[] }) {
               position: "relative",
               width: "100%",
               height: "100vh",
-              backgroundSize: "cover",
+              backgroundSize: "96px 96px",
               backgroundPosition: "center",
               opacity: village.status === "locked" ? 0.5 : 1,
-              backgroundColor: village.status === "locked" ? "var(--on-tertiary-fixed)" : "var(--on-tertiary-fixed)", //#191a1b
+              backgroundColor: village.status === "locked" ? "#8bd15d" : "#4aa8ee",
+              backgroundImage:
+                "radial-gradient(circle at 18px 18px, rgba(255,253,247,0.45) 0 5px, transparent 6px), radial-gradient(circle at 72px 54px, rgba(247,217,31,0.55) 0 7px, transparent 8px)",
             }}
           >
 
-            {village.nodes.map((node, index) => {
+            {village.nodes.map((node) => {
               return (
                 <MapNodeMarker
                   key={node.nodeId}

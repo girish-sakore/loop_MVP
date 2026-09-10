@@ -13,6 +13,13 @@ export async function POST(req: Request) {
     }
 
     const userId = session.user.id;
+    const existing = await prisma.userNodeProgress.findUnique({
+      where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
+    });
+
+    if (existing?.status === "completed") {
+      return NextResponse.json({ ok: true, locked: true });
+    }
 
     await prisma.userNodeProgress.upsert({
       where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
