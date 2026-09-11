@@ -402,7 +402,6 @@ function TimelineIntro({
 }) {
   return (
     <div className="relative flex min-h-[calc(100dvh-86px)] flex-col items-center justify-end overflow-hidden bg-[#f6f2ec] px-5 pb-12 text-[#0b0b0f]">
-      <div className="absolute left-1/2 top-[18%] h-[340px] w-[3px] -translate-x-1/2 rounded-full bg-[#d8d0c3]" />
 
       <div className="relative mb-24 w-full">
         <TimelineFeatureCard event={event} />
