@@ -63,8 +63,8 @@ const gameTileConfig: Record<string, TileConfig> = {
   },
   "image-select": {
     key: "image-select",
-    title: "Knockout",
-    subtitle: "Choose a winner",
+    title: "Spot On",
+    subtitle: "Pick the right one",
     icon: "hotel_class",
     color: "#e97f42",
   },

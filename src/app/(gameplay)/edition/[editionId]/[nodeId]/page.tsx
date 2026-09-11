@@ -25,6 +25,7 @@ export default async function NodeGameplayPage({ params }: PageProps) {
 
   const node = edition.nodes[nodeIndex];
   const nodeType = node.type as StageType;
+  const isLastNode = nodeIndex === edition.nodes.length - 1;
   const stages = node.subStages.map((stage, index) => ({
     ...stage,
     type: nodeType,
@@ -44,6 +45,7 @@ export default async function NodeGameplayPage({ params }: PageProps) {
         stages={stages}
         initialStage={nodeProgress.currentSubStage}
         userId={session.user.id}
+        isLastNode={isLastNode}
       />
     </MobileContainer>
   );

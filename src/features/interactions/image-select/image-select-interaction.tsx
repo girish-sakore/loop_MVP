@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import type { ImageSelectStage } from "@/types/gameplay";
 
 type Props = {
@@ -11,7 +11,11 @@ type Props = {
   retryCount?: number; // increments on each retry → resets selection
   showIntro?: boolean;
   onIntroComplete?: () => void;
+  hintsRemaining?: number;
+  onUseHint?: () => void;
 };
+
+const DEFAULT_HINTS = 3;
 
 export function ImageSelectInteraction({
   stage,
@@ -20,16 +24,29 @@ export function ImageSelectInteraction({
   retryCount = 0,
   showIntro = true,
   onIntroComplete,
+  hintsRemaining = DEFAULT_HINTS,
+  onUseHint,
 }: Props) {
   const [selection, setSelection] = useState<{
     retryCount: number;
     optionId: string | null;
     submitted: boolean;
   }>({ retryCount, optionId: null, submitted: false });
+
+  // Tracks whether the hint has been spent for this attempt (keyed by retryCount,
+  // same pattern as `selection`), and whether the popup is currently open.
+  const [hintState, setHintState] = useState<{ retryCount: number; used: boolean }>({
+    retryCount,
+    used: false,
+  });
+  const [showHintPopup, setShowHintPopup] = useState(false);
+
   const selected =
     selection.retryCount === retryCount ? selection.optionId : null;
   const isSubmitted =
     selection.retryCount === retryCount ? selection.submitted : false;
+  const hintUsedThisAttempt =
+    hintState.retryCount === retryCount ? hintState.used : false;
 
   function startGame() {
     if (disabled) return;
@@ -50,6 +67,23 @@ export function ImageSelectInteraction({
     onAnswer({ correct: option.isCorrect, feedback: option.feedback });
   }
 
+  function openHint() {
+    if (disabled || isSubmitted || !stage.hint) return;
+
+    // Only spend a hint (and notify parent) the first time it's opened
+    // for this attempt. Re-opening the popup afterwards is free.
+    if (!hintUsedThisAttempt) {
+      if (hintsRemaining <= 0) return;
+      setHintState({ retryCount, used: true });
+      onUseHint?.();
+    }
+    setShowHintPopup(true);
+  }
+
+  function closeHint() {
+    setShowHintPopup(false);
+  }
+
   if (showIntro) {
     return (
       <ImageSelectIntro
@@ -59,6 +93,11 @@ export function ImageSelectInteraction({
       />
     );
   }
+
+  // A hint can be opened if: not submitted, stage has hint text, and either
+  // it's already been used this attempt (free reopen) or hints remain.
+  const canOpenHint =
+    !disabled && !isSubmitted && !!stage.hint && (hintUsedThisAttempt || hintsRemaining > 0);
 
   return (
     <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden bg-[#f6f2ec] px-4 pb-4 pt-4 text-[#0b0b0f]">
@@ -170,17 +209,81 @@ export function ImageSelectInteraction({
         })}
       </div>
 
-      <div className="mx-auto w-full max-w-[366px] pt-3 pb-1 shrink-0">
+      <div className="mx-auto flex w-full max-w-[366px] gap-2 pt-3 pb-1 shrink-0">
         <button
           type="button"
           onClick={handleCheckGuess}
           disabled={disabled || !selected || isSubmitted}
-          className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+          className="h-12 flex-1 rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
         >
           Guess
         </button>
+
+        {stage.hint ? (
+          <button
+            type="button"
+            onClick={openHint}
+            disabled={!canOpenHint}
+            className="relative h-12 w-[64px] rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-[15px] font-extrabold transition active:scale-95 disabled:opacity-50"
+          >
+            Hint
+            {hintsRemaining > 0 && !hintUsedThisAttempt && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#ffb1bd] text-[10px] font-extrabold">
+                {hintsRemaining}
+              </span>
+            )}
+          </button>
+        ) : null}
       </div>
+
+      <AnimatePresence>
+        {showHintPopup && stage.hint ? (
+          <HintPopup text={stage.hint} onClose={closeHint} />
+        ) : null}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function HintPopup({ text, onClose }: { text: string; onClose: () => void }) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="relative w-full max-w-[320px] rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] p-5 shadow-[0_8px_0_#0b0b0f]"
+        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+        transition={{ type: "spring", stiffness: 300, damping: 24 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#f7d91f]">
+            <span className="material-symbols-outlined text-[18px]">
+              lightbulb
+            </span>
+          </span>
+          <span className="text-[13px] font-extrabold uppercase tracking-widest text-[#343238]">
+            Hint
+          </span>
+        </div>
+        <p className="text-[15px] font-semibold leading-snug text-[#0b0b0f]">
+          {text}
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-4 h-10 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[14px] font-extrabold text-[#0b0b0f] shadow-[0_3px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-none"
+        >
+          Got it
+        </button>
+      </motion.div>
+    </motion.div>
   );
 }
 

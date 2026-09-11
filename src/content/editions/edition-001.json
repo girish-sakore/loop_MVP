@@ -19,9 +19,10 @@
       "subStages": [
         {
           "id": "node-1-stage-1",
-          "question": "Who is Marie Curie? GFHGFHGFHGF",
+          "question": "Who is Marie Curie?",
           "attemptsAllowed": 3,
           "points": 100,
+          "hint": "She shared a Nobel Prize with her husband and later won a second one alone — in a different science.",
           "options": [
             {
               "id": "opt-1",
@@ -51,6 +52,7 @@
           "question": "Who is Thomas Edison?",
           "attemptsAllowed": 3,
           "points": 100,
+          "hint": "She shared a Nobel Prize with her husband and later won a second one alone — in a different science.",
           "options": [
             {
               "id": "opt-1",

@@ -21,6 +21,7 @@ export type StageBase = {
 
 export type ImageSelectStage = StageBase & {
   type: "image-select";
+  hint?: string;
   options: Array<{
     id: string;
     label: string;

@@ -40,6 +40,9 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
+          hintsRemaining={hintsRemaining}
+          onUseHint={onUseHint}
+
         />
       );
     case "swipe":
@@ -100,20 +103,22 @@ export function InteractionRenderer({
       );
     case "timeline-builder":
       return <TimelineBuilder
-                stage={stage}
-                onAnswer={onAnswer}
-                disabled={disabled}
-                retryCount={retryCount}
-                showIntro={showIntro}
-                onIntroComplete={onIntroComplete}
-              />;
+        stage={stage}
+        onAnswer={onAnswer}
+        disabled={disabled}
+        retryCount={retryCount}
+        showIntro={showIntro}
+        onIntroComplete={onIntroComplete}
+        hintsRemaining={hintsRemaining}
+        onUseHint={onUseHint}
+      />;
     case "reorder":
       return <ReorderInteractionPlaceholder
-                stage={stage}
-                onAnswer={onAnswer}
-                disabled={disabled}
-                retryCount={retryCount}
-              />;
+        stage={stage}
+        onAnswer={onAnswer}
+        disabled={disabled}
+        retryCount={retryCount}
+      />;
     default:
       return null;
   }

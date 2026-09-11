@@ -25,6 +25,8 @@ type Props = {
   retryCount?: number;
   showIntro?: boolean;
   onIntroComplete?: () => void;
+  hintsRemaining?: number;
+  onUseHint?: () => void;
 };
 
 type TimelineState = {
@@ -33,7 +35,14 @@ type TimelineState = {
   placedEvents: TimelineEvent[];
   pendingEvents: TimelineEvent[];
   hasDropped: boolean;
+  hintFeedback: Record<string, boolean>; // eventId -> isCorrectlyOrdered
 };
+
+const DEFAULT_HINTS = 3;
+
+// Rotating accent palette pulled from the app's existing game-theme colors
+// so timeline cards read as part of the same visual family as the other games.
+const THEME_ACCENTS = ["#b7a4f0", "#f7d91f", "#8bc34a", "#ec7fae"];
 
 export function TimelineBuilder({
   stage,
@@ -42,6 +51,8 @@ export function TimelineBuilder({
   retryCount = 0,
   showIntro = true,
   onIntroComplete,
+  hintsRemaining = DEFAULT_HINTS,
+  onUseHint,
 }: Props) {
   const sortedEvents = useMemo(
     () => [...stage.events].sort((a, b) => a.order - b.order),
@@ -125,6 +136,7 @@ export function TimelineBuilder({
       placedEvents,
       pendingEvents: pending,
       hasDropped: true,
+      hintFeedback: {}, // manual placement clears any stale hint marks
     });
   }
 
@@ -140,7 +152,51 @@ export function TimelineBuilder({
       ...currentState,
       placedEvents,
       pendingEvents: pending,
+      hintFeedback: {},
     });
+  }
+
+  function applyHint() {
+    if (disabled || hintsRemaining <= 0 || currentState.submitted) return;
+
+    let placedEvents = currentState.placedEvents;
+    let pending = currentState.pendingEvents;
+
+    if (currentCandidate) {
+      // A card is still waiting to be placed — auto-place it in its
+      // correct chronological slot.
+      const insertIndex = currentState.placedEvents.findIndex(
+        (event) => event.order > currentCandidate.order,
+      );
+      const targetIndex =
+        insertIndex === -1 ? currentState.placedEvents.length : insertIndex;
+
+      placedEvents = [
+        ...currentState.placedEvents.slice(0, targetIndex),
+        currentCandidate,
+        ...currentState.placedEvents.slice(targetIndex),
+      ];
+      pending = currentState.pendingEvents.slice(1);
+    }
+    // If everything is already placed, we skip straight to marking
+    // feedback on what's there — nothing left to auto-place.
+
+    // Mark every currently placed card as correct/incorrect based on
+    // chronological ordering, same idea as drag-drop's per-slot feedback.
+    const feedback: Record<string, boolean> = {};
+    placedEvents.forEach((event, index, arr) => {
+      feedback[event.id] = index === 0 || event.order > arr[index - 1].order;
+    });
+
+    setTimelineState({
+      ...currentState,
+      placedEvents,
+      pendingEvents: pending,
+      hasDropped: true,
+      hintFeedback: feedback,
+    });
+
+    onUseHint?.();
   }
 
   function checkGuess() {
@@ -215,6 +271,7 @@ export function TimelineBuilder({
                       ? () => removePlacedEvent(event.id)
                       : undefined
                   }
+                  feedback={currentState.hintFeedback[event.id]}
                 />
               </div>
             ))}
@@ -232,9 +289,27 @@ export function TimelineBuilder({
         <div className="shrink-0 pl-[36px] pt-2">
           {currentCandidate ? (
             <>
-              <p className="mb-2 text-center text-[11px] font-extrabold uppercase tracking-widest text-[#343238]">
-                Place the event on the timeline
-              </p>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-[11px] font-extrabold uppercase tracking-widest text-[#343238]">
+                  Place the event on the timeline
+                </p>
+                <button
+                  type="button"
+                  onClick={applyHint}
+                  disabled={disabled || hintsRemaining <= 0}
+                  className="relative flex h-8 items-center gap-1 rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] px-3 text-[12px] font-extrabold transition active:scale-95 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-[15px]">
+                    lightbulb
+                  </span>
+                  Hint
+                  {hintsRemaining > 0 && (
+                    <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#ffb1bd] text-[10px] font-extrabold">
+                      {hintsRemaining}
+                    </span>
+                  )}
+                </button>
+              </div>
               <div className="mb-2 flex items-center gap-1.5 text-[12px] font-extrabold text-[#343238]">
                 <span className="material-symbols-outlined text-[15px]">
                   style
@@ -251,14 +326,29 @@ export function TimelineBuilder({
               <p className="text-center text-[12px] font-extrabold text-[#343238]">
                 All events placed. Ready to check?
               </p>
-              <button
-                type="button"
-                onClick={checkGuess}
-                disabled={disabled || currentState.submitted}
-                className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
-              >
-                Guess
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={checkGuess}
+                  disabled={disabled || currentState.submitted}
+                  className="h-12 flex-1 rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+                >
+                  Guess
+                </button>
+                <button
+                  type="button"
+                  onClick={applyHint}
+                  disabled={disabled || hintsRemaining <= 0 || currentState.submitted}
+                  className="relative h-12 w-[64px] rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-[15px] font-extrabold transition active:scale-95 disabled:opacity-50"
+                >
+                  Hint
+                  {hintsRemaining > 0 && (
+                    <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#ffb1bd] text-[10px] font-extrabold">
+                      {hintsRemaining}
+                    </span>
+                  )}
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -295,6 +385,7 @@ function createInitialState(
     placedEvents: starterEvent ? [starterEvent] : [],
     pendingEvents,
     hasDropped: false,
+    hintFeedback: {},
   };
 }
 
@@ -340,15 +431,18 @@ function TimelineIntro({
 
 function TimelineFeatureCard({ event }: { event: TimelineEvent }) {
   return (
-    <div className="mx-auto grid min-h-[210px] w-full max-w-[380px] grid-cols-[116px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_8px_0_rgba(11,11,15,0.16)]">
-      <EventImage event={event} className="h-full min-h-[210px] border-r-[3px] border-[#0b0b0f]" />
-      <div className="relative min-w-0 px-3 py-3 pr-9">
-        <span className="mb-2 inline-block max-w-full rounded-[4px] border border-[#0b0b0f] bg-[#f5f0e9] px-2 py-1 text-[14px] font-extrabold leading-none">
+    <div className="mx-auto grid min-h-[240px] w-full max-w-[380px] grid-cols-[132px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_8px_0_rgba(11,11,15,0.16)]">
+      <EventImage event={event} className="h-full min-h-[240px] border-r-[3px] border-[#0b0b0f]" />
+      <div className="relative min-w-0 px-4 py-4 pr-10">
+        <span
+          className="mb-2 inline-block max-w-full rounded-[4px] border-2 border-[#0b0b0f] px-2.5 py-1 text-[15px] font-extrabold leading-none"
+          style={{ backgroundColor: THEME_ACCENTS[0] }}
+        >
           {event.year}
         </span>
-        <h2 className="text-[17px] font-extrabold leading-tight">{event.title}</h2>
-        <p className="mt-1 text-[16px] leading-[1.18] text-[#343238]">{event.description}</p>
-        <span className="material-symbols-outlined absolute right-2 top-2 rounded-full bg-[#fffdf7] text-[22px] text-[#85cb57]">
+        <h2 className="text-[19px] font-extrabold leading-tight">{event.title}</h2>
+        <p className="mt-1.5 text-[16px] leading-[1.2] text-[#343238]">{event.description}</p>
+        <span className="material-symbols-outlined absolute right-2.5 top-2.5 rounded-full bg-[#fffdf7] text-[24px] text-[#85cb57]">
           check_circle
         </span>
       </div>
@@ -382,7 +476,7 @@ function TimelineDropZone({
       onClick={() => onChoose(index)}
       className={`relative flex w-full items-center justify-center overflow-hidden rounded-md border px-2 text-center font-bold leading-snug transition-[height,margin,background-color,border-color,box-shadow] duration-150 ${
         isOver
-          ? "my-2 h-[48px] border-[3px] border-[#0b0b0f] bg-[#d7e96c] shadow-[0_4px_0_rgba(11,11,15,0.12)]"
+          ? "my-2 h-[56px] border-[3px] border-[#0b0b0f] bg-[#d7e96c] shadow-[0_4px_0_rgba(11,11,15,0.12)]"
         : isDragging
             ? "my-0 h-6 border-0 bg-transparent"
             : `${isEdge ? "h-4" : "h-3"} my-0 border-0 bg-transparent`
@@ -401,13 +495,15 @@ function TimelineRow({
   index,
   onOpen,
   onRemove,
+  feedback,
 }: {
   event: TimelineEvent;
   index: number;
   onOpen: () => void;
   onRemove?: () => void;
+  feedback?: boolean;
 }) {
-  const colors = ["bg-[#fffdf7]", "bg-[#f5f0e9]", "bg-[#eadfd1]", "bg-[#fffdf7]"];
+  const accent = THEME_ACCENTS[index % THEME_ACCENTS.length];
 
   return (
     <div
@@ -420,17 +516,33 @@ function TimelineRow({
           onOpen();
         }
       }}
-      className={`${colors[index % colors.length]} relative grid min-h-[70px] w-full min-w-0 cursor-pointer grid-cols-[70px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] text-left transition active:scale-[0.99]`}
+      className="relative flex min-h-[96px] w-full min-w-0 cursor-pointer overflow-hidden rounded-md border-[3px] border-[#0b0b0f] shadow-[0_5px_0_rgba(11,11,15,0.16)] transition active:scale-[0.99]"
     >
-      <EventImage event={event} className="h-full border-r-[3px] border-[#0b0b0f]" />
-      <div className="min-w-0 px-3 py-2 pr-8">
-        <span className="mb-1 inline-block max-w-full rounded-[4px] border border-[#0b0b0f] bg-[#fffdf7] px-1.5 py-0.5 text-[13px] font-extrabold leading-none">
-          {event.year}
-        </span>
-        <span className="block text-[14px] font-extrabold leading-tight">
-          {event.title}
-        </span>
+      <div className="flex h-auto w-[96px] shrink-0 items-center justify-center border-r-[3px] border-[#0b0b0f] bg-[#f5f0e9]">
+        <EventImage event={event} className="h-full w-full" />
       </div>
+      <div
+        className="flex min-w-0 flex-1 items-center px-4 py-3 pr-10"
+        style={{ backgroundColor: accent }}
+      >
+        <div className="min-w-0">
+          <span className="mb-1.5 inline-block max-w-full rounded-[4px] border-2 border-[#0b0b0f] bg-[#fffdf7] px-2.5 py-1 text-[14px] font-extrabold leading-none text-[#0b0b0f]">
+            {event.year}
+          </span>
+          <span className="block text-[17px] font-extrabold leading-tight text-[#0b0b0f]">
+            {event.title}
+          </span>
+        </div>
+      </div>
+      {feedback !== undefined ? (
+        <span
+          className={`absolute left-[106px] top-3 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0b0b0f] text-[13px] font-extrabold ${
+            feedback ? "bg-[#85cb57]" : "bg-[#ffb1bd]"
+          }`}
+        >
+          {feedback ? "✓" : "✕"}
+        </span>
+      ) : null}
       {onRemove ? (
         <button
           type="button"
@@ -438,14 +550,14 @@ function TimelineRow({
             e.stopPropagation();
             onRemove();
           }}
-          className="absolute right-1.5 top-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] text-[#0b0b0f] transition hover:bg-[#ffb1bd] active:scale-95"
+          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] text-[#0b0b0f] transition hover:bg-[#ffb1bd] active:scale-95"
           aria-label="Remove event from timeline"
         >
-          <span className="material-symbols-outlined text-[16px]">close</span>
+          <span className="material-symbols-outlined text-[17px]">close</span>
         </button>
       ) : (
-        <span className="material-symbols-outlined absolute right-1.5 top-2 rounded-full bg-[#fffdf7] text-[22px] text-[#85cb57]">
-          check_circle
+        <span className="material-symbols-outlined absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] text-[18px] text-[#0b0b0f]">
+          check
         </span>
       )}
     </div>
@@ -510,4 +622,3 @@ function EventInfoModal({
     </div>
   );
 }
-

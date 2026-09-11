@@ -11,8 +11,12 @@ import type { Stage } from "@/types/gameplay";
 
 const DEFAULT_HINT_BUDGET = 3;
 
-function useSessionHints(userId: string,editionId: string, nodeId: string, initialBudget = DEFAULT_HINT_BUDGET) {
-  const storageKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
+// Hints are now scoped to (userId, editionId) only — NOT nodeId — so the
+// same pool is shared across every game/node inside an edition. The count
+// persists across node navigation via localStorage and only clears when
+// resetHints() is explicitly called (see isLastNode handling below).
+function useSessionHints(userId: string, editionId: string, initialBudget = DEFAULT_HINT_BUDGET) {
+  const storageKey = `loop_hints_${userId}_${editionId}`;
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
@@ -76,9 +80,13 @@ interface GameplayEngineProps {
   stages: Stage[];
   initialStage?: number;
   userId: string;
+  // Pass true when this node is the last node in the edition, so the
+  // shared hint pool clears once the whole edition is finished rather
+  // than after every individual node.
+  isLastNode?: boolean;
 }
 export function GameplayEngine({
-  editionId, nodeId, userId, stages, initialStage = 0 }: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0, isLastNode = false }: GameplayEngineProps) {
   const router = useRouter();
   const hasNavigated = useRef(false); // guard navigation
   const initializedKey = useRef<string | null>(null);
@@ -112,7 +120,7 @@ export function GameplayEngine({
   const gameplayKey = `${editionId}:${nodeId}:${initialStage}`;
   const introDismissed =
     introState?.key === gameplayKey ? introState.dismissed : false;
-  const { hintsRemaining, consumeHint, resetHints } = useSessionHints(userId,editionId, nodeId);
+  const { hintsRemaining, consumeHint, resetHints } = useSessionHints(userId, editionId);
 
   // initialize from DB progress, not always 0
   useEffect(() => {
@@ -151,13 +159,15 @@ export function GameplayEngine({
   }, [editionId, nodeId, currentStage, score, correctAnswers, totalAnswers]);
 
   const completeProgress = useCallback(async () => {
-    resetHints();
+    // Only clear the shared hint pool once the whole edition is done —
+    // not on every individual node's completion.
+    if (isLastNode) resetHints();
     await fetch("/api/progress/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
     }).catch(() => { });
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers, resetHints]);
+  }, [editionId, nodeId, score, correctAnswers, totalAnswers, resetHints, isLastNode]);
 
   // Issue 2 fix — navigate in an effect, never during render
   useEffect(() => {

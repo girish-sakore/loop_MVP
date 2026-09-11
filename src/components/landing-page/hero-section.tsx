@@ -35,17 +35,7 @@ export default function HeroSection() {
 
         <div className="grid items-end gap-12 lg:grid-cols-[1fr_0.9fr]">
           <div className="space-y-8">
-            <h1
-              className="
-    max-w-4xl
-    font-semibold
-    text-[3.5rem]
-    leading-[0.9]
-    break-words
-    md:text-[7.2rem]
-    lg:text-[8.4rem]
-  "
-            >
+            <h1 className="max-w-4xl font-semibold text-[3.5rem] leading-[0.9] break-words md:text-[6rem] lg:text-[6.5rem]">
               Replace doomscrolling with learning
             </h1>
             <div className="flex flex-wrap items-center gap-4">
