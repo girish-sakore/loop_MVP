@@ -403,11 +403,11 @@ function TimelineIntro({
   return (
     <div className="relative flex min-h-[calc(100dvh-86px)] flex-col items-center justify-end overflow-hidden bg-[#f6f2ec] px-5 pb-12 text-[#0b0b0f]">
 
-      <div className="relative mb-24 w-full">
+      <div className="relative mb-20 w-full mt-5">
         <TimelineFeatureCard event={event} />
       </div>
 
-      <div className="mb-36 text-center">
+      <div className="mb-30 text-center">
         <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-[#5fa43a]">
           Timeline
         </p>
