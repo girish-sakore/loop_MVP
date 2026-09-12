@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import BottomNav from "@/components/layout/bottom-nav";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { getAuthSession } from "@/lib/auth-session";
-import { getEditionById } from "@/features/editions/edition-content";
+import { getAllEditions, getLatestEdition } from "@/features/editions/edition-content";
 import { buildVillageMapData } from "@/features/map/map-content";
 import type { MapNode, VillageMapData } from "@/features/map/types";
 import type { EditionNode } from "@/types/gameplay";
@@ -76,6 +76,14 @@ const gameTileConfig: Record<string, TileConfig> = {
     color: "#b996f6",
     badge: "New",
   },
+  knockout: {
+    key: "knockout",
+    title: "Knockout",
+    subtitle: "Pick the winner",
+    icon: "sports_mma",
+    color: "#85cb57",
+    badge: "New",
+  },
 };
 
 const gameOrder = [
@@ -86,21 +94,26 @@ const gameOrder = [
   "drag-drop",
   "image-select",
   "fill-blank",
+  "knockout",
 ];
-
-export default async function MapPage() {
+export default async function MapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ edition?: string }>;
+}) {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const villages = await buildVillageMapData(session.user.id);
-  const currentVillage =
-    villages.find((village) =>
-      village.nodes.some((node) => node.status === "current"),
-    ) ?? villages[0];
-  const currentEdition = currentVillage
-    ? getEditionById(currentVillage.editionId)
+  const { edition: requestedEditionId } = await searchParams;
+  const editions = getAllEditions();
+  const requestedEdition = requestedEditionId
+    ? editions.find((e) => e.id === requestedEditionId)
     : null;
-  const gameTiles = buildGameTiles(currentVillage, currentEdition?.nodes ?? []);
+  const selectedEdition = requestedEdition ?? getLatestEdition();
+
+  const villages = await buildVillageMapData(session.user.id);
+  const currentVillage = villages.find((village) => village.editionId === selectedEdition.id);
+  const gameTiles = buildGameTiles(currentVillage, selectedEdition.nodes);
 
   return (
     <MobileContainer>

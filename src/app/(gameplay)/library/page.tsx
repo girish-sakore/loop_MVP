@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 
 import BottomNav from "@/components/layout/bottom-nav";
 import { MobileContainer } from "@/components/layout/mobile-container";
-import { getAllEditions } from "@/features/editions/edition-content";
-import { getAuthSession } from "@/lib/auth-session";
+import { getAllEditions, getLatestEdition } from "@/features/editions/edition-content"; import { getAuthSession } from "@/lib/auth-session";
 import type { Edition } from "@/types/gameplay";
 
 const topicColors = ["#6ccdd2", "#f2b84b", "#df755b", "#b9d969", "#d994d7", "#4aa8ee"];
@@ -13,7 +12,8 @@ export default async function LibraryPage() {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const editions = getAllEditions();
+  const latestEdition = getLatestEdition();
+  const editions = getAllEditions().filter((edition) => edition.id !== latestEdition.id);
   const pastThemes = editions.slice().sort(compareByDateDesc);
   const recommended = editions.slice().sort((a, b) => a.order - b.order).slice(0, 6);
   const categories = buildCategories(editions);
@@ -131,7 +131,7 @@ function LibrarySection({
 function EditionCard({ edition, compact = false }: { edition: Edition; compact?: boolean }) {
   return (
     <Link
-      href={firstNodeHref(edition)}
+      href={`/map?edition=${edition.id}`}
       className="flex min-w-[354px] items-center gap-3 rounded-[14px] border border-[#d8d0c3] bg-[#fffdf7] p-3 transition active:scale-[0.98]"
     >
       <span

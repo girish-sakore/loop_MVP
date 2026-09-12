@@ -28,9 +28,12 @@ function loadEditions(): Edition[] {
 export function getEditionById(editionId: string): Edition | null {
   return loadEditions().find((edition) => edition.id === editionId) ?? null;
 }
-
 export function getFeaturedEdition(): Edition {
   return loadEditions()[0];
+}
+export function getLatestEdition(): Edition {
+  const editions = loadEditions(); // ascending by order
+  return editions[editions.length - 1];
 }
 
 export function getAllEditions(): Edition[] {

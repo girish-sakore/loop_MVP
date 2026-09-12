@@ -9,6 +9,12 @@ export const villageLayouts: Record<string, Array<{ x: string; y: string }>> = {
     { x: "60%", y: "16%" },
     { x: "48%", y: "9%" },
   ],
+  "salt-senses": [
+    { x: "50%", y: "78%" },
+    { x: "38%", y: "60%" },
+    { x: "62%", y: "45%" },
+    { x: "50%", y: "26%" },
+  ],
   // [
   //   { x: "48%", y: "94%" }, // stage 0 — gate, bottom (START)
   //   { x: "62%", y: "74%" },

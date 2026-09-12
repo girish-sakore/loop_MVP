@@ -6,6 +6,7 @@ import { FourWaySwipeInteraction } from "@/features/interactions/four-way-swipe/
 import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeline-builder";
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
 import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
+import { KnockoutInteraction } from "@/features/interactions/knockout/knockout-interaction";
 
 import type { Stage } from "@/types/gameplay";
 
@@ -112,6 +113,17 @@ export function InteractionRenderer({
         hintsRemaining={hintsRemaining}
         onUseHint={onUseHint}
       />;
+    case "knockout":
+      return (
+        <KnockoutInteraction
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
     case "reorder":
       return <ReorderInteractionPlaceholder
         stage={stage}

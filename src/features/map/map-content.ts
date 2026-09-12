@@ -6,22 +6,19 @@ import type { VillageMapData, MapNodeStatus } from "./types";
 export async function buildVillageMapData(userId: string): Promise<VillageMapData[]> {
   const editions = getAllEditions();
   const villages: VillageMapData[] = [];
-  let previousCompleted = true;
 
   for (const edition of editions) {
-    const nodeProgressMap = await getAllUserNodeProgress(userId, edition.id); // 1 query per edition, not per node
+    const nodeProgressMap = await getAllUserNodeProgress(userId, edition.id);
 
     const completedNodes = edition.nodes.filter((node) => {
       return nodeProgressMap.get(node.id)?.status === "completed";
     }).length;
     const editionCompleted = completedNodes >= edition.nodes.length;
-    const villageStatus = !previousCompleted ? "locked" : editionCompleted ? "completed" : "unlocked";
+    const villageStatus = editionCompleted ? "completed" : "unlocked";
 
     const nodes = edition.nodes.map((node, index) => {
-      let status: MapNodeStatus;
-      if (villageStatus === "locked") status = "locked";
-      else if (nodeProgressMap.get(node.id)?.status === "completed") status = "completed";
-      else status = "current";
+      const status: MapNodeStatus =
+        nodeProgressMap.get(node.id)?.status === "completed" ? "completed" : "current";
 
       const { x, y } = getNodePosition(edition.theme, index);
       const nodeProgress = nodeProgressMap.get(node.id);
@@ -41,7 +38,6 @@ export async function buildVillageMapData(userId: string): Promise<VillageMapDat
     });
 
     villages.push({ editionId: edition.id, title: edition.title, theme: edition.theme, order: edition.order, status: villageStatus, nodes });
-    previousCompleted = editionCompleted;
   }
 
   return villages;

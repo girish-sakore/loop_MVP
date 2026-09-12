@@ -6,7 +6,8 @@ export type StageType =
   | "reorder"
   | "four-way-swipe"
   | "drag-drop"
-  | "clue-connect";
+  | "clue-connect"
+  | "knockout";
 
 export type StageBase = {
   id: string;
@@ -132,6 +133,29 @@ export type ClueConnectStage = StageBase & {
   };
 };
 
+export type KnockoutCard = {
+  id: string;
+  label: string;
+  value: number;
+  unit: string;
+  icon: string;
+};
+
+export type KnockoutStage = StageBase & {
+  type: "knockout";
+  prompt?: string;
+  introLabel?: string;
+  timeLimit?: number;
+  instructions?: string;
+  cards: KnockoutCard[];
+  feedback: {
+    correct: string;
+    incorrect: string;
+    timeout: string;
+    complete: string;
+  };
+};
+
 export type FillBlankStage = StageBase & {
   type: "fill-blank";
 
@@ -216,7 +240,8 @@ export type Stage =
   | FillBlankStage
   | TimelineBuilderStage
   | DragDropStage
-  | ClueConnectStage;
+  | ClueConnectStage
+  | KnockoutStage;
 
 export interface EditionNode {
   id: string;
