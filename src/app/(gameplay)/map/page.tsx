@@ -76,6 +76,13 @@ const gameTileConfig: Record<string, TileConfig> = {
     color: "#b996f6",
     badge: "New",
   },
+  "color-match": {
+    key: "color-match",
+    title: "Palette",
+    subtitle: "Match the color",
+    icon: "palette",
+    color: "#f2b84b",
+  },
 };
 
 const gameOrder = [
@@ -86,6 +93,7 @@ const gameOrder = [
   "drag-drop",
   "image-select",
   "fill-blank",
+  "color-match",
 ];
 
 export default async function MapPage() {

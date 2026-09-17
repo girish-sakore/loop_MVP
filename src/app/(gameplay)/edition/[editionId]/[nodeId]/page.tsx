@@ -43,6 +43,20 @@ export default async function NodeGameplayPage({ params }: PageProps) {
         nodeId={node.id}
         stages={stages}
         initialStage={nodeProgress.currentSubStage}
+        initialProgress={
+          nodeProgress.status === "in_progress"
+            ? {
+                currentStage: nodeProgress.currentSubStage,
+                attemptsRemaining:
+                  nodeProgress.attemptsRemaining ??
+                  (stages[nodeProgress.currentSubStage]?.attemptsAllowed ?? 0),
+                stagePassed: nodeProgress.stagePassed,
+                score: nodeProgress.score,
+                correctAnswers: nodeProgress.correctAnswers,
+                totalAnswers: nodeProgress.totalAnswers,
+              }
+            : undefined
+        }
         userId={session.user.id}
       />
     </MobileContainer>
