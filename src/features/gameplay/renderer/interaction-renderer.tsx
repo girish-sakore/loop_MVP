@@ -7,6 +7,11 @@ import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeli
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
 import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
 import { ColorMatchInteraction } from "@/features/interactions/color-match/color-match-interaction";
+import dynamic from "next/dynamic";
+
+const BorderHopInteraction = dynamic(() =>
+  import("@/features/interactions/border-hop/border-hop-interaction").then((module) => module.BorderHopInteraction),
+);
 
 import type { Stage } from "@/types/gameplay";
 
@@ -14,6 +19,7 @@ type InteractionRendererProps = {
   stage: Stage;
   disabled?: boolean;
   retryCount?: number;
+  attemptsRemaining?: number;
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
   showIntro: boolean;
   onIntroComplete: () => void;
@@ -25,6 +31,7 @@ export function InteractionRenderer({
   stage,
   disabled,
   retryCount = 0,
+  attemptsRemaining,
   onAnswer,
   showIntro,
   onIntroComplete,
@@ -32,6 +39,20 @@ export function InteractionRenderer({
   onUseHint,
 }: InteractionRendererProps) {
   switch (stage.type) {
+    case "border-hop":
+      return (
+        <BorderHopInteraction
+          key={`${stage.id}:${retryCount}`}
+          stage={stage}
+          disabled={disabled}
+          attemptsRemaining={attemptsRemaining}
+          onAnswer={onAnswer}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+          hintsRemaining={hintsRemaining}
+          onUseHint={onUseHint}
+        />
+      );
     case "image-select":
       return (
         <ImageSelectInteraction

@@ -281,6 +281,7 @@ export function GameplayEngine({
               stage={stage}
               disabled={feedback.open}
               retryCount={retryCount}
+              attemptsRemaining={attemptsRemaining}
               onAnswer={handleAnswer}
               showIntro={!introDismissed}
               onIntroComplete={() =>

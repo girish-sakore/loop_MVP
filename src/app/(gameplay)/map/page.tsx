@@ -25,6 +25,14 @@ type GameTile = TileConfig & {
 };
 
 const gameTileConfig: Record<string, TileConfig> = {
+  "border-hop": {
+    key: "border-hop",
+    title: "Border Hop",
+    subtitle: "Cross the world",
+    icon: "travel_explore",
+    color: "#8bc5a5",
+    badge: "New",
+  },
   swipe: {
     key: "swipe",
     title: "This or That",
@@ -94,6 +102,7 @@ const gameOrder = [
   "image-select",
   "fill-blank",
   "color-match",
+  "border-hop",
 ];
 
 export default async function MapPage() {

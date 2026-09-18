@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import type { ClueConnectStage, Edition, EditionNode, Stage } from "@/types/gameplay";
+import type { BorderHopStage, ClueConnectStage, Edition, EditionNode, Stage } from "@/types/gameplay";
+import { validateRoute } from "@/features/interactions/border-hop/border-hop-rules";
 
 const editionsDirectory = path.join(process.cwd(), "src/content/editions");
 
@@ -58,6 +59,15 @@ function normalizeSubStage(
   stage: Stage,
   index: number,
 ): Stage[] {
+  if (node.type === "border-hop") {
+    const borderStage = stage as BorderHopStage;
+    try {
+      const route = validateRoute(borderStage);
+      return [{ ...borderStage, type: "border-hop", startCountry: route.start, targetCountry: route.target }];
+    } catch (error) {
+      throw new Error(`Invalid Border Hop stage ${node.id}/${stage.id ?? index}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
   if (node.type !== "clue-connect" || !isClueConnectStage(stage)) {
     return [stage];
   }

@@ -1121,6 +1121,34 @@
           }
         }
       ]
+    },
+    {
+      "id": "node-10",
+      "type": "border-hop",
+      "mapTitle": "Border Hop",
+      "mapSubtitle": "Find a path across land borders.",
+      "subStages": [
+        {
+          "id": "node-10-stage-1",
+          "question": "Cross Europe one border at a time.",
+          "startCountry": "Portugal",
+          "targetCountry": "Germany",
+          "maxGuesses": 7,
+          "hintsAllowed": 3,
+          "attemptsAllowed": 3,
+          "points": 100
+        },
+        {
+          "id": "node-10-stage-2",
+          "question": "Find your way across South America.",
+          "startCountry": "Colombia",
+          "targetCountry": "Chile",
+          "maxGuesses": 6,
+          "hintsAllowed": 3,
+          "attemptsAllowed": 3,
+          "points": 100
+        }
+      ]
     }
   ]
 }

@@ -7,7 +7,8 @@ export type StageType =
   | "four-way-swipe"
   | "drag-drop"
   | "clue-connect"
-  | "color-match";
+  | "color-match"
+  | "border-hop";
 
 export type StageBase = {
   id: string;
@@ -229,7 +230,19 @@ export type TimelineBuilderStage = StageBase & {
   events: TimelineEvent[];
 };
 
+export type BorderHopStage = StageBase & {
+  type: "border-hop";
+  startCountry: string;
+  targetCountry: string;
+  prompt?: string;
+  introLabel?: string;
+  maxGuesses?: number;
+  hintsAllowed?: number;
+  feedback?: { correct: string; incorrect: string };
+};
+
 export type Stage =
+  | BorderHopStage
   | ImageSelectStage
   | PlaceholderStage
   | SwipeStage
