@@ -234,10 +234,23 @@ export function LoginForm() {
       </div>
     );
   }
+  async function handleGoogleSignIn() {
+    setBusy(true);
+    setError(null);
 
+    const { error: signInError } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: callbackUrl,
+    });
+
+    if (signInError) {
+      setError(signInError.message || "Could not sign in with Google.");
+      setBusy(false);
+    }
+  }
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5 w-full">
-      
+
       {/* Headline */}
       <div className="text-center flex flex-col gap-2">
         <h1
@@ -321,6 +334,21 @@ export function LoginForm() {
             </span>
           </>
         )}
+      </button>
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={busy}
+        className="h-14 w-full rounded-xl text-[16px] font-bold flex items-center justify-center gap-3 transition-all duration-75 active:translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+        style={{
+          backgroundColor: "var(--surface-container-lowest)",
+          color: "var(--on-surface)",
+          boxShadow: "0 4px 0 0 #d1cdcc",
+          border: "1px solid var(--outline-variant)",
+        }}
+      >
+        <span className="text-lg font-bold">G</span>
+        Continue with Google
       </button>
     </form>
   );

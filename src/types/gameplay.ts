@@ -6,7 +6,8 @@ export type StageType =
   | "reorder"
   | "four-way-swipe"
   | "drag-drop"
-  | "clue-connect";
+  | "clue-connect"
+  | "color-match";
 
 export type StageBase = {
   id: string;
@@ -131,6 +132,27 @@ export type ClueConnectStage = StageBase & {
   };
 };
 
+export type ColorMatchClue = {
+  id: string;
+  hex: string;
+  clue1: string;
+  hint: string;
+  name: string;
+};
+
+export type ColorMatchStage = StageBase & {
+  type: "color-match";
+  prompt: string;
+  introLabel?: string;
+  eyebrow?: string;
+  title?: string;
+  clues: ColorMatchClue[];
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
+
 export type FillBlankStage = StageBase & {
   type: "fill-blank";
 
@@ -215,7 +237,8 @@ export type Stage =
   | FillBlankStage
   | TimelineBuilderStage
   | DragDropStage
-  | ClueConnectStage;
+  | ClueConnectStage
+  | ColorMatchStage;
 
 export interface EditionNode {
   id: string;

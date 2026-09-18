@@ -6,7 +6,7 @@ import { transporter } from "./nodemailer";
 
 import { prisma } from "@/lib/db";
 
-const localURL = "http://localhost:3000";
+const localURL = "http://localhost/:3000";
 const deploymentURL = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : undefined;
@@ -26,13 +26,18 @@ export const auth = betterAuth({
 
   trustedOrigins: [
     localURL,
-    // "http://192.168.31.185:3000",
     ...(authBaseURL === localURL ? [] : [authBaseURL]),
   ],
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
 
   // Expose extra user fields on the session object
   user: {

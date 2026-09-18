@@ -6,6 +6,7 @@ import { FourWaySwipeInteraction } from "@/features/interactions/four-way-swipe/
 import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeline-builder";
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
 import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
+import { ColorMatchInteraction } from "@/features/interactions/color-match/color-match-interaction";
 
 import type { Stage } from "@/types/gameplay";
 
@@ -89,6 +90,18 @@ export function InteractionRenderer({
     case "clue-connect":
       return (
         <ClueConnectInteraction
+          key={`${stage.id}:${retryCount}`}
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
+    case "color-match":
+      return (
+        <ColorMatchInteraction
           key={`${stage.id}:${retryCount}`}
           stage={stage}
           onAnswer={onAnswer}

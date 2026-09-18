@@ -126,6 +126,8 @@ model UserNodeProgress {
 
   status          String    @default("not_started") // not_started | in_progress | completed
   currentSubStage Int       @default(0)
+  attemptsRemaining Int?    // null for legacy/uninitialized progress; zero means exhausted
+  stagePassed     Boolean   @default(false)
   score           Int       @default(0)
   correctAnswers  Int       @default(0)
   totalAnswers    Int       @default(0)

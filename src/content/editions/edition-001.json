@@ -1071,6 +1071,56 @@
           }
         }
       ]
+    },
+    {
+      "id": "node-9",
+      "type": "color-match",
+      "mapTitle": "Color Stories",
+      "mapSubtitle": "Drag each color to its true story.",
+      "subStages": [
+        {
+          "id": "node-9-stage-1",
+          "question": "Colors with Real Stories",
+          "attemptsAllowed": 3,
+          "points": 100,
+          "prompt": "When you finish this world, keep exploring the hidden colors around you.",
+          "introLabel": "Palette",
+          "clues": [
+            {
+              "id": "saffron",
+              "hex": "#F1A83D",
+              "clue1": "It takes about 150,000 hand-picked, dried crocus flowers to produce just 1 kilogram of this dye.",
+              "hint": "For most of history this dye traded at nearly the same value as gold and silver by weight. Only three stigmas can be hand-plucked per flower, which is why the price has never really dropped.",
+              "name": "Saffron"
+            },
+            {
+              "id": "prussianblue",
+              "hex": "#003153",
+              "clue1": "A dye-maker in 1704 was trying to invent a red pigment from crushed cochineal insects but accidentally created this instead.",
+              "hint": "The resulting compound is now an FDA-approved antidote for radioactive cesium and thallium poisoning, kept in nuclear emergency kits worldwide. It also gave photography the cyanotype process, the original technique behind architectural blueprints.",
+              "name": "Prussian Blue"
+            },
+            {
+              "id": "tyrianpurple",
+              "hex": "#66023C",
+              "clue1": "Dye-makers had to crack open roughly 12,000 sea snails to extract enough gland fluid to color a single garment hem.",
+              "hint": "In 2024, Paris Olympics organizers chose this exact hue for the running track at the Stade de France, the first time in Olympic history the surface was not red or blue.",
+              "name": "Tyrian Purple"
+            },
+            {
+              "id": "pompeianred",
+              "hex": "#B33A3A",
+              "clue1": "In 2023, scientists found that many walls at this ancient Roman site were never actually painted this color — it appeared by accident.",
+              "hint": "Lab analysis showed the original pigment was yellow ochre, chemically transformed in moments by superheated volcanic gas during the 79 CE eruption.",
+              "name": "Pompeian Red"
+            }
+          ],
+          "feedback": {
+            "correct": "Every color found its story. Great eye!",
+            "incorrect": "Not quite — try again and watch for the small details."
+          }
+        }
+      ]
     }
   ]
 }
