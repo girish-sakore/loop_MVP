@@ -195,12 +195,23 @@ export function GameplayEngine({
   function handleAnswer({
     correct,
     feedback: message,
+    points,
+    totalAnswers: answerCount = 1,
+    correctAnswers: correctAnswerCount = correct ? 1 : 0,
   }: {
     correct: boolean;
     feedback: string;
+    points?: number;
+    totalAnswers?: number;
+    correctAnswers?: number;
   }) {
     if (answerLocked.current) return;
-    registerResult({ correct, points: stage?.points ?? 0 });
+    registerResult({
+      correct,
+      points: points ?? stage?.points ?? 0,
+      totalAnswers: answerCount,
+      correctAnswers: correctAnswerCount,
+    });
     const snapshot = useGameplayStore.getState();
     answerLocked.current = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
     setFeedback({ open: true, correct, message });
@@ -279,6 +290,7 @@ export function GameplayEngine({
           >
             <InteractionRenderer
               stage={stage}
+              stages={stages}
               disabled={feedback.open}
               retryCount={retryCount}
               attemptsRemaining={attemptsRemaining}

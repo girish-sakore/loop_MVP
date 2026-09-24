@@ -85,52 +85,52 @@
       "subStages": [
         {
           "id": "node-2-stage-1",
-          "question": "Swipe left or right",
+          "question": "Swipe left for Original Name and right for Pen Name",
           "attemptsAllowed": 2,
           "points": 80,
-          "statement": "Salt was once more valuable than gold in some regions.",
+          "statement": "",
           "card": {
-            "title": "Salt Value",
-            "subtitle": "Fact or Myth?",
+            "title": "Ruskin Bond",
+            "subtitle": "Pen name or Original Name?",
             "image": "/images/cards/salt-value.png"
           },
           "left": {
-            "label": "Myth",
-            "icon": "close"
+            "label": "Original",
+            "icon": "check"
           },
           "right": {
-            "label": "Fact",
-            "icon": "check"
+            "label": "Pen Name",
+            "icon": "cross"
           },
           "correctDirection": "right",
           "feedback": {
-            "correct": "Correct! Salt was an extremely valuable commodity.",
+            "correct": "Correct!",
             "incorrect": "This statement is actually true."
           }
         },
         {
           "id": "node-2-stage-2",
-          "question": "Swipe left or right",
+          "question": "Swipe left for Original Name and right for Pen Name",
           "attemptsAllowed": 3,
           "points": 80,
-          "statement": "Kya aap Memes Review krna chahte hai??",
+          "statement": "",
           "card": {
-            "title": "Meme Quiz",
-            "subtitle": "Haa... or Nah!!?",
+            "title": "George Orwell",
+            "subtitle": "Pen name or Original Name?",
             "image": "https://img.buzzfeed.com/buzzfeed-static/static/2017-12/21/14/asset/buzzfeed-prod-fastlane-03/sub-buzz-13410-1513883496-9.png?downsize=900:*&output-format=auto&output-quality=auto"
           },
           "left": {
-            "label": "Time nahi hai bro..",
+            "label": "Original Name",
             "icon": "close"
           },
           "right": {
-            "label": "Memes he review krna hai!!!",
+            "label": "Pen Name",
             "icon": "check"
           },
           "correctDirection": "right",
           "feedback": {
-            "correct": "Hum is bat pr agree krte hai ki aapko memes review krna chahiye. (Daily 2 mins)",
-            "incorrect": "Thik hai yr koi na.."
+            "correct": "yes correct",
+            "incorrect": "wrong."
           }
         }
       ]
@@ -218,6 +218,168 @@
               "word": "dog"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "node-3b",
+      "type": "fill-blank-text",
+      "mapTitle": "Salt Phrases",
+      "mapSubtitle": "Complete the saying",
+      "subStages": [
+        {
+          "id": "node-3b-stage-1",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "Long ago in ancient Rome, salt was so valuable that it was sometimes used to pay people. A soldier's salt allowance was called his salarium, which is where our modern word \"salary\" comes from. If a worker did a poor job, people felt he had not earned the salt he was being paid. Today, when someone is not good enough at what they do, we say they are \"not worth their {{b1}}.\"",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "salt",
+              "hint": "It is the precious white mineral mentioned throughout the clue."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Someone who is not worth their salt is not considered good enough at their job.",
+            "incorrect": "Not quite. Think of the precious white mineral that was once used as payment."
+          }
+        },
+        {
+          "id": "node-3b-stage-2",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "Salt has long been associated with saving and protecting things because it can keep food from spoiling. This connection between salt and saving also influenced religious language. The word for the saving of a person's soul is called {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "salvation",
+              "hint": "This word means the saving of a person's soul."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Salvation means being saved, especially in a religious sense.",
+            "incorrect": "Not quite. Think of the religious word for the saving of a person's soul."
+          }
+        },
+        {
+          "id": "node-3b-stage-3",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing phrase",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "The ancient Roman writer Pliny the Elder wrote about medicine that was taken with a small pinch of salt. Over time, this became a way of saying that you should be a little doubtful when hearing something hard to believe. When you should not believe something completely, you should {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "take it with a grain of salt",
+              "hint": "The phrase tells you to add a tiny amount of doubt, like adding a tiny amount of salt."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! To take something with a grain of salt means to be slightly skeptical about it.",
+            "incorrect": "Not quite. Think of the expression that tells you to be a little skeptical."
+          }
+        },
+        {
+          "id": "node-3b-stage-4",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "In the periodic table, some elements are grouped together because they behave in similar ways. Group 17 contains elements such as chlorine, fluorine, and iodine. The group's name comes from Greek words meaning \"salt-producing.\" This group of elements is called the {{b1}} family.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "halogen",
+              "hint": "This is the name of the group 17 family that includes chlorine and fluorine."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! The halogen family is group 17 of the periodic table.",
+            "incorrect": "Not quite. Think of the group 17 family that includes chlorine, fluorine, and iodine."
+          }
+        },
+        {
+          "id": "node-3b-stage-5",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the word",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "Very salty water can create a sharp, stinging feeling on your skin, eyes, or lips. Salt water used for preserving foods such as pickles has a special name. This very salty preserving liquid is called {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "brine",
+              "hint": "It is the salty liquid commonly used to preserve pickles and other foods."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Brine is salty water used for preserving food.",
+            "incorrect": "Not quite. Think of the salty liquid used to preserve pickles."
+          }
+        },
+        {
+          "id": "node-3b-stage-6",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing phrase",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "In medieval England, a valuable salt container was placed in the middle of a large dinner table. Important guests sat close to the salt, while lower-ranking guests sat farther away. Someone seated in the honored position was said to be {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "above the salt",
+              "hint": "Important guests sat closer to the salt, so they were described as being higher than it."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Being \"above the salt\" meant occupying an honored position at the table.",
+            "incorrect": "Not quite. Important guests sat closer to the salt and were said to be what the salt?"
+          }
+        },
+        {
+          "id": "node-3b-stage-7",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the tradition",
+          "question": "Fill in the missing phrase",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "In Russia and other Slavic countries, an important guest may be welcomed with a decorated loaf of bread and a dish of salt. The guest takes some bread, dips it in the salt, and eats it as a sign of friendship and trust. This traditional ceremony is known as a {{b1}} welcome.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "bread and salt",
+              "hint": "Think of the two foods traditionally offered to an honored guest."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Bread and salt are traditional symbols of hospitality and friendship.",
+            "incorrect": "Not quite. Think of the two foods offered together to welcome an honored guest."
+          }
         }
       ]
     },
@@ -1147,6 +1309,86 @@
           "hintsAllowed": 3,
           "attemptsAllowed": 3,
           "points": 100
+        }
+      ]
+    },
+    {
+      "id": "node-word-root",
+      "type": "word-root",
+      "mapTitle": "Word Root Discovery",
+      "mapSubtitle": "Explore the root SALT and discover words that originated from it.",
+      "subStages": [
+        {
+          "id": "word-root-stage-1",
+          "question": "Discover words from SALT",
+          "attemptsAllowed": 1,
+          "points": 100,
+          "type": "word-root",
+          "puzzle": {
+            "cols": 10,
+            "rows": 10,
+            "root": {
+              "word": "SALT",
+              "x": 5,
+              "y": 5
+            },
+            "clues": [
+              {
+                "id": "salt-1",
+                "x": 2,
+                "y": 1,
+                "number": 1,
+                "title": "Salted herbs",
+                "text": "Romans ate vegetables and herbs preserved in salt. This practice gave rise to the word SALAD — from the Latin 'salata,' meaning salted.",
+                "answer": "salad"
+              },
+              {
+                "id": "salt-2",
+                "x": 8,
+                "y": 2,
+                "number": 2,
+                "title": "Soldiers' allowance",
+                "text": "Roman soldiers received a monthly allowance called SALARIUM, used to buy salt. This is the origin of the modern English word SALARY.",
+                "answer": "salary"
+              },
+              {
+                "id": "salt-3",
+                "x": 9,
+                "y": 5,
+                "number": 3,
+                "title": "French condiment",
+                "text": "In French, SAUCE originally meant salted food. The word evolved to describe savory liquid preparations served alongside meals.",
+                "answer": "sauce"
+              },
+              {
+                "id": "salt-4",
+                "x": 7,
+                "y": 8,
+                "number": 4,
+                "title": "Things preserved in salt",
+                "text": "Sausage comes from the Latin SALSUS, meaning salted. Meat was preserved by packing it in salt — the origin of SALAMI and SAUSAGE.",
+                "answer": "sausage"
+              },
+              {
+                "id": "salt-5",
+                "x": 3,
+                "y": 8,
+                "number": 5,
+                "title": "Spanish sauce",
+                "text": "SALSA literally means 'sauce' in Spanish. The term described spicy, salt-based tomato condiments in Mexican cooking.",
+                "answer": "salsa"
+              },
+              {
+                "id": "salt-6",
+                "x": 5,
+                "y": 1,
+                "number": 6,
+                "title": "Saline solution",
+                "text": "SALINE — a solution of salt in water — takes its name directly from Latin SAL. Used in medicine for wound washing and injections.",
+                "answer": "saline"
+              }
+            ]
+          }
         }
       ]
     }

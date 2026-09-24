@@ -58,7 +58,7 @@ export function DraggedSwatch({ dragging, label }: Props) {
               duration: 0.15,
               ease: "easeOut",
             }}
-            className="whitespace-nowrap rounded-full border-[3px] border-[#0b0b0f] bg-[#0b0b0f] px-3 py-1.5 text-[15px] font-extrabold leading-none text-[#f6f2ec] shadow-[0_5px_0_rgba(11,11,15,0.3)]"
+            className="whitespace-nowrap rounded-full border-[3px] border-[#0b0b0f] bg-[#0b0b0f] px-3 py-1.5 text-[17px] font-extrabold leading-none text-[#f6f2ec] shadow-[0_5px_0_rgba(11,11,15,0.3)]"
           >
             {label.text}
           </motion.div>

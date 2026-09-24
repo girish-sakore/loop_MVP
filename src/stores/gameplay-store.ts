@@ -18,7 +18,7 @@ type GameplayState = {
   restore: (snapshot: GameplaySnapshot) => void;
   setAttempts: (attempts: number) => void;
   setStage: (stage: number) => void;
-  registerResult: (args: { correct: boolean; points: number }) => void;
+  registerResult: (args: { correct: boolean; points: number; totalAnswers?: number; correctAnswers?: number }) => void;
   nextStage: (totalStages: number, nextAttempts: number) => void;
   reset: () => void;
 };
@@ -39,7 +39,7 @@ export const useGameplayStore = create<GameplayState>((set) => ({
   restore: (snapshot) => set({ ...initialState, ...snapshot }),
   setAttempts: (attempts) => set({ attemptsRemaining: attempts }),
   setStage: (stage) => set({ currentStage: stage }),
-  registerResult: ({ correct, points }) =>
+  registerResult: ({ correct, points, totalAnswers = 1, correctAnswers = correct ? 1 : 0 }) =>
     set((state) => ({
       transitionState: "checking",
       stagePassed: correct,
@@ -47,10 +47,8 @@ export const useGameplayStore = create<GameplayState>((set) => ({
       attemptsRemaining: correct
         ? state.attemptsRemaining
         : Math.max(state.attemptsRemaining - 1, 0),
-      totalAnswers: state.totalAnswers + 1,
-      correctAnswers: correct
-        ? state.correctAnswers + 1
-        : state.correctAnswers,
+      totalAnswers: state.totalAnswers + totalAnswers,
+      correctAnswers: state.correctAnswers + correctAnswers,
     })),
   nextStage: (totalStages, nextAttempts) =>
     set((state) => {

@@ -252,6 +252,16 @@ input {
   }
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shake 0.32s ease-in-out;
+}
+
 @keyframes blink-animation {
   75% {
     visibility: hidden;

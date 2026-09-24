@@ -2,13 +2,15 @@ export type StageType =
   | "image-select"
   | "swipe"
   | "fill-blank"
+  | "fill-blank-text"
   | "timeline-builder"
   | "reorder"
   | "four-way-swipe"
   | "drag-drop"
   | "clue-connect"
   | "color-match"
-  | "border-hop";
+  | "border-hop"
+  | "word-root";
 
 export type StageBase = {
   id: string;
@@ -169,6 +171,22 @@ export type FillBlankStage = StageBase & {
     word: string;
   }>;
 };
+export type FillBlankTextStage = StageBase & {
+  type: "fill-blank-text";
+  prompt: string; // Supports {{b1}} placeholders
+  introLabel?: string;
+  hintsAllowed?: number;
+  blanks: Array<{
+    id: string;
+    answer: string;
+    hint?: string; // optional small-text hint shown in the popup
+  }>;
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
+
 export type SwipeStage = StageBase & {
   type: "swipe";
 
@@ -196,6 +214,26 @@ export type SwipeStage = StageBase & {
     correct: string;
     incorrect: string;
   };
+};
+
+export type WordRootStage = StageBase & {
+  type: "word-root";
+  puzzle?: WordRootPuzzle;
+};
+
+export type WordRootPuzzle = {
+  cols: number;
+  rows: number;
+  root: { word: string; x: number; y: number };
+  clues: Array<{
+    id: string;
+    x: number;
+    y: number;
+    number: number;
+    title: string;
+    text: string;
+    answer: string;
+  }>;
 };
 
 export type FourWaySwipeDirection = "up" | "down" | "left" | "right";
@@ -241,6 +279,8 @@ export type BorderHopStage = StageBase & {
   feedback?: { correct: string; incorrect: string };
 };
 
+
+
 export type Stage =
   | BorderHopStage
   | ImageSelectStage
@@ -248,10 +288,12 @@ export type Stage =
   | SwipeStage
   | FourWaySwipeStage
   | FillBlankStage
+  | FillBlankTextStage
   | TimelineBuilderStage
   | DragDropStage
   | ClueConnectStage
-  | ColorMatchStage;
+  | ColorMatchStage
+  | WordRootStage
 
 export interface EditionNode {
   id: string;

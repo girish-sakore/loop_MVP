@@ -6,6 +6,7 @@ export type PromptPart =
   | {
       type: "blank";
       id: string;
+ 
     };
 
 const PLACEHOLDER_REGEX = /\{\{(.*?)\}\}/g;

@@ -207,7 +207,7 @@ function fallbackCover(edition: Edition) {
   const firstStage = edition.nodes.flatMap((node) => node.subStages)[0];
   if (!firstStage) return "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=480&q=80";
   if ("card" in firstStage && firstStage.card.image) return firstStage.card.image;
-  if ("options" in firstStage && firstStage.options[0] && "image" in firstStage.options[0]) {
+  if ("options" in firstStage && firstStage.options?.[0] && "image" in firstStage.options[0]) {
     return firstStage.options[0].image;
   }
   if ("events" in firstStage && firstStage.events[0]?.image) return firstStage.events[0].image;

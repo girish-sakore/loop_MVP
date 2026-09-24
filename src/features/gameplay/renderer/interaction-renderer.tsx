@@ -1,4 +1,5 @@
 import { FillBlankInteraction } from "@/features/interactions/fill-blank/fill-blank-interaction";
+import { FillBlankTextInteraction } from "@/features/interactions/fill-blank-text/fill-blank-text-interaction";
 import { ImageSelectInteraction } from "@/features/interactions/image-select/image-select-interaction";
 import { DragDropInteraction } from "@/features/interactions/drag-drop/drag-drop-interaction";
 import { SwipeInteractionPlaceholder } from "@/features/interactions/swipe/swipe-interaction";
@@ -7,6 +8,7 @@ import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeli
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
 import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
 import { ColorMatchInteraction } from "@/features/interactions/color-match/color-match-interaction";
+import { WordRootInteraction } from "@/features/interactions/word-root/word-root-interaction";
 import dynamic from "next/dynamic";
 
 const BorderHopInteraction = dynamic(() =>
@@ -17,6 +19,7 @@ import type { Stage } from "@/types/gameplay";
 
 type InteractionRendererProps = {
   stage: Stage;
+  stages?: Stage[];
   disabled?: boolean;
   retryCount?: number;
   attemptsRemaining?: number;
@@ -29,6 +32,7 @@ type InteractionRendererProps = {
 
 export function InteractionRenderer({
   stage,
+  stages,
   disabled,
   retryCount = 0,
   attemptsRemaining,
@@ -95,6 +99,19 @@ export function InteractionRenderer({
           retryCount={retryCount}
         />
       );
+    case "fill-blank-text":
+      return (
+        <FillBlankTextInteraction
+          stages={(stages ?? [stage]).filter((item): item is Extract<Stage, { type: "fill-blank-text" }> => item.type === "fill-blank-text")}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+          hintsRemaining={hintsRemaining}
+          onUseHint={onUseHint}
+        />
+      );
     case "drag-drop":
       return (
         <DragDropInteraction
@@ -134,20 +151,32 @@ export function InteractionRenderer({
       );
     case "timeline-builder":
       return <TimelineBuilder
-                stage={stage}
-                onAnswer={onAnswer}
-                disabled={disabled}
-                retryCount={retryCount}
-                showIntro={showIntro}
-                onIntroComplete={onIntroComplete}
-              />;
+        stage={stage}
+        onAnswer={onAnswer}
+        disabled={disabled}
+        retryCount={retryCount}
+        showIntro={showIntro}
+        onIntroComplete={onIntroComplete}
+      />;
+    case "word-root":
+      return (
+        <WordRootInteraction
+          key={`${stage.id}:${retryCount}`}
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
     case "reorder":
       return <ReorderInteractionPlaceholder
-                stage={stage}
-                onAnswer={onAnswer}
-                disabled={disabled}
-                retryCount={retryCount}
-              />;
+        stage={stage}
+        onAnswer={onAnswer}
+        disabled={disabled}
+        retryCount={retryCount}
+      />;
     default:
       return null;
   }
