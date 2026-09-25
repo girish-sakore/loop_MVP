@@ -1,6 +1,7 @@
 "use client";
 
 import { useRazorpayCheckout } from "@/hooks/use-razorpay-checkout";
+import Link from "next/link";
 
 interface PricingFooterProps {
   plan: "monthly" | "yearly";
@@ -112,15 +113,26 @@ export function PricingFooter({ plan, userEmail, userName }: PricingFooterProps)
 
       {/* Legal links */}
       <div className="flex justify-center gap-6 pt-2 flex-wrap">
-        {["Restore Purchase", "Terms of Use", "Privacy Policy"].map((label) => (
-          <button
-            key={label}
-            className="text-[10px] font-bold tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity"
-            style={{ color: "var(--on-surface-variant)" }}
-          >
-            {label}
-          </button>
-        ))}
+        <button
+          className="text-[10px] font-bold tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity"
+          style={{ color: "var(--on-surface-variant)" }}
+        >
+          Restore Purchase
+        </button>
+        <Link
+          href="/terms-of-service"
+          className="text-[10px] font-bold tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity"
+          style={{ color: "var(--on-surface-variant)" }}
+        >
+          Terms of Use
+        </Link>
+        <Link
+          href="/privacy-policy"
+          className="text-[10px] font-bold tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity"
+          style={{ color: "var(--on-surface-variant)" }}
+        >
+          Privacy Policy
+        </Link>
       </div>
 
       {/* Disclaimer */}
