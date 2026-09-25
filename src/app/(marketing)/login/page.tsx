@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { LoginForm } from "@/features/auth/login-form";
 import { getAuthSession } from "@/lib/auth-session";
@@ -67,21 +68,21 @@ export default async function LoginPage() {
             style={{ color: "var(--on-surface-variant)" }}
           >
             By continuing, you agree to our{" "}
-            <a
-              href="#"
+            <Link
+              href="/terms-of-service"
               className="font-bold hover:underline"
               style={{ color: "var(--secondary)" }}
             >
               Terms of Service
-            </a>{" "}
+            </Link>{" "}
             and{" "}
-            <a
-              href="#"
+            <Link
+              href="/privacy-policy"
               className="font-bold hover:underline"
               style={{ color: "var(--secondary)" }}
             >
               Privacy Policy
-            </a>
+            </Link>
             .
           </p>
         </main>
