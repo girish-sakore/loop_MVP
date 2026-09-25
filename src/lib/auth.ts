@@ -10,9 +10,7 @@ const localURL = "http://localhost/:3000";
 const deploymentURL = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : undefined;
-const productionURL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : deploymentURL;
+const productionURL = process.env.NEXT_PUBLIC_APP_URL;
 const authBaseURL =
   process.env.VERCEL_ENV === "production"
     ? productionURL ?? localURL
