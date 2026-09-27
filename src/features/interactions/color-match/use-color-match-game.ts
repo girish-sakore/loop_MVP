@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ColorMatchStage } from "@/types/gameplay";
 
@@ -71,14 +71,14 @@ export function useColorMatchGame({
     return (state.key === resetKey ? state.matchedIds : []).includes(id);
   }
 
-  function handleMatch(id: string) {
+  const handleMatch = useCallback((id: string) => {
     setState((latest) => {
       const base =
         latest.key === resetKey ? latest : { key: resetKey, matchedIds: [] };
       if (base.matchedIds.includes(id)) return base;
       return { key: resetKey, matchedIds: [...base.matchedIds, id] };
     });
-  }
+  }, [resetKey]);
 
   function startDrag(event: React.PointerEvent<HTMLDivElement>, id: string) {
     if (disabled || matchStateHas(id)) return;
@@ -196,8 +196,10 @@ export function useColorMatchGame({
   useEffect(() => {
     answeredKey.current = null;
     failureReportedKey.current = null;
-    setOpenId(null);
-    setShowWin(false);
+    queueMicrotask(() => {
+      setOpenId(null);
+      setShowWin(false);
+    });
   }, [resetKey]);
 
   return {

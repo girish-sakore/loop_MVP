@@ -86,16 +86,13 @@ export function useCamera(
   /**
    * Return camera to its previous state (before last panTo).
    */
-  const restorePrevious = useCallback(
-    (_duration: number = 500) => {
-      const prev = prevCamera.current;
-      boardX.set(prev.x);
-      boardY.set(prev.y);
-      boardScale.set(prev.scale);
-      callbacks.onCameraChange?.(prev);
-    },
-    [boardX, boardY, boardScale, callbacks],
-  );
+  const restorePrevious = useCallback(() => {
+    const prev = prevCamera.current;
+    boardX.set(prev.x);
+    boardY.set(prev.y);
+    boardScale.set(prev.scale);
+    callbacks.onCameraChange?.(prev);
+  }, [boardX, boardY, boardScale, callbacks]);
 
   /**
    * Update camera for drag panning. Delta is in screen pixels.

@@ -78,7 +78,7 @@ export function GameplayShell({
 
       <span className="sr-only">{stageLabel}</span>
 
-      <main className="flex-1 px-0 pb-8 overflow-y-auto">
+      <main className="flex-1 px-0 pb-5 overflow-y-auto">
         {children}
       </main>
     </div>

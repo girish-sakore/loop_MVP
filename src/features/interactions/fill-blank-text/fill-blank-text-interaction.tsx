@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import { parsePrompt, type PromptPart } from "@/features/interactions/fill-blank/parse-prompt";
 import { FillBlankTextHintPopup } from "./fill-blank-text-hint-popup";
@@ -10,6 +12,9 @@ type Option = FillBlankTextStage["blanks"][number];
 type CardStatus = "unanswered" | "correct" | "wrong" | "skipped";
 
 type Props = {
+  retryCount?: number;
+  hintsRemaining?: number;
+  onUseHint?: () => void;
   // Pass either one stage (old call sites keep working) or an array (enables nav/skip).
   stage?: FillBlankTextStage;
   stages?: FillBlankTextStage[];
@@ -26,7 +31,6 @@ type Props = {
   showIntro?: boolean;
   onIntroComplete?: () => void;
 };
-
 const DEFAULT_HINTS = 3;
 
 export function FillBlankTextInteraction({
@@ -38,20 +42,102 @@ export function FillBlankTextInteraction({
   disabled,
   showIntro = true,
   onIntroComplete,
+  hintsRemaining = DEFAULT_HINTS,
+  onUseHint,
 }: Props) {
   const stageList = useMemo(
     () => stages ?? (singleStage ? [singleStage] : []),
     [stages, singleStage],
   );
+  const storageKey = useMemo(
+    () => `fill-blank-text:${stageList.map((stage) => stage.id).join("|")}`,
+    [stageList],
+  );
+  const [hasLoadedSavedState, setHasLoadedSavedState] = useState(false);
 
   const [introDone, setIntroDone] = useState(!showIntro);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answersByStage, setAnswersByStage] = useState<Record<string, Record<string, string>>>({});
   const [statusByStage, setStatusByStage] = useState<Record<string, CardStatus>>({});
-  const [hintsByStage, setHintsByStage] = useState<Record<string, number>>({});
   const [activeHint, setActiveHint] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
 
+
+  // making local storage for given answer so it persists across page reloads and sessions.
+  // This is useful for users who may want to return to the game later without losing their progress. 
+  // The useEffect hooks handle loading and saving the state to local storage.
+  useEffect(() => {
+    if (!storageKey) return;
+
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+
+      try {
+        const saved = localStorage.getItem(storageKey);
+
+        if (saved) {
+          const parsed = JSON.parse(saved);
+
+          if (typeof parsed.introDone === "boolean") {
+            setIntroDone(parsed.introDone);
+          }
+
+          if (typeof parsed.currentIndex === "number") {
+            setCurrentIndex(
+              Math.min(
+                Math.max(parsed.currentIndex, 0),
+                Math.max(stageList.length - 1, 0),
+              ),
+            );
+          }
+
+          if (parsed.answersByStage && typeof parsed.answersByStage === "object") {
+            setAnswersByStage(parsed.answersByStage);
+          }
+
+          if (parsed.statusByStage && typeof parsed.statusByStage === "object") {
+            setStatusByStage(parsed.statusByStage);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to restore fill-blank game state:", error);
+      } finally {
+        if (!cancelled) {
+          setHasLoadedSavedState(true);
+        }
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [storageKey, stageList.length]);
+  useEffect(() => {
+    if (!hasLoadedSavedState || !storageKey) return;
+
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          introDone,
+          currentIndex,
+          answersByStage,
+          statusByStage,
+        }),
+      );
+    } catch (error) {
+      console.error("Failed to save fill-blank game state:", error);
+    }
+  }, [
+    hasLoadedSavedState,
+    storageKey,
+    introDone,
+    currentIndex,
+    answersByStage,
+    statusByStage,
+  ]);
   const stage = stageList[Math.min(currentIndex, Math.max(stageList.length - 1, 0))];
   const total = stageList.length;
   const showPager = total > 1;
@@ -74,7 +160,6 @@ export function FillBlankTextInteraction({
 
   const answers = answersByStage[stage.id] ?? Object.fromEntries(stage.blanks.map((b) => [b.id, ""]));
   const status = statusByStage[stage.id] ?? "unanswered";
-  const hintsRemaining = hintsByStage[stage.id] ?? DEFAULT_HINTS;
   const allFilled = stage.blanks.every((blank) => answers[blank.id]?.trim());
 
   function handleInputChange(blankId: string, value: string) {
@@ -126,7 +211,7 @@ export function FillBlankTextInteraction({
       setActiveHint(`Hint: This answer starts with "${target.answer.charAt(0).toUpperCase()}".`);
     }
     setHintVisible(true);
-    setHintsByStage((prev) => ({ ...prev, [stage.id]: hintsRemaining - 1 }));
+    onUseHint?.();
   }
 
   function goTo(index: number) {
@@ -225,7 +310,18 @@ export function FillBlankTextInteraction({
   }
 
   return (
-    <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden bg-[#FDF9F1] px-4 pb-4 pt-6 text-[#2B2A25]">
+    <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-y-auto bg-[#FDF9F1] px-4 pb-4 pt-6 text-[#2B2A25]">
+
+
+      {/* Heading — matches swipe game style */}
+      <div className="flex shrink-0 flex-col items-center gap-2 text-center px-4 pt-2 mb-2">
+        <span className="inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#53BCD1] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#2B2A25]">
+          {stage.introLabel ?? "Fill in the Blank"}
+        </span>
+        <h1 className="font-display max-w-[360px] text-[27px] leading-none">
+          {stage.question}
+        </h1>
+      </div>
       {showPager && (
         <div className="mx-auto mb-3 flex w-full max-w-[380px] justify-end">
           <span className="text-[14px] font-extrabold text-[#2B2A25]">
@@ -233,17 +329,13 @@ export function FillBlankTextInteraction({
           </span>
         </div>
       )}
-
       {/* Prompt card */}
-      <div className="min-h-0 flex-1 overflow-y-auto px-2">
+      <div className="min-h-0 flex-1 overflow-visible px-2">
         <div className="relative mx-auto max-w-[380px]">
           <div className="absolute inset-0 translate-y-[10px] rounded-[28px] border-[3px] border-[#53BCD1] bg-[#FDF9F1]" />
 
           <div className="relative rounded-[28px] border-[3px] border-[#2B2A25] bg-[#FFFDF7] p-4 shadow-[6px_6px_0_#2B2A25]">
             <div className="flex items-center justify-between">
-              <span className="inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#53BCD1] px-4 py-1 text-[12px] font-extrabold uppercase tracking-widest text-[#0b0b0b]">
-                {stage.introLabel ?? "Fill in the Blank"}
-              </span>
               {status === "correct" && (
                 <span className="text-[12px] font-extrabold text-[#3FAE6A]">✓ Answered</span>
               )}
@@ -255,7 +347,7 @@ export function FillBlankTextInteraction({
               )}
             </div>
 
-            <div className="font-display mt-3 text-[18px] leading-relaxed text-[#2B2A25]">
+            <div className="font-display mt-3 text-[16px] leading-relaxed text-[#2B2A25]">
               {parts.map((part, index) =>
                 renderPart(part, index, answers, blanksById, handleInputChange, disabled),
               )}
@@ -277,17 +369,16 @@ export function FillBlankTextInteraction({
                 aria-selected={isActive}
                 aria-label={`Go to card ${index + 1}`}
                 onClick={() => goTo(index)}
-                className={`h-3.5 w-3.5 rounded-full border-[2px] border-[#2B2A25] transition ${
-                  isActive
-                    ? "scale-125 bg-[#E8933A]"
-                    : itemStatus === "correct"
-                      ? "bg-[#3FAE6A]"
-                      : itemStatus === "wrong"
-                        ? "bg-[#E36F6F]"
-                        : itemStatus === "skipped"
-                          ? "bg-[#8a8878]"
-                          : "bg-transparent"
-                }`}
+                className={`h-3.5 w-3.5 rounded-full border-[2px] border-[#2B2A25] transition ${isActive
+                  ? "scale-125 bg-[#E8933A]"
+                  : itemStatus === "correct"
+                    ? "bg-[#3FAE6A]"
+                    : itemStatus === "wrong"
+                      ? "bg-[#E36F6F]"
+                      : itemStatus === "skipped"
+                        ? "bg-[#8a8878]"
+                        : "bg-transparent"
+                  }`}
               />
             );
           })}
@@ -303,7 +394,7 @@ export function FillBlankTextInteraction({
             aria-label="Previous card"
             className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-[#2B2A25] bg-[#FBAE4B] text-[16px] font-extrabold text-[#2B2A25] shadow-[3px_3px_0_#2B2A25] transition active:translate-y-0.5 active:shadow-[1px_1px_0_#2B2A25] disabled:opacity-40"
           >
-            ←
+            <FontAwesomeIcon icon={faChevronLeft} className="text-[18px]" />
           </button>
           <button
             type="button"
@@ -320,12 +411,12 @@ export function FillBlankTextInteraction({
             aria-label="Next card"
             className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-[#2B2A25] bg-[#FBAE4B] text-[16px] font-extrabold text-[#2B2A25] shadow-[3px_3px_0_#2B2A25] transition active:translate-y-0.5 active:shadow-[1px_1px_0_#2B2A25] disabled:opacity-40"
           >
-            →
+            <FontAwesomeIcon icon={faChevronRight} className="text-[18px]" />
           </button>
         </div>
       )}
       {/* Check + Hint */}
-      <div className="mx-auto mt-5 flex w-full max-w-[380px] shrink-0 gap-2 border-t-[3px] border-[#2B2A25] pt-4">
+      <div className="sticky bottom-0 z-20 mx-auto mt-5 flex w-full max-w-[380px] shrink-0 gap-2 border-t-[3px] border-[#2B2A25] bg-[#FDF9F1] pt-4 pb-2">
         <button
           type="button"
           onClick={handleCheckGuess}
@@ -371,15 +462,56 @@ function renderPart(
   const blank = blanksById.get(part.id);
   if (!blank) return null;
 
+  const expectedLength = blank.answer?.length || 0;
+  const currentValue = answers[part.id] ?? "";
+  const words = (blank.answer ?? "").split(" ");
+
   return (
-    <input
+    <span
       key={part.id}
-      type="text"
-      value={answers[part.id] ?? ""}
-      onChange={(event) => onChange(part.id, event.target.value)}
-      disabled={disabled}
-      placeholder=""
-      className="mx-1 inline-block w-32 min-w-[80px] border-b-[3px] border-dashed border-[#2B2A25] bg-transparent text-center font-display italic text-[#2B2A25] outline-none transition placeholder:italic placeholder:text-[#8a8878] focus:border-solid focus:border-[#E8933A] disabled:cursor-not-allowed disabled:opacity-60"
-    />
+      className="mx-1 inline-flex max-w-full flex-wrap items-end justify-center gap-x-3 gap-y-2 align-baseline"
+      onClick={() => {
+        const input = document.getElementById(`blank-input-${part.id}`);
+        input?.focus();
+      }}
+      aria-label={`Answer, ${expectedLength} letters`}
+    >
+      <input
+        id={`blank-input-${part.id}`}
+        type="text"
+        value={currentValue}
+        onChange={(event) =>
+          onChange(part.id, event.target.value.slice(0, expectedLength))
+        }
+        disabled={disabled}
+        maxLength={expectedLength || undefined}
+        className="sr-only"
+      />
+
+      {words.map((word, wordIndex) => (
+        <span
+          key={`word-${wordIndex}`}
+          className="inline-flex shrink-0 items-end gap-1"
+        >
+          {Array.from(word).map((_, letterIndex) => {
+            // Calculate the character position including spaces from previous words.
+            const characterIndex =
+              words.slice(0, wordIndex).reduce(
+                (total, previousWord) => total + previousWord.length + 1,
+                0,
+              ) + letterIndex;
+
+            return (
+              <span
+                key={`letter-${characterIndex}`}
+                className="inline-flex h-7 w-5 items-end justify-center border-b-[3px] border-solid border-[#2B2A25] font-display italic text-[#2B2A25]"
+              >
+                {currentValue[characterIndex] ?? ""}
+              </span>
+            );
+          })}
+        </span>
+      ))}
+    </span>
   );
 }

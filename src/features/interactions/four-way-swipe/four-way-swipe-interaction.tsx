@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   animate,
   motion,
@@ -67,7 +67,7 @@ export function FourWaySwipeInteraction({
     answered.current = false;
     animate(x, 0, { type: "spring", stiffness: 320, damping: 24 });
     animate(y, 0, { type: "spring", stiffness: 320, damping: 24 });
-  }, [retryCount, stage.id]);
+  }, [retryCount, stage.id, x, y]);
 
   useMotionValueEvent(x, "change", (latestX) => {
     setActiveDirection(getDominantDirection(latestX, y.get()));
