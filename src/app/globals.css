@@ -57,7 +57,7 @@
 }
 :root {
   /* Base */
-  --background: #b996f6;
+  --background: #fff;
   --foreground: #0b0b0f;
   --muted-foreground: #343238;
   --card: #fffdf7;
