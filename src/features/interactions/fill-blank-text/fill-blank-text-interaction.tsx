@@ -314,7 +314,7 @@ export function FillBlankTextInteraction({
 
 
       {/* Heading — matches swipe game style */}
-      <div className="flex shrink-0 flex-col items-center gap-2 text-center px-4 pt-2 mb-2">
+      <div className="flex shrink-0 flex-col items-center gap-4 text-center px-4 pt-2 mb-2">
         <span className="inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#53BCD1] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#2B2A25]">
           {stage.introLabel ?? "Fill in the Blank"}
         </span>

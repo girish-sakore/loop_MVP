@@ -9,6 +9,7 @@ import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/r
 import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
 import { ColorMatchInteraction } from "@/features/interactions/color-match/color-match-interaction";
 import { WordRootInteraction } from "@/features/interactions/word-root/word-root-interaction";
+import { ImageTextSAnswerInteraction } from "@/features/interactions/image-text-sanswer/image-text-sanswer-interaction";
 import dynamic from "next/dynamic";
 
 const BorderHopInteraction = dynamic(() =>
@@ -177,6 +178,20 @@ export function InteractionRenderer({
         disabled={disabled}
         retryCount={retryCount}
       />;
+    case "image-text-sanswer":
+      return (
+        <ImageTextSAnswerInteraction
+          key={`${stage.id}:${retryCount}`}
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+          hintsRemaining={hintsRemaining}
+          onUseHint={onUseHint}
+        />
+      );
     default:
       return null;
   }

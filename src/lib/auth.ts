@@ -7,7 +7,7 @@ import { transporter } from "./nodemailer";
 import { prisma } from "@/lib/db";
 
 const localURL = "http://localhost:3000";
-const networkURL = "http://10.140.231.104:3000";
+const networkURL = "http://192.168.31.185:3000";
 
 const deploymentURL = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

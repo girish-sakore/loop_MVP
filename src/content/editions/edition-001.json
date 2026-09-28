@@ -990,34 +990,44 @@
       ]
     },
     {
-      "id": "node-6",
-      "type": "reorder",
-      "mapTitle": "Salt Sequence",
-      "mapSubtitle": "Put the clues in order.",
+      "id": "node-6b",
+      "type": "image-text-sanswer",
+      "mapTitle": "Visual Mystery",
+      "mapSubtitle": "Guess what you see",
       "subStages": [
         {
           "id": "node-6-stage-1",
-          "question": "Arrange the salt story",
-          "attemptsAllowed": 3,
+          "type": "image-text-sanswer",
+          "mapTitle": "Visual Mystery",
+          "mapSubtitle": "Guess what you see",
+          "question": "What famous landmark is this?",
+          "attemptsAllowed": 2,
           "points": 80,
-          "prompt": "Place these moments from earliest to latest.",
-          "items": [
-            {
-              "id": "salt-springs",
-              "label": "People boil brine from natural salt springs",
-              "order": 1
-            },
-            {
-              "id": "salt-trade",
-              "label": "Salt becomes a valuable trade good",
-              "order": 2
-            },
-            {
-              "id": "modern-table",
-              "label": "Iodized table salt becomes common at home",
-              "order": 3
-            }
-          ]
+          "introLabel": "Visual Guess",
+          "image": "/images/benji-bhai.jpg",
+          "answer": "Eiffel Tower",
+          "hint": "This famous Parisian landmark was built in 1889 and is made of iron.",
+          "feedback": {
+            "correct": "Correct! The Eiffel Tower is Paris's iconic iron lattice tower.",
+            "incorrect": "Not quite. Think of the famous Parisian iron tower built in 1889."
+          }
+        },
+        {
+          "id": "node-6-stage-2",
+          "type": "image-text-sanswer",
+          "mapTitle": "Visual Mystery",
+          "mapSubtitle": "Guess what you see",
+          "question": "What ancient civilization built this?",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Visual Guess",
+          "image": "/images/benji-bhai.jpg",
+          "answer": "Mayan",
+          "hint": "This civilization was known for their pyramids and complex calendar system.",
+          "feedback": {
+            "correct": "Correct! The Maya built incredible pyramids and developed a sophisticated calendar.",
+            "incorrect": "Not quite. Think of the ancient civilization known for their pyramids and calendar."
+          }
         }
       ]
     },

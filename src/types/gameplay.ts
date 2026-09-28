@@ -10,7 +10,8 @@ export type StageType =
   | "clue-connect"
   | "color-match"
   | "border-hop"
-  | "word-root";
+  | "word-root"
+  | "image-text-sanswer";
 
 export type StageBase = {
   id: string;
@@ -294,6 +295,7 @@ export type Stage =
   | ClueConnectStage
   | ColorMatchStage
   | WordRootStage
+  | ImageTextSAnswerStage;
 
 export interface EditionNode {
   id: string;
@@ -316,4 +318,17 @@ export type Edition = {
   weekLabel?: string;
   author?: string;
   coverImage?: string;
+};
+
+export type ImageTextSAnswerStage = StageBase & {
+  type: "image-text-sanswer";
+  image: string;
+  answer: string;
+  hint?: string;
+  introLabel?: string;
+  hintsAllowed?: number;
+  feedback?: {
+    correct: string;
+    incorrect: string;
+  };
 };
