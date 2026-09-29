@@ -1,100 +1,52 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback, useRef, useSyncExternalStore } from "react";
+// features/gameplay/engine/gameplay-engine.tsx
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { FeedbackModal } from "@/components/feedback/feedback-modal";
 import { InteractionRenderer } from "@/features/gameplay/renderer/interaction-renderer";
 import { GameplayShell } from "@/features/gameplay/shell/gameplay-shell";
 import { useGameplayStore } from "@/stores/gameplay-store";
-import { progressStorageKey, restoreSnapshot, saveSnapshot, type GameplaySnapshot } from "@/features/gameplay/progress/resume";
+import { useProgressSync } from "@/features/gameplay/progress/use-progress-sync";
+import {
+  DEFAULT_HINT_BUDGET,
+  SNAPSHOT_VERSION,
+  compareProgress,
+  mergeSnapshots,
+  normalizeSnapshot,
+  pickSnapshot,
+  progressStorageKey,
+  restoreSnapshot,
+  saveSnapshot,
+  type GameplaySnapshot,
+  type InteractionState,
+  type StoredProgress,
+} from "@/features/gameplay/progress/resume";
 import type { Stage } from "@/types/gameplay";
-
-const DEFAULT_HINT_BUDGET = 3;
-
-function useSessionHints(userId: string,editionId: string, nodeId: string, initialBudget = DEFAULT_HINT_BUDGET) {
-  const storageKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
-
-  const subscribe = useCallback(
-    (onStoreChange: () => void) => {
-      const handleStorage = (e: StorageEvent) => {
-        if (e.key === storageKey || e.key === null) {
-          onStoreChange();
-        }
-      };
-      window.addEventListener("storage", handleStorage);
-      const handleCustom = () => onStoreChange();
-      window.addEventListener("loop_hints_change", handleCustom);
-      return () => {
-        window.removeEventListener("storage", handleStorage);
-        window.removeEventListener("loop_hints_change", handleCustom);
-      };
-    },
-    [storageKey],
-  );
-
-  const getSnapshot = useCallback(() => {
-    try {
-      const val = localStorage.getItem(storageKey);
-      if (val !== null) {
-        const parsed = parseInt(val, 10);
-        if (!isNaN(parsed) && parsed >= 0 && parsed <= initialBudget) {
-          return parsed;
-        }
-      }
-    } catch { }
-    return initialBudget;
-  }, [storageKey, initialBudget]);
-
-  const getServerSnapshot = useCallback(() => initialBudget, [initialBudget]);
-
-  const hintsRemaining = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
-  const consumeHint = useCallback(() => {
-    try {
-      const val = localStorage.getItem(storageKey);
-      const current = val !== null ? parseInt(val, 10) : initialBudget;
-      const validCurrent = !isNaN(current) ? current : initialBudget;
-      const next = Math.max(validCurrent - 1, 0);
-      localStorage.setItem(storageKey, String(next));
-      window.dispatchEvent(new Event("loop_hints_change"));
-    } catch { }
-  }, [storageKey, initialBudget]);
-
-  const resetHints = useCallback(() => {
-    try {
-      localStorage.removeItem(storageKey);
-      window.dispatchEvent(new Event("loop_hints_change"));
-    } catch { }
-  }, [storageKey]);
-
-  return { hintsRemaining, consumeHint, resetHints };
-}
 
 interface GameplayEngineProps {
   editionId: string;
   nodeId: string;
   stages: Stage[];
   initialStage?: number;
-  initialProgress?: GameplaySnapshot;
+  initialProgress?: StoredProgress;
   userId: string;
 }
+
 export function GameplayEngine({
   editionId, nodeId, userId, stages, initialStage = 0, initialProgress }: GameplayEngineProps) {
   const router = useRouter();
-  const hasNavigated = useRef(false); // guard navigation
+  const hasNavigated = useRef(false);
   const [initializedKey, setInitializedKey] = useState<string | null>(null);
   const answerLocked = useRef(true);
   const [retryCount, setRetryCount] = useState(0);
-  const [feedback, setFeedback] = useState<{
-    open: boolean;
-    correct: boolean;
-    message: string;
-  }>({ open: false, correct: false, message: "" });
-  const [introState, setIntroState] = useState<{
-    key: string;
-    dismissed: boolean;
-  } | null>(null);
+  // Bumped when another device is ahead, so the game remounts with the new state.
+  const [epoch, setEpoch] = useState(0);
+  const [feedback, setFeedback] = useState<{ open: boolean; correct: boolean; message: string }>(
+    { open: false, correct: false, message: "" });
+  const [introState, setIntroState] = useState<{ key: string; dismissed: boolean } | null>(null);
   const {
     currentStage,
     attemptsRemaining,
@@ -102,95 +54,139 @@ export function GameplayEngine({
     correctAnswers,
     totalAnswers,
     completed,
+    hintsRemaining,
+    interactionState,
     restore,
     registerResult,
     nextStage,
+    setInteractionState,
+    clearInteractionState,
+    consumeHint,
+    applyRemoteHints,
   } = useGameplayStore();
 
   const stage = stages[currentStage];
   const totalAttempts = stage?.attemptsAllowed ?? 3;
   const progress = useMemo(() => (currentStage / stages.length) * 100, [currentStage, stages.length]);
   const gameplayKey = progressStorageKey(userId, editionId, nodeId);
-  const introDismissed =
-    introState?.key === gameplayKey ? introState.dismissed : false;
-  const { hintsRemaining, consumeHint, resetHints } = useSessionHints(userId,editionId, nodeId);
+  const legacyHintsKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
+  const introDismissed = introState?.key === gameplayKey ? introState.dismissed : false;
+  const ready = initializedKey === gameplayKey;
 
-  const syncProgress = useCallback(async (snapshot: GameplaySnapshot) => {
-    // Write synchronously before starting the request: refresh may interrupt it.
-    try {
-      saveSnapshot(localStorage, gameplayKey, snapshot);
-    } catch { /* Storage access itself can be blocked by the browser. */ }
-    await fetch("/api/progress/sync", {
-      method: "POST",
-      keepalive: true,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        editionId, nodeId,
-        currentSubStage: snapshot.currentStage,
-        attemptsRemaining: snapshot.attemptsRemaining,
-        stagePassed: snapshot.stagePassed,
-        score: snapshot.score,
-        correctAnswers: snapshot.correctAnswers,
-        totalAnswers: snapshot.totalAnswers,
-      }),
-    }).catch(() => { });
-  }, [editionId, nodeId, gameplayKey]);
+  const applySnapshot = useCallback((snapshot: GameplaySnapshot) => {
+    restore(snapshot);
+    hasNavigated.current = false;
+    const locked = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
+    answerLocked.current = locked;
+    setFeedback({
+      open: locked,
+      correct: snapshot.stagePassed,
+      message: snapshot.stagePassed
+        ? "You already completed this stage. Continue to the next one."
+        : locked ? "No attempts remaining for this stage." : "",
+    });
+    const started = snapshot.totalAnswers > 0 || snapshot.currentStage > 0;
+    setIntroState((prev) => ({
+      key: gameplayKey,
+      dismissed: (prev?.key === gameplayKey && prev.dismissed) || started,
+    }));
+  }, [restore, gameplayKey]);
 
-  // Restore before mounting an interaction; never replenish a saved zero.
+  const handleRemote = useCallback((remote: GameplaySnapshot) => {
+    if (hasNavigated.current) return;
+    const local = pickSnapshot(useGameplayStore.getState());
+    if (compareProgress(remote, local) > 0) {
+      // Another device is further along: adopt it and remount the game.
+      // The stage differs from what we had, so drop any local game-in-progress
+      // state — it belonged to the old stage.
+      const merged = { ...mergeSnapshots(local, remote), interactionState: {} };
+      applySnapshot(merged);
+      try { saveSnapshot(localStorage, gameplayKey, merged); } catch { /* storage blocked */ }
+      setEpoch((e) => e + 1);
+    } else if (remote.hintsRemaining < local.hintsRemaining) {
+      applyRemoteHints(remote.hintsRemaining);
+    }
+  }, [applySnapshot, applyRemoteHints, gameplayKey]);
+
+  const { save, flush } = useProgressSync({
+    editionId,
+    nodeId,
+    storageKey: gameplayKey,
+    enabled: ready,
+    onRemote: handleRemote,
+  });
+
+  // Stage-level change: local write + network push.
+  const syncStage = useCallback(() => save(pickSnapshot(useGameplayStore.getState())), [save]);
+
+  // Game-state change (typing, hopping...): local only, no network call.
+  const saveLocalOnly = useCallback(() => {
+    try { saveSnapshot(localStorage, gameplayKey, pickSnapshot(useGameplayStore.getState())); } catch { /* storage blocked */ }
+  }, [gameplayKey]);
+
   useEffect(() => {
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
-      const server: GameplaySnapshot = initialProgress ?? {
+
+      let legacyHints: number | undefined;
+      try {
+        const raw = localStorage.getItem(legacyHintsKey);
+        const parsed = raw === null ? NaN : parseInt(raw, 10);
+        if (Number.isSafeInteger(parsed) && parsed >= 0) legacyHints = parsed;
+      } catch { /* storage blocked */ }
+      const hintFallback = legacyHints ?? DEFAULT_HINT_BUDGET;
+
+      const server: GameplaySnapshot = normalizeSnapshot(initialProgress, { hintsRemaining: hintFallback }) ?? {
+        version: SNAPSHOT_VERSION,
+        updatedAt: 0,
         currentStage: initialStage,
         attemptsRemaining: stages[initialStage]?.attemptsAllowed ?? 0,
         stagePassed: false,
         score: 0,
         correctAnswers: 0,
         totalAnswers: 0,
+        hintsRemaining: hintFallback,
+        interactionState: {},
       };
+
       let snapshot = server;
       try {
         snapshot = restoreSnapshot(localStorage, gameplayKey, server, stages.map((item) => item.attemptsAllowed));
       } catch { /* Fall back to server progress if storage is blocked. */ }
-      restore(snapshot);
-      hasNavigated.current = false;
-      const locked = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
-      answerLocked.current = locked;
-      setFeedback({
-        open: locked,
-        correct: snapshot.stagePassed,
-        message: snapshot.stagePassed
-          ? "You already completed this stage. Continue to the next one."
-          : locked ? "No attempts remaining for this stage." : "",
-      });
-      setIntroState({ key: gameplayKey, dismissed: snapshot.totalAnswers > 0 || snapshot.currentStage > 0 });
+
+      applySnapshot(snapshot);
       setInitializedKey(gameplayKey);
-      // Flush a browser backup that was saved just before a reload.
-      void syncProgress(snapshot);
+      save(snapshot);
+      try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
     });
     return () => { cancelled = true; };
-  }, [stages, initialStage, initialProgress, restore, gameplayKey, syncProgress]);
+  }, [stages, initialStage, initialProgress, gameplayKey, legacyHintsKey, applySnapshot, save]);
 
   const completeProgress = useCallback(async () => {
-    resetHints();
+    flush();
     await fetch("/api/progress/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
     }).catch(() => { });
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers, resetHints]);
+    try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
+  }, [editionId, nodeId, score, correctAnswers, totalAnswers, gameplayKey, flush]);
 
-  // Issue 2 fix — navigate in an effect, never during render
   useEffect(() => {
-    if (initializedKey !== gameplayKey) return;
+    if (!ready) return;
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
         router.push("/summary");
       });
     }
-  }, [gameplayKey, initializedKey, completed, stage, completeProgress, router]);
+  }, [ready, completed, stage, completeProgress, router]);
+
+  const handleInteractionStateChange = useCallback((stageId: string, state: InteractionState) => {
+    setInteractionState(stageId, state);
+    saveLocalOnly();
+  }, [setInteractionState, saveLocalOnly]);
 
   function handleAnswer({
     correct,
@@ -215,18 +211,13 @@ export function GameplayEngine({
     const snapshot = useGameplayStore.getState();
     answerLocked.current = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
     setFeedback({ open: true, correct, message });
-    void syncProgress({
-      currentStage: snapshot.currentStage,
-      attemptsRemaining: snapshot.attemptsRemaining,
-      stagePassed: snapshot.stagePassed,
-      score: snapshot.score,
-      correctAnswers: snapshot.correctAnswers,
-      totalAnswers: snapshot.totalAnswers,
-    });
+    syncStage();
   }
 
   function handleRetry() {
     if (answerLocked.current) return;
+    clearInteractionState(stage.id);
+    syncStage();
     setRetryCount((c) => c + 1);
     setFeedback({ open: false, correct: false, message: "" });
   }
@@ -242,15 +233,7 @@ export function GameplayEngine({
     const nextAttempts = stages[nextIndex]?.attemptsAllowed ?? 0;
     nextStage(stages.length, nextAttempts);
     answerLocked.current = false;
-    const after = useGameplayStore.getState();
-    await syncProgress({
-      currentStage: after.currentStage,
-      attemptsRemaining: after.attemptsRemaining,
-      stagePassed: false,
-      score: after.score,
-      correctAnswers: after.correctAnswers,
-      totalAnswers: after.totalAnswers,
-    });
+    syncStage();
   }
 
   async function handleContinue() {
@@ -263,14 +246,15 @@ export function GameplayEngine({
 
   const handleUseHint = useCallback(() => {
     consumeHint();
-  }, [consumeHint]);
+    syncStage();
+  }, [consumeHint, syncStage]);
 
-  // While navigating away, render nothing
   if ((completed || !stage) && hasNavigated.current) {
     return null;
   }
 
   if (!stage) return null;
+  if (!ready) return null;
 
   return (
     <>
@@ -282,7 +266,7 @@ export function GameplayEngine({
       >
         <AnimatePresence mode="wait">
           <motion.div
-            key={stage.id}
+            key={`${stage.id}:${epoch}`}
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
@@ -296,11 +280,11 @@ export function GameplayEngine({
               attemptsRemaining={attemptsRemaining}
               onAnswer={handleAnswer}
               showIntro={!introDismissed}
-              onIntroComplete={() =>
-                setIntroState({ key: gameplayKey, dismissed: true })
-              }
+              onIntroComplete={() => setIntroState({ key: gameplayKey, dismissed: true })}
               hintsRemaining={hintsRemaining}
               onUseHint={handleUseHint}
+              interactionState={interactionState[stage.id]}
+              onInteractionStateChange={(s) => handleInteractionStateChange(stage.id, s)}
             />
           </motion.div>
         </AnimatePresence>

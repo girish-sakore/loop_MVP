@@ -16,12 +16,21 @@ export function BorderHopMap({ start, target, route, hints, wrong }: Props) {
   const paths = useMemo(() => {
     // Fit the endpoints, not the answer: framing must not reveal the route.
     // A rotated projection keeps antimeridian countries (Russia) together.
+    // Projection is still computed from the full world data, so hiding other
+    // countries below does not change how the map is framed.
     const projection = geoEquirectangular().rotate(start === "Russia" || target === "Russia" ? [-90, 0] : [0, 0]);
     const endpoints = worldCountries.filter((c) => [start, target].includes(c.properties.name));
     projection.fitExtent([[55, 55], [745, 445]], { type: "FeatureCollection", features: endpoints });
     const path = geoPath(projection);
     return worldCountries.map((country) => ({ name: country.properties.name, d: path(country) ?? "" }));
   }, [start, target]);
+
+  // Only these countries are drawn: origin, destination, countries the player
+  // has hopped through, hint outlines, and a wrong guess (so its flash shows).
+  const visible = useMemo(
+    () => new Set([start, target, ...route, ...hints, ...(wrong ? [wrong] : [])]),
+    [start, target, route, hints, wrong],
+  );
 
   function zoom(factor: number) {
     setView((old) => {
@@ -62,7 +71,7 @@ export function BorderHopMap({ start, target, route, hints, wrong }: Props) {
         onPointerCancel={() => { drag.current = null; setDragging(false); }}
       >
         <g transform={`translate(${view.x} ${view.y}) scale(${view.zoom})`}>
-          {paths.map(({ name, d }) => (
+          {paths.filter(({ name }) => visible.has(name)).map(({ name, d }) => (
             <path key={name} d={d} data-country={name} vectorEffect="non-scaling-stroke"
               className={[styles.country, name === start ? styles.start : name === target ? styles.target : route.includes(name) ? styles.visited : hints.includes(name) ? styles.hinted : "", name === wrong ? styles.wrong : ""].join(" ")} />
           ))}

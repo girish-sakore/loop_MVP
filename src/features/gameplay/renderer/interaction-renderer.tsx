@@ -11,6 +11,7 @@ import { ColorMatchInteraction } from "@/features/interactions/color-match/color
 import { WordRootInteraction } from "@/features/interactions/word-root/word-root-interaction";
 import { ImageTextSAnswerInteraction } from "@/features/interactions/image-text-sanswer/image-text-sanswer-interaction";
 import dynamic from "next/dynamic";
+import type { InteractionState } from "@/features/gameplay/progress/resume"; // NEW
 
 const BorderHopInteraction = dynamic(() =>
   import("@/features/interactions/border-hop/border-hop-interaction").then((module) => module.BorderHopInteraction),
@@ -29,6 +30,8 @@ type InteractionRendererProps = {
   onIntroComplete: () => void;
   hintsRemaining?: number;
   onUseHint?: () => void;
+  interactionState?: InteractionState;                          // NEW
+  onInteractionStateChange?: (state: InteractionState) => void; // NEW
 };
 
 export function InteractionRenderer({
@@ -42,6 +45,8 @@ export function InteractionRenderer({
   onIntroComplete,
   hintsRemaining,
   onUseHint,
+  interactionState,          // NEW
+  onInteractionStateChange,  // NEW
 }: InteractionRendererProps) {
   switch (stage.type) {
     case "border-hop":
@@ -56,6 +61,8 @@ export function InteractionRenderer({
           onIntroComplete={onIntroComplete}
           hintsRemaining={hintsRemaining}
           onUseHint={onUseHint}
+          interactionState={interactionState}                   // NEW
+          onInteractionStateChange={onInteractionStateChange}   // NEW
         />
       );
     case "image-select":
@@ -103,6 +110,7 @@ export function InteractionRenderer({
     case "fill-blank-text":
       return (
         <FillBlankTextInteraction
+          key={`${stage.id}:${retryCount}`}   // NEW: retry remounts with a fresh deck
           stages={(stages ?? [stage]).filter((item): item is Extract<Stage, { type: "fill-blank-text" }> => item.type === "fill-blank-text")}
           onAnswer={onAnswer}
           disabled={disabled}
@@ -111,6 +119,8 @@ export function InteractionRenderer({
           onIntroComplete={onIntroComplete}
           hintsRemaining={hintsRemaining}
           onUseHint={onUseHint}
+          interactionState={interactionState}                   // NEW
+          onInteractionStateChange={onInteractionStateChange}   // NEW
         />
       );
     case "drag-drop":

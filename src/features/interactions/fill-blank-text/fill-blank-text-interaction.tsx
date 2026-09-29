@@ -1,15 +1,23 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import { parsePrompt, type PromptPart } from "@/features/interactions/fill-blank/parse-prompt";
+import { useInteractionProgress } from "@/features/gameplay/progress/use-interaction-progress";
 import { FillBlankTextHintPopup } from "./fill-blank-text-hint-popup";
 import type { FillBlankTextStage } from "@/types/gameplay";
 
 type Option = FillBlankTextStage["blanks"][number];
 type CardStatus = "unanswered" | "correct" | "wrong" | "skipped";
+
+// Everything the user would be upset to lose. Must stay JSON-serializable.
+type FillBlankState = {
+  currentIndex: number;
+  answersByStage: Record<string, Record<string, string>>;
+  statusByStage: Record<string, CardStatus>;
+};
 
 type Props = {
   retryCount?: number;
@@ -30,6 +38,9 @@ type Props = {
   disabled?: boolean;
   showIntro?: boolean;
   onIntroComplete?: () => void;
+  // Saved progress from the engine + callback to report changes back.
+  interactionState?: Record<string, unknown>;
+  onInteractionStateChange?: (state: Record<string, unknown>) => void;
 };
 const DEFAULT_HINTS = 3;
 
@@ -44,101 +55,50 @@ export function FillBlankTextInteraction({
   onIntroComplete,
   hintsRemaining = DEFAULT_HINTS,
   onUseHint,
+  interactionState,
+  onInteractionStateChange,
 }: Props) {
   const stageList = useMemo(
     () => stages ?? (singleStage ? [singleStage] : []),
     [stages, singleStage],
   );
-  const storageKey = useMemo(
-    () => `fill-blank-text:${stageList.map((stage) => stage.id).join("|")}`,
-    [stageList],
-  );
-  const [hasLoadedSavedState, setHasLoadedSavedState] = useState(false);
 
-  const [introDone, setIntroDone] = useState(!showIntro);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answersByStage, setAnswersByStage] = useState<Record<string, Record<string, string>>>({});
-  const [statusByStage, setStatusByStage] = useState<Record<string, CardStatus>>({});
+  // A round that was fully submitted but not fully correct already cost an
+  // attempt. Restoring it would leave every card "answered" with nothing left
+  // to do, so start the deck fresh instead (same as Retry would).
+  const saved = interactionState as Partial<FillBlankState> | undefined;
+  const savedStatus = saved?.statusByStage;
+  const roundSubmitted =
+    !!savedStatus &&
+    stageList.length > 0 &&
+    stageList.every((s) => savedStatus[s.id] && savedStatus[s.id] !== "unanswered");
+  const roundAllCorrect =
+    roundSubmitted && stageList.every((s) => savedStatus![s.id] === "correct");
+  const restored = roundSubmitted && !roundAllCorrect ? undefined : saved;
+
+  const [gameState, update] = useInteractionProgress<FillBlankState>({
+    defaultState: { currentIndex: 0, answersByStage: {}, statusByStage: {} },
+    interactionState: restored,
+    onInteractionStateChange: onInteractionStateChange as
+      | ((s: FillBlankState) => void)
+      | undefined,
+  });
+  const { answersByStage, statusByStage } = gameState;
+
+  // Sanitize: a saved index may be out of range if the stages changed.
+  const currentIndex = Math.min(
+    Math.max(Number.isInteger(gameState.currentIndex) ? gameState.currentIndex : 0, 0),
+    Math.max(stageList.length - 1, 0),
+  );
+
+  // Intro is owned by the engine (showIntro prop), so it is not persisted here.
+  const introDone = !showIntro;
+
+  // Transient UI: not saved.
   const [activeHint, setActiveHint] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
 
-
-  // making local storage for given answer so it persists across page reloads and sessions.
-  // This is useful for users who may want to return to the game later without losing their progress. 
-  // The useEffect hooks handle loading and saving the state to local storage.
-  useEffect(() => {
-    if (!storageKey) return;
-
-    let cancelled = false;
-
-    queueMicrotask(() => {
-      if (cancelled) return;
-
-      try {
-        const saved = localStorage.getItem(storageKey);
-
-        if (saved) {
-          const parsed = JSON.parse(saved);
-
-          if (typeof parsed.introDone === "boolean") {
-            setIntroDone(parsed.introDone);
-          }
-
-          if (typeof parsed.currentIndex === "number") {
-            setCurrentIndex(
-              Math.min(
-                Math.max(parsed.currentIndex, 0),
-                Math.max(stageList.length - 1, 0),
-              ),
-            );
-          }
-
-          if (parsed.answersByStage && typeof parsed.answersByStage === "object") {
-            setAnswersByStage(parsed.answersByStage);
-          }
-
-          if (parsed.statusByStage && typeof parsed.statusByStage === "object") {
-            setStatusByStage(parsed.statusByStage);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to restore fill-blank game state:", error);
-      } finally {
-        if (!cancelled) {
-          setHasLoadedSavedState(true);
-        }
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [storageKey, stageList.length]);
-  useEffect(() => {
-    if (!hasLoadedSavedState || !storageKey) return;
-
-    try {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({
-          introDone,
-          currentIndex,
-          answersByStage,
-          statusByStage,
-        }),
-      );
-    } catch (error) {
-      console.error("Failed to save fill-blank game state:", error);
-    }
-  }, [
-    hasLoadedSavedState,
-    storageKey,
-    introDone,
-    currentIndex,
-    answersByStage,
-    statusByStage,
-  ]);
-  const stage = stageList[Math.min(currentIndex, Math.max(stageList.length - 1, 0))];
+  const stage = stageList[currentIndex];
   const total = stageList.length;
   const showPager = total > 1;
   const atStart = currentIndex === 0;
@@ -164,9 +124,12 @@ export function FillBlankTextInteraction({
 
   function handleInputChange(blankId: string, value: string) {
     if (disabled) return;
-    setAnswersByStage((prev) => ({
-      ...prev,
-      [stage.id]: { ...(prev[stage.id] ?? {}), [blankId]: value },
+    // Functional form: keystrokes can arrive faster than renders.
+    update((prev) => ({
+      answersByStage: {
+        ...prev.answersByStage,
+        [stage.id]: { ...(prev.answersByStage[stage.id] ?? {}), [blankId]: value },
+      },
     }));
   }
 
@@ -182,7 +145,7 @@ export function FillBlankTextInteraction({
       ...statusByStage,
       [stage.id]: correct ? "correct" : "wrong",
     };
-    setStatusByStage(nextStatusByStage);
+    update({ statusByStage: nextStatusByStage });
 
     const feedback = correct
       ? stage.feedback?.correct ?? "Correct!"
@@ -217,7 +180,7 @@ export function FillBlankTextInteraction({
   function goTo(index: number) {
     if (index < 0 || index >= total) return;
     setHintVisible(false);
-    setCurrentIndex(index);
+    update({ currentIndex: index });
   }
 
   function handleSkip() {
@@ -225,7 +188,7 @@ export function FillBlankTextInteraction({
       ...statusByStage,
       [stage.id]: statusByStage[stage.id] === "correct" ? "correct" : "skipped",
     };
-    setStatusByStage(nextStatusByStage);
+    update({ statusByStage: nextStatusByStage });
     if (Object.values(nextStatusByStage).filter((value) => value !== "unanswered").length === total) {
       submitRound(nextStatusByStage);
       return;
@@ -293,10 +256,7 @@ export function FillBlankTextInteraction({
         <motion.button
           type="button"
           disabled={disabled}
-          onClick={() => {
-            setIntroDone(true);
-            onIntroComplete?.();
-          }}
+          onClick={() => onIntroComplete?.()}
           className="h-14 w-full max-w-[340px] self-center rounded-full border-[3px] border-[#2B2A25] bg-[#FBAE4B] text-[17px] font-extrabold text-[#2B2A25] shadow-[0_4px_0_#2B2A25] transition active:translate-y-0.5 active:shadow-[0_2px_0_#2B2A25] disabled:opacity-40"
           initial={{ opacity: 0, y: 18, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -311,8 +271,6 @@ export function FillBlankTextInteraction({
 
   return (
     <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-y-auto bg-[#FDF9F1] px-4 pb-4 pt-6 text-[#2B2A25]">
-
-
       {/* Heading — matches swipe game style */}
       <div className="flex shrink-0 flex-col items-center gap-4 text-center px-4 pt-2 mb-2">
         <span className="inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#53BCD1] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#2B2A25]">
@@ -439,8 +397,6 @@ export function FillBlankTextInteraction({
           )}
         </button>
       </div>
-
-
 
       <FillBlankTextHintPopup open={hintVisible} hint={activeHint} onClose={() => setHintVisible(false)} />
     </div>
