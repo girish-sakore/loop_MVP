@@ -991,13 +991,13 @@
     },
     {
       "id": "node-6b",
-      "type": "image-text-sanswer",
+      "type": "image-text-answer",
       "mapTitle": "Visual Mystery",
       "mapSubtitle": "Guess what you see",
       "subStages": [
         {
           "id": "node-6-stage-1",
-          "type": "image-text-sanswer",
+          "type": "image-text-answer",
           "mapTitle": "Visual Mystery",
           "mapSubtitle": "Guess what you see",
           "question": "What famous landmark is this?",
@@ -1014,7 +1014,7 @@
         },
         {
           "id": "node-6-stage-2",
-          "type": "image-text-sanswer",
+          "type": "image-text-answer",
           "mapTitle": "Visual Mystery",
           "mapSubtitle": "Guess what you see",
           "question": "What ancient civilization built this?",

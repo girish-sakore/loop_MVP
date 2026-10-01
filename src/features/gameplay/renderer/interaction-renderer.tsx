@@ -9,7 +9,7 @@ import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/r
 import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
 import { ColorMatchInteraction } from "@/features/interactions/color-match/color-match-interaction";
 import { WordRootInteraction } from "@/features/interactions/word-root/word-root-interaction";
-import { ImageTextSAnswerInteraction } from "@/features/interactions/image-text-answer/image-text-answer-interaction";
+import { ImageTextSAnswerInteraction } from "@/features/interactions/image-text-sanswer/image-text-sanswer-interaction";
 import dynamic from "next/dynamic";
 import type { InteractionState } from "@/features/gameplay/progress/resume"; // NEW
 
