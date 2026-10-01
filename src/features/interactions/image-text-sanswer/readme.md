@@ -28,9 +28,9 @@ The hint system is connected to the game engine and uses the same `FillBlankText
 
 ## Files Created
 
-- `image-text-sanswer-interaction.tsx`: Main interaction component
+- `image-text-answer-interaction.tsx`: Main interaction component
 - `readme.md`: This documentation
 
 ## Integration
 
-This interaction is automatically integrated into the `InteractionRenderer` component and will be displayed when a stage with type `"image-text-sanswer"` is encountered.
+This interaction is automatically integrated into the `InteractionRenderer` component and will be displayed when a stage with type `"image-text-answer"` is encountered.

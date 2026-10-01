@@ -11,7 +11,7 @@ export type StageType =
   | "color-match"
   | "border-hop"
   | "word-root"
-  | "image-text-sanswer";
+  | "image-text-answer";
 
 export type StageBase = {
   id: string;
@@ -321,7 +321,7 @@ export type Edition = {
 };
 
 export type ImageTextSAnswerStage = StageBase & {
-  type: "image-text-sanswer";
+  type: "image-text-answer";
   image: string;
   answer: string;
   hint?: string;

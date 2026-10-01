@@ -3,11 +3,11 @@
 import type { UserNodeProgress } from "@prisma/client";
 import { normalizeSnapshot, type GameplaySnapshot } from "./resume";
 
-type Row = Pick<
-  UserNodeProgress,
-  | "currentSubStage" | "attemptsRemaining" | "stagePassed" | "score" | "correctAnswers"
-  | "totalAnswers" | "hintsRemaining" | "clientUpdatedAt" | "version"
->;
+type Row = Pick<UserNodeProgress, "currentSubStage" | "attemptsRemaining" | "stagePassed" | "score" | "correctAnswers" | "totalAnswers"> & {
+  hintsRemaining: number;
+  clientUpdatedAt: bigint;
+  version: number;
+};
 
 /**
  * null attemptsRemaining means "legacy/uninitialized": treat the whole row as
