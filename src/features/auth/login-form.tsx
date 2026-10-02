@@ -4,14 +4,14 @@ import { useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 
-export function LoginForm() {
+export function LoginForm({ defaultCallbackUrl = "/map" }: { defaultCallbackUrl?: string }) {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(false);
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/map";
+  const callbackUrl = searchParams.get("callbackUrl") ?? defaultCallbackUrl;
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();

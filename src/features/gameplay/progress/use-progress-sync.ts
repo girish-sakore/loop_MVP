@@ -16,17 +16,20 @@ type Options = {
   storageKey: string;
   /** Turn syncing on only after the initial restore has finished. */
   enabled: boolean;
+  /** Ephemeral runs (replays) never persist: no localStorage, no network. */
+  ephemeral?: boolean;
   /** Called with the server's merged view after every push and pull. */
   onRemote: (remote: GameplaySnapshot) => void;
 };
 
-export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemote }: Options) {
+export function useProgressSync({ editionId, nodeId, storageKey, enabled, ephemeral = false, onRemote }: Options) {
   const onRemoteRef = useRef(onRemote);
   useEffect(() => { onRemoteRef.current = onRemote; });
 
   const pending = useRef<GameplaySnapshot | null>(null);
 
   const post = useCallback(async (snapshot: GameplaySnapshot) => {
+    if (ephemeral) return;
     try {
       const res = await fetch("/api/progress/sync", {
         method: "POST",
@@ -43,7 +46,7 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
       // Offline or server error: keep it queued and retry on focus/online/next save.
       pending.current = snapshot;
     }
-  }, [editionId, nodeId]);
+  }, [editionId, nodeId, ephemeral]);
 
   const flush = useCallback(() => {
     const snapshot = pending.current;
@@ -53,11 +56,14 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
 
   /** Local write is always immediate. Call only on discrete stage events. */
   const save = useCallback((snapshot: GameplaySnapshot) => {
-    try { saveSnapshot(localStorage, storageKey, snapshot); } catch { /* storage blocked */ }
+    if (!ephemeral) {
+      try { saveSnapshot(localStorage, storageKey, snapshot); } catch { /* storage blocked */ }
+    }
     void post(snapshot);
-  }, [storageKey, post]);
+  }, [storageKey, post, ephemeral]);
 
   const pull = useCallback(async () => {
+    if (ephemeral) return;
     try {
       const params = new URLSearchParams({ editionId, nodeId });
       const res = await fetch(`/api/progress/sync?${params}`, { cache: "no-store" });

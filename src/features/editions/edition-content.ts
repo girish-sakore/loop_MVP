@@ -34,8 +34,34 @@ export function getFeaturedEdition(): Edition {
   return loadEditions()[0];
 }
 
+/**
+ * Select one edition for a calendar day. A specifically dated release wins;
+ * otherwise the available library rotates by UTC day to keep home singular.
+ */
+export function getDailyEdition(date = new Date()): Edition {
+  const editions = loadEditions();
+  const dayKey = toUtcDayKey(date);
+  const scheduledEdition = editions.find((edition) => edition.publishedAt === dayKey);
+  if (scheduledEdition) return scheduledEdition;
+
+  const dayNumber = Math.floor(Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+  ) / 86_400_000);
+  return editions[((dayNumber % editions.length) + editions.length) % editions.length];
+}
+
 export function getAllEditions(): Edition[] {
   return loadEditions();
+}
+
+function toUtcDayKey(date: Date) {
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, "0"),
+    String(date.getUTCDate()).padStart(2, "0"),
+  ].join("-");
 }
 
 function normalizeEdition(edition: Edition): Edition {

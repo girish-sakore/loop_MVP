@@ -14,7 +14,7 @@ export default function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-5 left-1/2 z-50 grid w-[min(290px,calc(100%-48px))] max-w-[520px] -translate-x-1/2 grid-cols-3 rounded-full bg-[#efe8dc] p-1.5 shadow-[0_2px_10px_rgba(11,11,15,0.06)]">
+      <nav className="fixed bottom-4 left-1/2 z-50 grid w-[min(390px,calc(100%-36px))] max-w-[520px] -translate-x-1/2 grid-cols-3 rounded-full border-[3px] border-[#1e1b18] bg-[#f8f1e3] p-1.5 shadow-[0_6px_0_#1e1b18]">
         {links.map(({ href, icon, label }) => {
           const isActive = pathname === href;
           return (
@@ -23,8 +23,8 @@ export default function BottomNav() {
               href={href}
               className={
                 isActive
-                  ? "flex h-14 flex-col items-center justify-center rounded-full bg-[#ded1b8] text-[#0b0b0f] transition-all duration-75 active:translate-y-0.5"
-                  : "flex h-14 flex-col items-center justify-center rounded-full text-[#0b0b0f] transition-all duration-75 hover:bg-[#f5f0e9] active:translate-y-0.5"
+                  ? "flex h-16 flex-col items-center justify-center rounded-full bg-[#1e1b18] text-[#f8f1e3] transition-all duration-75 active:translate-y-0.5"
+                  : "flex h-16 flex-col items-center justify-center rounded-full text-[#1e1b18] transition-all duration-75 hover:bg-[#eee3d2] active:translate-y-0.5"
               }
             >
               <span

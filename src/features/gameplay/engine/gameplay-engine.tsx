@@ -33,10 +33,21 @@ interface GameplayEngineProps {
   initialStage?: number;
   initialProgress?: StoredProgress;
   userId: string;
+  /**
+   * When set (daily games), completion routes to `/summary?gameKey=<key>` so
+   * the summary can offer a replay. Absent for regular edition nodes, which
+   * keep routing to the plain `/summary`.
+   */
+  gameKey?: string;
+  /**
+   * Ephemeral runs (daily-game replays) persist nothing: no localStorage,
+   * no /api/progress/sync, no /api/progress/complete.
+   */
+  ephemeral?: boolean;
 }
 
 export function GameplayEngine({
-  editionId, nodeId, userId, stages, initialStage = 0, initialProgress }: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, gameKey, ephemeral = false }: GameplayEngineProps) {
   const router = useRouter();
   const hasNavigated = useRef(false);
   const [initializedKey, setInitializedKey] = useState<string | null>(null);
@@ -101,18 +112,21 @@ export function GameplayEngine({
       // state — it belonged to the old stage.
       const merged = { ...mergeSnapshots(local, remote), interactionState: {} };
       applySnapshot(merged);
-      try { saveSnapshot(localStorage, gameplayKey, merged); } catch { /* storage blocked */ }
+      if (!ephemeral) {
+        try { saveSnapshot(localStorage, gameplayKey, merged); } catch { /* storage blocked */ }
+      }
       setEpoch((e) => e + 1);
     } else if (remote.hintsRemaining < local.hintsRemaining) {
       applyRemoteHints(remote.hintsRemaining);
     }
-  }, [applySnapshot, applyRemoteHints, gameplayKey]);
+  }, [applySnapshot, applyRemoteHints, gameplayKey, ephemeral]);
 
   const { save, flush } = useProgressSync({
     editionId,
     nodeId,
     storageKey: gameplayKey,
     enabled: ready,
+    ephemeral,
     onRemote: handleRemote,
   });
 
@@ -121,13 +135,33 @@ export function GameplayEngine({
 
   // Game-state change (typing, hopping...): local only, no network call.
   const saveLocalOnly = useCallback(() => {
+    if (ephemeral) return;
     try { saveSnapshot(localStorage, gameplayKey, pickSnapshot(useGameplayStore.getState())); } catch { /* storage blocked */ }
-  }, [gameplayKey]);
+  }, [gameplayKey, ephemeral]);
 
   useEffect(() => {
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
+
+      // Ephemeral runs (replays) start completely fresh: no saved progress is
+      // read, and nothing is written to localStorage or the network.
+      if (ephemeral) {
+        applySnapshot({
+          version: SNAPSHOT_VERSION,
+          updatedAt: 0,
+          currentStage: initialStage,
+          attemptsRemaining: stages[initialStage]?.attemptsAllowed ?? 0,
+          stagePassed: false,
+          score: 0,
+          correctAnswers: 0,
+          totalAnswers: 0,
+          hintsRemaining: DEFAULT_HINT_BUDGET,
+          interactionState: {},
+        });
+        setInitializedKey(gameplayKey);
+        return;
+      }
 
       let legacyHints: number | undefined;
       try {
@@ -161,9 +195,11 @@ export function GameplayEngine({
       try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
     });
     return () => { cancelled = true; };
-  }, [stages, initialStage, initialProgress, gameplayKey, legacyHintsKey, applySnapshot, save]);
+  }, [stages, initialStage, initialProgress, gameplayKey, legacyHintsKey, applySnapshot, save, ephemeral]);
 
   const completeProgress = useCallback(async () => {
+    // Ephemeral runs (replays) leave no trace: no DB completion, no storage.
+    if (ephemeral) return;
     flush();
     await fetch("/api/progress/complete", {
       method: "POST",
@@ -171,17 +207,17 @@ export function GameplayEngine({
       body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
     }).catch(() => { });
     try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers, gameplayKey, flush]);
+  }, [editionId, nodeId, score, correctAnswers, totalAnswers, gameplayKey, flush, ephemeral]);
 
   useEffect(() => {
     if (!ready) return;
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
-        router.push("/summary");
+        router.push(gameKey ? `/summary?gameKey=${encodeURIComponent(gameKey)}` : "/summary");
       });
     }
-  }, [ready, completed, stage, completeProgress, router]);
+  }, [ready, completed, stage, completeProgress, router, gameKey]);
 
   const handleInteractionStateChange = useCallback((stageId: string, state: InteractionState) => {
     setInteractionState(stageId, state);
