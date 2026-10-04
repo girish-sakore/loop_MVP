@@ -11,6 +11,13 @@ import type { SwipeStage } from "@/types/gameplay";
 
 const SWIPE_THRESHOLD = 120;
 
+// Matchbox theme slot for this game (index of "swipe" in the game order).
+const THEME = { ["--c" as string]: "var(--mb-t0)", ["--f" as string]: "var(--mb-tf0)" };
+
+// Shared look: ink outline + hard offset shadow.
+const INK = "border-2 border-[var(--mb-ink)]";
+const HARD = "shadow-[3px_3px_0_var(--mb-sh)]";
+
 type Props = {
   stage: SwipeStage;
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
@@ -86,12 +93,10 @@ export function SwipeInteractionPlaceholder({
   }
 
   return (
-    <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden bg-[#f6f2ec] px-4 pb-4 pt-4 text-[#0b0b0f]">
-      <div className="flex shrink-0 flex-col items-center gap-2 text-center">
-        <span className="inline-flex rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#0b0b0f]">
-          Swipe Challenge
-        </span>
-        <h1 className="font-display max-w-[360px] text-[27px] leading-none">
+    <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden px-4 pb-4 pt-4 text-[var(--mb-onbg)]">
+      <div className="flex shrink-0 flex-col items-center gap-3 text-center">
+        <Tag>Swipe Challenge</Tag>
+        <h1 className="max-w-[360px] text-[24px] font-bold leading-tight tracking-[-0.01em]">
           {stage.question}
         </h1>
       </div>
@@ -99,14 +104,14 @@ export function SwipeInteractionPlaceholder({
       <div className="relative flex min-h-0 flex-1 flex-col justify-center py-4">
         <div className="relative flex min-w-0 justify-center px-3">
           <motion.div
-            className="pointer-events-none absolute left-0 top-8 z-10 rounded-[4px] border-[3px] border-[#0b0b0f] bg-[#fffdf7] px-3 py-1 text-[12px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_rgba(11,11,15,0.16)]"
+            className={`pointer-events-none absolute left-0 top-8 z-20 rounded-md ${INK} bg-[var(--mb-cream)] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[var(--mb-ink)] ${HARD}`}
             style={{ opacity: leftOpacity, rotate: -8 }}
           >
             {stage.left.label}
           </motion.div>
 
           <motion.div
-            className="pointer-events-none absolute right-0 top-8 z-10 rounded-[4px] border-[3px] border-[#0b0b0f] bg-[#85cb57] px-3 py-1 text-[12px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_rgba(11,11,15,0.16)]"
+            className={`pointer-events-none absolute right-0 top-8 z-20 rounded-md ${INK} bg-[var(--mb-yel)] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[var(--mb-ink)] ${HARD}`}
             style={{ opacity: rightOpacity, rotate: 8 }}
           >
             {stage.right.label}
@@ -127,7 +132,7 @@ export function SwipeInteractionPlaceholder({
                 resetCard();
               }
             }}
-            className="relative grid h-[min(58dvh,430px)] min-h-[350px] w-full max-w-[330px] cursor-grab select-none grid-rows-[70%_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_8px_0_rgba(11,11,15,0.16)] active:cursor-grabbing"
+            className={`relative grid h-[min(58dvh,430px)] min-h-[350px] w-full max-w-[330px] cursor-grab select-none grid-rows-[70%_minmax(0,1fr)] overflow-hidden rounded-xl ${INK} bg-[var(--c)] text-left shadow-[4px_4px_0_var(--mb-sh)] active:cursor-grabbing`}
             initial={{ scale: 0.96, opacity: 0, y: 16 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             transition={{
@@ -135,26 +140,27 @@ export function SwipeInteractionPlaceholder({
               stiffness: 280,
               damping: 24,
             }}
-            style={{ x, rotate, touchAction: "pan-y" }}
+            style={{ x, rotate, touchAction: "pan-y", ...THEME }}
           >
+            <Strikes />
             <SwipeCardMedia
               image={stage.card.image}
               title={stage.card.title}
-              className="h-full border-b-[3px] border-[#0b0b0f]"
+              className="h-full border-b-2 border-[var(--mb-ink)]"
             />
 
-            <div className="flex min-h-0 flex-col justify-center px-5 py-4 text-center">
+            <div className="flex min-h-0 flex-col justify-center bg-[var(--mb-cream)] px-6 py-4 text-center text-[var(--mb-ink)]">
               {stage.card.subtitle ? (
-                <span className="mx-auto mb-3 max-w-full rounded-[4px] border border-[#0b0b0f] bg-[#f5f0e9] px-2 py-1 text-[12px] font-extrabold leading-none text-[#343238]">
+                <span className="mx-auto mb-3 max-w-full rounded-full border-[1.5px] border-[var(--mb-ink)] bg-[var(--mb-dcream)] px-3 py-1 text-[12px] font-bold leading-none">
                   {stage.card.subtitle}
                 </span>
               ) : null}
 
-              <h2 className="text-[24px] font-extrabold leading-tight">
+              <h2 className="text-[24px] font-bold leading-tight">
                 {stage.card.title}
               </h2>
 
-              <p className="mt-4 text-[18px] font-semibold leading-snug text-[#0b0b0f]">
+              <p className="mt-3 text-[17px] font-medium leading-snug">
                 {stage.statement}
               </p>
             </div>
@@ -178,11 +184,11 @@ function SwipeIntro({
   onStart: () => void;
 }) {
   return (
-    <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#f6f2ec] px-5 pb-12 pt-8 text-[#0b0b0f]">
-      <div className="absolute left-1/2 top-[15%] h-[320px] w-[3px] -translate-x-1/2 rounded-full bg-[#d8d0c3]" />
+    <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden px-5 pb-12 pt-8 text-[var(--mb-onbg)]">
+      <div className="absolute left-1/2 top-[15%] h-[320px] w-[2px] -translate-x-1/2 rounded-full bg-[color-mix(in_srgb,var(--mb-onbg)_25%,transparent)]" />
       <motion.div
         aria-hidden
-        className="absolute left-[16%] top-[29%] rounded-[4px] border-[3px] border-[#0b0b0f] bg-[#fffdf7] px-3 py-1 text-[12px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_rgba(11,11,15,0.16)]"
+        className={`absolute left-[16%] top-[29%] rounded-md ${INK} bg-[var(--mb-cream)] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[var(--mb-ink)] ${HARD}`}
         initial={{ opacity: 0, x: 18, rotate: -8 }}
         animate={{ opacity: [0, 1, 0.65], x: [18, -4, 0] }}
         transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 0.8 }}
@@ -191,7 +197,7 @@ function SwipeIntro({
       </motion.div>
       <motion.div
         aria-hidden
-        className="absolute right-[16%] top-[29%] rounded-[4px] border-[3px] border-[#0b0b0f] bg-[#85cb57] px-3 py-1 text-[12px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_rgba(11,11,15,0.16)]"
+        className={`absolute right-[16%] top-[29%] rounded-md ${INK} bg-[var(--mb-yel)] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[var(--mb-ink)] ${HARD}`}
         initial={{ opacity: 0, x: -18, rotate: 8 }}
         animate={{ opacity: [0.65, 1, 0], x: [0, 4, -18] }}
         transition={{
@@ -206,17 +212,18 @@ function SwipeIntro({
 
       <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center">
         <motion.div
-          className="mb-8 inline-flex rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_rgba(11,11,15,0.18)]"
           initial={{ opacity: 0, y: 12, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.28, ease: [0.2, 0.9, 0.2, 1] }}
+          className="mb-8"
         >
-          Swipe Challenge
+          <Tag>Swipe Challenge</Tag>
         </motion.div>
 
         <div className="relative mb-8 flex h-[230px] w-full max-w-[360px] justify-center">
           <motion.div
-            className="grid h-[210px] w-[176px] grid-rows-[116px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] shadow-[0_8px_0_rgba(11,11,15,0.16)]"
+            className={`relative grid h-[210px] w-[176px] grid-rows-[116px_minmax(0,1fr)] overflow-hidden rounded-xl ${INK} bg-[var(--c)] shadow-[4px_4px_0_var(--mb-sh)]`}
+            style={THEME}
             initial={{ opacity: 0, y: 18, rotate: 0 }}
             animate={{
               opacity: 1,
@@ -229,16 +236,17 @@ function SwipeIntro({
               rotate: { duration: 2.6, repeat: Infinity, repeatDelay: 0.4 },
             }}
           >
+            <Strikes />
             <SwipeCardMedia
               image={stage.card.image}
               title={stage.card.title}
-              className="h-full border-b-[3px] border-[#0b0b0f]"
+              className="h-full border-b-2 border-[var(--mb-ink)]"
             />
-            <div className="flex min-h-0 flex-col justify-center px-3 py-2 text-center">
-              <span className="text-[16px] font-extrabold leading-tight">
+            <div className="flex min-h-0 flex-col justify-center bg-[var(--mb-cream)] px-4 py-2 text-center text-[var(--mb-ink)]">
+              <span className="text-[16px] font-bold leading-tight">
                 {stage.card.title}
               </span>
-              <span className="mt-1 text-[12px] font-bold leading-tight text-[#343238]">
+              <span className="mt-1 text-[12px] font-medium leading-tight opacity-70">
                 Decide fast
               </span>
             </div>
@@ -251,10 +259,10 @@ function SwipeIntro({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.36, duration: 0.28 }}
         >
-          <h1 className="font-display mx-auto max-w-[360px] text-[30px] leading-none">
+          <h1 className="mx-auto max-w-[360px] text-[26px] font-bold leading-tight tracking-[-0.01em]">
             {stage.question}
           </h1>
-          <p className="mx-auto mt-3 max-w-[340px] text-[15px] font-semibold leading-snug text-[#343238]">
+          <p className="mx-auto mt-3 max-w-[340px] text-[15px] font-medium leading-snug opacity-80">
             Read the card, then swipe left for {stage.left.label} or right for{" "}
             {stage.right.label}.
           </p>
@@ -264,15 +272,33 @@ function SwipeIntro({
       <motion.button
         type="button"
         onClick={onStart}
-        className="relative h-14 w-full max-w-[340px] self-center rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[16px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f]"
+        className={`relative h-14 w-full max-w-[340px] self-center rounded-xl ${INK} bg-[var(--mb-yel)] text-[15px] font-bold tracking-[0.08em] text-[var(--mb-ink)] ${HARD}`}
         initial={{ opacity: 0, y: 18, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        whileTap={{ y: 4, boxShadow: "0 2px 0 #0b0b0f" }}
+        whileTap={{ x: 2, y: 2 }}
         transition={{ delay: 0.52, duration: 0.3, ease: [0.2, 0.9, 0.2, 1] }}
       >
-        Play
+        PLAY
       </motion.button>
     </div>
+  );
+}
+
+/** Matchbox strike strips down both edges of a card. */
+function Strikes() {
+  return (
+    <>
+      <span aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[6px] bg-[var(--mb-strike)]" />
+      <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-[6px] bg-[var(--mb-strike)]" />
+    </>
+  );
+}
+
+function Tag({ children }: { children: React.ReactNode }) {
+  return (
+    <span className={`inline-flex rounded-full ${INK} bg-[var(--mb-cream)] px-4 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--mb-ink)] shadow-[2px_2px_0_var(--mb-sh)]`}>
+      {children}
+    </span>
   );
 }
 
@@ -300,11 +326,11 @@ function SwipeCardMedia({
 
   return (
     <div
-      className={`flex w-full flex-col items-center justify-center bg-[#eadfd1] ${className ?? ""}`}
+      className={`flex w-full flex-col items-center justify-center bg-[var(--mb-dcream)] text-[var(--mb-ink)] ${className ?? ""}`}
       aria-label={title}
     >
       <span className="material-symbols-outlined text-[56px]">swipe</span>
-      <span className="mt-1 text-[11px] font-extrabold uppercase text-[#343238]">
+      <span className="mt-1 text-[11px] font-bold uppercase tracking-wider opacity-70">
         Swipe Card
       </span>
     </div>
@@ -322,8 +348,8 @@ function ChoiceHint({
 
   return (
     <div
-      className={`flex min-w-0 items-center gap-2 rounded-md border-[3px] border-[#0b0b0f] px-3 py-2 text-[13px] font-extrabold shadow-[0_4px_0_rgba(11,11,15,0.14)] ${
-        isLeft ? "bg-[#fffdf7]" : "bg-[#85cb57]"
+      className={`flex min-w-0 items-center gap-2 rounded-xl ${INK} px-3 py-3 text-[14px] font-bold text-[var(--mb-ink)] ${HARD} ${
+        isLeft ? "bg-[var(--mb-cream)]" : "bg-[var(--mb-yel)]"
       }`}
     >
       {isLeft ? (

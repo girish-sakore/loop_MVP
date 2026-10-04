@@ -136,7 +136,7 @@ export default async function MapPage() {
         )}
         <div className="sech">Your streak</div>
         <StreakCard streak={streak} />
-        {/* {gameTiles.length > 0 && (
+        {gameTiles.length > 0 && (
           <>
             <div className="sech">Today&apos;s games</div>
             <section className="mb-tiles">
