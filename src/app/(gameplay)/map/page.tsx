@@ -16,7 +16,7 @@ import StreakCard from "@/components/matchbox/streak-card";
 import { getStreak } from "@/features/streak/get-streak";
 import RecentGames from "@/components/matchbox/recent-games";
 import { getRecentGames } from "@/features/recent-games/get-recent-games";
-import { GAME_ORDER as gameOrder } from "@/lib/matchbox/game-order";
+import { GAME_ORDER as gameOrder, themeIndexFor } from "@/lib/matchbox/game-order";
 
 type TileConfig = {
   key: string;
@@ -143,7 +143,7 @@ export default async function MapPage() {
             </section>
           </>
         )}
-      <RecentGames games={recentGames} />
+        <RecentGames games={recentGames} />
       </main>
       <BottomNav />
     </MobileContainer>
@@ -153,7 +153,7 @@ export default async function MapPage() {
 function TodayTile({ tile }: { tile: GameTile }) {
   const isCompleted = tile.node.status === "completed";
   const isLocked = isCompleted || tile.node.status === "locked";
-  const i = Math.max(0, gameOrder.indexOf(tile.key)) % 11;
+  const i = themeIndexFor(tile.key) % 11;
 
   const content = (
     <>
@@ -206,8 +206,8 @@ function buildGameTiles(
   if (!village) return [];
 
   const sortedNodes = [...editionNodes].sort((a, b) => {
-    const aOrder = gameOrder.indexOf(a.type);
-    const bOrder = gameOrder.indexOf(b.type);
+    const aOrder = themeIndexFor(a.type);
+    const bOrder = themeIndexFor(b.type);
 
     return (aOrder === -1 ? 999 : aOrder) - (bOrder === -1 ? 999 : bOrder);
   });
