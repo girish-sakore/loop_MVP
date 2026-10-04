@@ -1,16 +1,15 @@
 // app/api/progress/complete/route.ts
 //
-// ASSUMPTION (not verified against your existing file, which wasn't provided):
-// this reads score/correctAnswers/totalAnswers from the request body, computes
-// stars, marks the row completed, then resets the fields a replay would need
-// fresh (hints, attempts, stage, sync bookkeeping). Adjust the stars formula
-// and the "reset vs keep" choices to match whatever your current file does.
+// Same as the version you pasted, except the upsert now runs in a transaction
+// together with recordCompletionForStreak, so a node can never be marked
+// completed without the streak being updated (and vice versa).
 
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { DEFAULT_HINT_BUDGET } from "@/features/gameplay/progress/resume";
+import { recordCompletionForStreak } from "@/features/streak/record-completion.server";
 
 async function getUserId(): Promise<string | null> {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -44,44 +43,55 @@ export async function POST(req: Request) {
   }
 
   const stars = computeStars(correctAnswers, totalAnswers);
+  const now = new Date();
 
-  const row = await prisma.userNodeProgress.upsert({
-    where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
-    create: {
-      userId,
-      editionId,
-      nodeId,
-      status: "completed",
-      score,
-      correctAnswers,
-      totalAnswers,
-      stars,
-      stagePassed: true,
-      startedAt: new Date(),
-      completedAt: new Date(),
-      // A finished node's row should not "un-finish" itself if an in-flight
-      // sync from the same tab lands after this. Reset the fields that would
-      // make it look like an active session again.
-      currentSubStage: 0,
-      attemptsRemaining: 0,
-      hintsRemaining: DEFAULT_HINT_BUDGET,
-      clientUpdatedAt: BigInt(Date.now()),
-      version: 1,
-    },
-    update: {
-      status: "completed",
-      score,
-      correctAnswers,
-      totalAnswers,
-      stars,
-      stagePassed: true,
-      completedAt: new Date(),
-      currentSubStage: 0,
-      attemptsRemaining: 0,
-      hintsRemaining: DEFAULT_HINT_BUDGET,
-      clientUpdatedAt: BigInt(Date.now()),
-      version: 1,
-    },
+  const { row, streak } = await prisma.$transaction(async (tx) => {
+    // Keep the first completion time on replays so the streak week strip
+    // doesn't lose the day the node was originally completed.
+    const prev = await tx.userNodeProgress.findUnique({
+      where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
+      select: { completedAt: true },
+    });
+
+    const row = await tx.userNodeProgress.upsert({
+      where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
+      create: {
+        userId,
+        editionId,
+        nodeId,
+        status: "completed",
+        score,
+        correctAnswers,
+        totalAnswers,
+        stars,
+        stagePassed: true,
+        startedAt: now,
+        completedAt: now,
+        currentSubStage: 0,
+        attemptsRemaining: 0,
+        hintsRemaining: DEFAULT_HINT_BUDGET,
+        clientUpdatedAt: BigInt(now.getTime()),
+        version: 1,
+      },
+      update: {
+        status: "completed",
+        score,
+        correctAnswers,
+        totalAnswers,
+        stars,
+        stagePassed: true,
+        completedAt: prev?.completedAt ?? now,
+        currentSubStage: 0,
+        attemptsRemaining: 0,
+        hintsRemaining: DEFAULT_HINT_BUDGET,
+        clientUpdatedAt: BigInt(now.getTime()),
+        version: 1,
+      },
+    });
+
+    // stagePassed is always true on this endpoint, so every call qualifies.
+    const streak = await recordCompletionForStreak(tx, userId, now);
+    return { row, streak };
   });
 
   return NextResponse.json({
@@ -90,5 +100,6 @@ export async function POST(req: Request) {
     score: row.score,
     correctAnswers: row.correctAnswers,
     totalAnswers: row.totalAnswers,
+    streak,
   });
 }

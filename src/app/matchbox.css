@@ -2488,3 +2488,13 @@
 .mb .pf-ver{text-align:center;color:var(--mb-cream);opacity:.6;font:700 11px var(--font-dm),system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin:14px 0 0}
 .mb .gr.static{cursor:default}
 .mb .gr.static:active{transform:none;box-shadow:2px 2px 0 var(--mb-sh)}
+
+/* ---- Gameplay shell ---- */
+.mb.gp-shell{min-height:100dvh;display:flex;flex-direction:column;background:var(--mb-dteal);color:var(--mb-cream)}
+.mb .gp-head{height:86px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:2px dashed color-mix(in srgb,var(--mb-cream) 25%,transparent)}
+.mb .gp-close{width:46px;height:46px;flex:none;border-radius:50%;background:var(--mb-yel);border:2px solid var(--mb-ink);box-shadow:2px 2px 0 var(--mb-sh);display:grid;place-items:center;color:var(--mb-ink);text-decoration:none}
+.mb .gp-close:active{transform:translate(2px,2px);box-shadow:none}
+.mb .gp-bar{flex:1;max-width:320px;height:18px;border:2px solid var(--mb-ink);border-radius:99px;background:var(--mb-cream);overflow:hidden}
+.mb .gp-bar i{display:block;height:100%;background:var(--mb-red);transition:width .7s ease-out}
+.mb .gp-lives{display:flex;gap:2px;margin-left:auto}
+.mb .gp-main{flex:1;overflow-y:auto;padding-bottom:20px}
