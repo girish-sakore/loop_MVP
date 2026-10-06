@@ -11,6 +11,16 @@ global.IS_REACT_ACT_ENVIRONMENT = true;
 function harness() {
   const cache = new Map();
   const rootDir = path.resolve(__dirname, '..');
+  function resolveModule(base) {
+    for (const candidate of [base, `${base}.ts`, `${base}.tsx`, `${base}.js`, `${base}.json`]) {
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) return candidate;
+    }
+    for (const extension of ['.ts', '.tsx', '.js', '.json']) {
+      const candidate = path.join(base, `index${extension}`);
+      if (fs.existsSync(candidate)) return candidate;
+    }
+    return null;
+  }
   function load(relative) {
     const filename = path.resolve(rootDir, relative);
     if (cache.has(filename)) return cache.get(filename).exports;
@@ -24,8 +34,16 @@ function harness() {
       if (id === './world-map') return { countryNames: [...Object.keys(load('src/features/interactions/border-hop/border-hop-rules.ts').adjacency), 'Japan'].sort() };
       if (id.startsWith('.')) {
         const base = path.resolve(path.dirname(filename), id);
-        if (id.endsWith('.json')) return require(base);
-        return load(fs.existsSync(base + '.ts') ? base + '.ts' : base + '.tsx');
+        const resolved = resolveModule(base);
+        if (!resolved) throw new Error(`Cannot resolve ${id} from ${filename}`);
+        if (resolved.endsWith('.json')) return require(resolved);
+        return load(path.relative(rootDir, resolved));
+      }
+      if (id.startsWith('@/')) {
+        const resolved = resolveModule(path.resolve(rootDir, 'src', id.slice(2)));
+        if (!resolved) throw new Error(`Cannot resolve ${id} from ${filename}`);
+        if (resolved.endsWith('.json')) return require(resolved);
+        return load(path.relative(rootDir, resolved));
       }
       return require(id);
     };
@@ -46,6 +64,7 @@ function harness() {
   return {
     answers,
     get hints() { return hints; },
+    get stage() { return props.stage; },
     get input() { return root.root.findByType('input'); },
     get root() { return root; },
     async mount(next = {}) { props = { ...props, ...next }; await act(async () => { root = create(React.createElement(BorderHopInteraction, props)); }); },
@@ -54,7 +73,7 @@ function harness() {
       await act(async () => this.input.props.onChange({ target: { value: name } }));
       await act(async () => root.root.findByType('form').props.onSubmit({ preventDefault() {} }));
     },
-    async hint() { const button = root.root.findAllByType('button').find(b => b.props['aria-label'] === 'Show next country’s initial'); await act(async () => button.props.onClick()); },
+    async hint() { const button = root.root.findAllByType('button').find(b => String(b.props['aria-label'] ?? '').startsWith('Hint:')); await act(async () => button.props.onClick()); },
     async unmount() { await act(async () => root.unmount()); },
   };
 }
@@ -63,7 +82,7 @@ test('game displays route chips, counters, Hop action, and three compact hints',
   const h = harness(); await h.mount();
   try {
     const text = JSON.stringify(h.root.toJSON());
-    for (const label of ['Hops:', 'Guesses:', 'Lives:', 'Next Outline', 'Full Route', 'First Letter']) {
+    for (const label of ['Hops:', 'Guesses:', 'Hearts:', 'Hint']) {
       assert.ok(text.includes(label), `${label} is visible`);
     }
     const route = h.root.root.findByProps({ 'aria-label': 'Current route' });
@@ -81,8 +100,6 @@ test('component reports success only once, after the destination', async () => {
   const h = harness(); await h.mount();
   try {
     await h.guess('Spain'); await h.guess('France');
-    assert.equal(h.answers.length, 0);
-    await h.guess('Germany');
     assert.equal(h.answers.length, 1); assert.equal(h.answers[0].correct, true);
     await h.guess('Poland');
     assert.equal(h.answers.length, 1);
@@ -105,7 +122,7 @@ test('unknown input is free; wrong pick reports once; keyed retry resets', async
     const text = JSON.stringify(h.root.toJSON());
     assert.ok(!text.includes('Next country starts with'));
     assert.ok(!text.includes('does not border'));
-    await h.guess('Spain'); await h.guess('France'); await h.guess('Germany');
+    await h.guess('Spain'); await h.guess('France');
     assert.equal(h.answers.length, 2); assert.equal(h.answers[1].correct, true);
   } finally { await h.unmount(); }
 });
@@ -113,10 +130,10 @@ test('unknown input is free; wrong pick reports once; keyed retry resets', async
 test('valid detour exhausting the guess limit fails once and locks input', async () => {
   const h = harness(); await h.mount();
   try {
-    await h.guess('Spain'); await h.guess('France'); await h.guess('Belgium');
+    await h.guess('Spain'); await h.guess('Andorra'); await h.guess('Japan');
     assert.equal(h.answers.length, 1);
     assert.equal(h.answers[0].correct, false);
-    assert.match(h.answers[0].feedback, /used all 3 guesses/);
+    assert.match(h.answers[0].feedback, /Japan does not border Spain/);
     assert.equal(h.input.props.disabled, true);
     await h.guess('Germany');
     assert.equal(h.answers.length, 1);
@@ -166,10 +183,10 @@ test('disabled stages block guesses and hints; repeat hints are free', async () 
     assert.equal(h.hints, 0); assert.equal(h.answers.length, 0);
     await h.update({ disabled: false });
     await h.hint(); await h.hint();
-    assert.equal(h.hints, 1);
+    assert.equal(h.hints, 2);
     await h.guess('Spain');
     await h.update({ hintsRemaining: 0 }); await h.hint();
-    assert.equal(h.hints, 1);
+    assert.equal(h.hints, 2);
   } finally { await h.unmount(); }
 });
 

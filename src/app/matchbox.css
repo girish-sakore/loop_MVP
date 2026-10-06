@@ -1824,6 +1824,12 @@
     opacity: .35
 }
 
+.mb #v-library .day.done.match {
+    border-color: var(--c);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 42%, transparent);
+    font-weight: 800;
+}
+
 .mb #v-library .day.missed {
     border-color: var(--mb-soft);
     opacity: .6
@@ -1836,6 +1842,28 @@
 .mb #v-library .day.sel {
     outline: 2px solid var(--mb-red);
     outline-offset: 1px
+}
+
+.mb #v-library .day:disabled {
+    cursor: default
+}
+
+.mb #v-library .day:disabled:not(.done) {
+    opacity: .35
+}
+
+.mb #v-library .calendar-edition {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: inherit;
+    text-decoration: none
+}
+
+.mb #v-library .calendar-edition:hover,
+.mb #v-library .calendar-edition:focus-visible {
+    text-decoration: underline
 }
 
 .mb #v-library .legend span:first-child i {

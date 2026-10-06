@@ -17,7 +17,7 @@ const BorderHopInteraction = dynamic(() =>
   import("@/features/interactions/border-hop/border-hop-interaction").then((module) => module.BorderHopInteraction),
 );
 
-import type { Stage } from "@/types/gameplay";
+import type { Stage, FillBlankTextStage } from "@/types/gameplay";
 
 type InteractionRendererProps = {
   stage: Stage;
@@ -107,11 +107,27 @@ export function InteractionRenderer({
           retryCount={retryCount}
         />
       );
-    case "fill-blank-text":
+    case "fill-blank-text": {
+      const textStage = stage as FillBlankTextStage;
+      // The collapsed round carries the whole deck in `cards`; page through it
+      // as ONE round instead of re-rendering each blank as its own engine stage.
+      const deck: FillBlankTextStage[] = textStage.cards
+        ? textStage.cards.map((card) => ({
+            ...textStage,
+            id: card.id,
+            prompt: card.prompt,
+            question: card.question ?? textStage.question,
+            blanks: card.blanks,
+            feedback: {
+              correct: card.feedback?.correct ?? textStage.feedback.correct,
+              incorrect: card.feedback?.incorrect ?? textStage.feedback.incorrect,
+            },
+          }))
+        : [textStage];
       return (
         <FillBlankTextInteraction
           key={`${stage.id}:${retryCount}`}   // NEW: retry remounts with a fresh deck
-          stages={(stages ?? [stage]).filter((item): item is Extract<Stage, { type: "fill-blank-text" }> => item.type === "fill-blank-text")}
+          stages={deck}
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
@@ -123,6 +139,7 @@ export function InteractionRenderer({
           onInteractionStateChange={onInteractionStateChange}   // NEW
         />
       );
+    }
     case "drag-drop":
       return (
         <DragDropInteraction

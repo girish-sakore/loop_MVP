@@ -8,6 +8,11 @@ const React = require('react');
 const { act, create } = require('react-test-renderer');
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
+global.document = {
+  visibilityState: 'visible',
+  addEventListener() {},
+  removeEventListener() {},
+};
 
 function harness() {
   const cache = new Map();
@@ -32,6 +37,16 @@ function harness() {
     '@/features/gameplay/renderer/interaction-renderer': { InteractionRenderer: props => { interaction = props; return null; } },
     '@/features/gameplay/shell/gameplay-shell': { GameplayShell: passthrough },
   };
+  function resolveModule(base) {
+    for (const candidate of [base, `${base}.ts`, `${base}.tsx`, `${base}.js`, `${base}.json`]) {
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) return candidate;
+    }
+    for (const extension of ['.ts', '.tsx', '.js', '.json']) {
+      const candidate = path.join(base, `index${extension}`);
+      if (fs.existsSync(candidate)) return candidate;
+    }
+    return null;
+  }
   function load(relative) {
     const filename = path.resolve(__dirname, '..', relative);
     if (cache.has(filename)) return cache.get(filename).exports;
@@ -42,8 +57,15 @@ function harness() {
     mod.require = id => {
       if (mocks[id]) return mocks[id];
       if (id.startsWith('@/')) {
-        const base = 'src/' + id.slice(2);
-        return load(fs.existsSync(path.resolve(__dirname, '..', base + '.ts')) ? base + '.ts' : base + '.tsx');
+        const resolved = resolveModule(path.resolve(__dirname, '..', 'src', id.slice(2)));
+        if (!resolved) throw new Error(`Cannot resolve ${id} from ${filename}`);
+        return load(path.relative(path.resolve(__dirname, '..'), resolved));
+      }
+      if (id.startsWith('.')) {
+        const resolved = resolveModule(path.resolve(path.dirname(filename), id));
+        if (!resolved) throw new Error(`Cannot resolve ${id} from ${filename}`);
+        if (resolved.endsWith('.json')) return require(resolved);
+        return load(path.relative(path.resolve(__dirname, '..'), resolved));
       }
       return require(id);
     };

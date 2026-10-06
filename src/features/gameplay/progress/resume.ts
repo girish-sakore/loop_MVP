@@ -32,8 +32,12 @@ export type StoredProgress = Pick<
 > &
   Partial<Pick<GameplaySnapshot, "version" | "updatedAt" | "hintsRemaining">>;
 
-export function progressStorageKey(userId: string, editionId: string, nodeId: string) {
-  return `loop_progress_${JSON.stringify([userId, editionId, nodeId])}`;
+export function progressStorageKey(userId: string, gameId: string) {
+  return `loop_progress_${JSON.stringify([userId, gameId])}`;
+}
+
+export function legacyProgressStorageKey(userId: string, editionId: string, gameId: string) {
+  return `loop_progress_${JSON.stringify([userId, editionId, gameId])}`;
 }
 
 const isCount = (v: unknown): v is number => typeof v === "number" && Number.isSafeInteger(v) && v >= 0;
@@ -163,9 +167,11 @@ export function restoreSnapshot(
   key: string,
   server: GameplaySnapshot,
   allowances: number[],
+  legacyKey?: string,
 ): GameplaySnapshot {
   try {
-    const local = normalizeSnapshot(JSON.parse(storage.getItem(key) ?? "null"), {
+    const raw = storage.getItem(key) ?? (legacyKey ? storage.getItem(legacyKey) : null);
+    const local = normalizeSnapshot(JSON.parse(raw ?? "null"), {
       hintsRemaining: server.hintsRemaining,
     });
     if (!local) return server;

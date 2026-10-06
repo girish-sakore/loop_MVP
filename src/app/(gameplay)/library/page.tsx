@@ -10,25 +10,27 @@ export default async function LibraryPage() {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  // Only plain, serialisable fields cross into the client component.
-  const editions: LibraryEdition[] = getAllEditions().map((edition) => {
-    const nodeId = edition.nodes[0]?.id;
+  // One published day == one game. Only plain, serialisable fields cross into
+  // the client component.
+  const editions = await getAllEditions();
+  const library: LibraryEdition[] = editions.map(({ game, edition, dateKey }) => {
+    const rounds = edition.nodes[0]?.subStages.length ?? 0;
     return {
-      id: edition.id,
+      id: dateKey,
       title: edition.title,
-      category: edition.category ?? "Featured",
-      publishedAt: edition.publishedAt,
+      category: edition.category ?? game.type,
+      publishedAt: dateKey,
       weekLabel: edition.weekLabel,
       order: edition.order,
-      games: edition.nodes.length,
-      href: nodeId ? `/edition/${edition.id}/${nodeId}` : "/map",
+      games: rounds,
+      href: `/edition/${dateKey}/${game.id}`,
     };
   });
 
   return (
     <MobileContainer>
       <main className="mb mb-root mb-page">
-        <LibraryView editions={editions} />
+        <LibraryView editions={library} />
       </main>
       <BottomNav />
     </MobileContainer>

@@ -2,32 +2,42 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum DailyGameStatus {
+  draft
+  published
+}
+
+enum DailyGameProgressStatus {
+  not_started
+  in_progress
+  completed
+}
 
 datasource db {
   provider = "postgresql"
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
+  id            String   @id @default(cuid())
+  email         String   @unique
   name          String?
-  emailVerified Boolean        @default(false)
+  emailVerified Boolean  @default(false)
   image         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
   // Subscription
-  isPremium         Boolean       @default(false)
-  plan              String?       // "monthly" | "yearly"
+  isPremium         Boolean   @default(false)
+  plan              String? // "monthly" | "yearly"
   subscriptionStart DateTime?
   subscriptionEnd   DateTime?
 
   sessions      Session[]
   accounts      Account[]
   subscriptions Subscription[]
-  editionProgress UserEditionProgress[]
-  nodeProgress    UserNodeProgress[]
-  streak UserStreak?
+  streak        UserStreak?
+  createdGames  DailyGame[]
+  gameProgress  DailyGameProgress[]
 
   @@map("user")
 }
@@ -44,19 +54,19 @@ model UserStreak {
 }
 
 model Subscription {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  razorpayOrderId   String   @unique
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  razorpayOrderId   String  @unique
   razorpayPaymentId String?
-  status            String   // "created" | "paid" | "failed"
-  plan              String   // "monthly" | "yearly"
+  status            String // "created" | "paid" | "failed"
+  plan              String // "monthly" | "yearly"
   amountPaise       Int
-  currency          String   @default("INR")
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  currency          String  @default("INR")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("subscription")
 }
@@ -106,56 +116,52 @@ model Verification {
   @@map("verification")
 }
 
-model UserEditionProgress {
-  id            String    @id @default(cuid())
-  userId        String
-  editionId     String    // matches Edition.id from JSON e.g. "edition-001"
-  
-  status        String    @default("not_started")
-  // "not_started" | "in_progress" | "completed"
-  
-  currentNodeIndex Int       @default(0) @map("current_stage")
-  score         Int       @default(0)
-  correctAnswers Int      @default(0)
-  totalAnswers  Int       @default(0)
-  
-  startedAt     DateTime?
-  completedAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+model DailyGame {
+  id            String              @id @default(cuid())
+  type          String // "swipe", "image-select", "timeline-builder", ...
+  title         String
+  description   String?
+  category      String?
+  coverImage    String? // storage key or URL
+  scheduledFor  DateTime            @unique @db.Date // IST calendar day, one game per day
+  status        DailyGameStatus     @default(draft)
+  schemaVersion Int                 @default(1)
+  content       Json // { "stages": [...] }, shape depends on `type`
+  createdById   String?
+  createdBy     User?               @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  progress      DailyGameProgress[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, editionId])  // one record per user per edition
-  @@map("user_edition_progress")
+  @@index([type])
+  @@index([status, scheduledFor])
+  @@map("daily_game")
 }
 
-model UserNodeProgress {
-  id              String    @id @default(cuid())
-  userId          String
-  editionId       String
-  nodeId          String                        // e.g. "node-1", matches EditionNode.id
+model DailyGameProgress {
+  id                String                  @id @default(cuid())
+  userId            String
+  dailyGameId       String
+  status            DailyGameProgressStatus @default(not_started)
+  currentSubStage   Int                     @default(0)
+  attemptsRemaining Int? // null for legacy/uninitialized progress; zero means exhausted
+  stagePassed       Boolean                 @default(false)
+  score             Int                     @default(0)
+  correctAnswers    Int                     @default(0)
+  totalAnswers      Int                     @default(0)
+  stars             Int                     @default(0) // 0-3, computed server-side on completion
+  hintsRemaining    Int                     @default(3)
+  clientUpdatedAt   BigInt                  @default(0)
+  version           Int                     @default(1)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
 
-  status          String    @default("not_started") // not_started | in_progress | completed
-  currentSubStage Int       @default(0)
-  attemptsRemaining Int?    // null for legacy/uninitialized progress; zero means exhausted
-  stagePassed     Boolean   @default(false)
-  score           Int       @default(0)
-  correctAnswers  Int       @default(0)
-  totalAnswers    Int       @default(0)
-  stars           Int       @default(0)             // 0-3, computed server-side on completion
-  hintsRemaining  Int       @default(3)
- 
-  clientUpdatedAt BigInt    @default(0)
-  version         Int       @default(1)
-  startedAt       DateTime?
-  completedAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyGame DailyGame @relation(fields: [dailyGameId], references: [id], onDelete: Cascade)
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, editionId, nodeId])
-  @@map("user_node_progress")
+  @@unique([userId, dailyGameId])
+  @@index([dailyGameId])
+  @@map("daily_game_progress")
 }
-

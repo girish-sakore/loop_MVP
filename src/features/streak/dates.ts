@@ -27,6 +27,16 @@ export function streakToday(now: Date = new Date()): Date {
   return dayKeyToDate(streakDayKey(now));
 }
 
+/** A scheduled daily game can be played on its day and any later day. */
+export function isGameAvailable(scheduledFor: Date, now: Date = new Date()): boolean {
+  return streakDayKey(scheduledFor) <= streakDayKey(now);
+}
+
+/** A game counts only when its scheduled IST date is today's IST date. */
+export function isGameScheduledForToday(scheduledFor: Date, now: Date = new Date()): boolean {
+  return streakDayKey(scheduledFor) === streakDayKey(now);
+}
+
 export function addDays(d: Date, n: number): Date {
   return new Date(d.getTime() + n * DAY_MS);
 }

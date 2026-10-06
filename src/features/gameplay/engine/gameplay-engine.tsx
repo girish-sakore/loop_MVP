@@ -14,6 +14,7 @@ import {
   DEFAULT_HINT_BUDGET,
   SNAPSHOT_VERSION,
   compareProgress,
+  legacyProgressStorageKey,
   mergeSnapshots,
   normalizeSnapshot,
   pickSnapshot,
@@ -24,6 +25,11 @@ import {
   type InteractionState,
   type StoredProgress,
 } from "@/features/gameplay/progress/resume";
+import {
+  markPendingCompletion,
+  pendingCompletionKey,
+  retryPendingCompletion,
+} from "@/features/gameplay/progress/pending-completions";
 import type { Stage } from "@/types/gameplay";
 
 interface GameplayEngineProps {
@@ -50,9 +56,6 @@ export function GameplayEngine({
   const {
     currentStage,
     attemptsRemaining,
-    score,
-    correctAnswers,
-    totalAnswers,
     completed,
     hintsRemaining,
     interactionState,
@@ -68,7 +71,8 @@ export function GameplayEngine({
   const stage = stages[currentStage];
   const totalAttempts = stage?.attemptsAllowed ?? 3;
   const progress = useMemo(() => (currentStage / stages.length) * 100, [currentStage, stages.length]);
-  const gameplayKey = progressStorageKey(userId, editionId, nodeId);
+  const gameplayKey = progressStorageKey(userId, nodeId);
+  const legacyGameplayKey = legacyProgressStorageKey(userId, editionId, nodeId);
   const legacyHintsKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
   const introDismissed = introState?.key === gameplayKey ? introState.dismissed : false;
   const ready = initializedKey === gameplayKey;
@@ -108,9 +112,8 @@ export function GameplayEngine({
     }
   }, [applySnapshot, applyRemoteHints, gameplayKey]);
 
-  const { save, flush } = useProgressSync({
-    editionId,
-    nodeId,
+  const { save } = useProgressSync({
+    gameId: nodeId,
     storageKey: gameplayKey,
     enabled: ready,
     onRemote: handleRemote,
@@ -152,36 +155,39 @@ export function GameplayEngine({
 
       let snapshot = server;
       try {
-        snapshot = restoreSnapshot(localStorage, gameplayKey, server, stages.map((item) => item.attemptsAllowed));
+        snapshot = restoreSnapshot(
+          localStorage,
+          gameplayKey,
+          server,
+          stages.map((item) => item.attemptsAllowed),
+          legacyGameplayKey,
+        );
       } catch { /* Fall back to server progress if storage is blocked. */ }
 
       applySnapshot(snapshot);
       setInitializedKey(gameplayKey);
       save(snapshot);
+      try { localStorage.removeItem(legacyGameplayKey); } catch { /* storage blocked */ }
       try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
+      try {
+        const pendingKey = pendingCompletionKey(userId, nodeId);
+        if (localStorage.getItem(pendingKey)) void retryPendingCompletion(pendingKey);
+      } catch { /* Keep the final snapshot; the server can still accept a retry. */ }
     });
     return () => { cancelled = true; };
-  }, [stages, initialStage, initialProgress, gameplayKey, legacyHintsKey, applySnapshot, save]);
-
-  const completeProgress = useCallback(async () => {
-    flush();
-    await fetch("/api/progress/complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
-    }).catch(() => { });
-    try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers, gameplayKey, flush]);
+  }, [stages, initialStage, initialProgress, gameplayKey, legacyGameplayKey, legacyHintsKey, applySnapshot, save, userId, nodeId]);
 
   useEffect(() => {
     if (!ready) return;
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
-      completeProgress().then(() => {
-        router.push("/summary");
-      });
+      try {
+        const pendingKey = markPendingCompletion(localStorage, userId, nodeId);
+        void retryPendingCompletion(pendingKey);
+      } catch { /* If browser storage is blocked, keep the server sync as the fallback. */ }
+      router.push(`/summary?editionId=${encodeURIComponent(editionId)}`);
     }
-  }, [ready, completed, stage, completeProgress, router]);
+  }, [ready, completed, stage, editionId, nodeId, userId, router]);
 
   const handleInteractionStateChange = useCallback((stageId: string, state: InteractionState) => {
     setInteractionState(stageId, state);

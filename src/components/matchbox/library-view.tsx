@@ -53,13 +53,13 @@ export default function LibraryView({ editions }: { editions: LibraryEdition[] }
     .slice()
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "") || a.order - b.order);
 
-  const selEditions = sel ? byDay.get(sel) : undefined;
-  const detail = selEditions?.length
-    ? `${selEditions.map((e) => `Nº ${pad3(e.order)} · ${e.category} · ${e.title}`).join("  |  ")}`
-    : "Tap a day to see its box.";
+  const selectedEditions = sel ? byDay.get(sel) ?? [] : [];
+  const visibleSelectedEditions = cat
+    ? selectedEditions.filter((edition) => edition.category === cat)
+    : selectedEditions;
 
   return (
-    <>
+    <div id="v-library">
       <div className="pt"><h1>The Library</h1><p>Every box, week by week.</p></div>
 
       <div className="card paper" style={{ padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
@@ -82,18 +82,43 @@ export default function LibraryView({ editions }: { editions: LibraryEdition[] }
           {Array.from({ length: dim }, (_, i) => {
             const d = i + 1, k = key(y, m, d), eds = byDay.get(k);
             const state = eds ? "done" : k === today ? "today" : "";
-            const dimmed = !!eds && !!cat && !eds.some((e) => e.category === cat);
+            const matchingEditions = cat
+              ? eds?.filter((edition) => edition.category === cat) ?? []
+              : eds ?? [];
+            const matchesFilter = matchingEditions.length > 0;
+            const dimmed = !!eds && !!cat && !matchesFilter;
+            const label = eds?.length
+              ? `${k}: ${eds.map((edition) => edition.title).join(", ")}`
+              : `${k}: no edition`;
             return (
               <button
                 key={d}
-                className={`day ${state} ${dimmed ? "dim" : ""} ${sel === k ? "sel" : ""}`}
-                style={eds ? typeStyle(catIndex(eds[0].category)) : undefined}
-                onClick={() => { if (eds) setSel(k); }}
+                className={`day ${state} ${cat && matchesFilter ? "match" : ""} ${dimmed ? "dim" : ""} ${sel === k ? "sel" : ""}`}
+                style={matchesFilter ? typeStyle(catIndex(matchingEditions[0].category)) : undefined}
+                type="button"
+                aria-label={label}
+                aria-pressed={sel === k}
+                aria-current={k === today ? "date" : undefined}
+                disabled={!eds || dimmed}
+                onClick={() => setSel(k)}
               >{d}</button>
             );
           })}
         </div>
-        <div className="detail" id="detail">{detail}</div>
+        <div className="detail" id="detail" aria-live="polite">
+          {visibleSelectedEditions.length ? (
+            visibleSelectedEditions.map((edition) => (
+              <Link key={edition.id} href={edition.href} className="calendar-edition">
+                Nº {pad3(edition.order)} · {edition.category} · {edition.title}
+                <span aria-hidden="true"> →</span>
+              </Link>
+            ))
+          ) : sel && cat ? (
+            `No ${cat} box was published on this day.`
+          ) : (
+            "Choose an available day to open its box."
+          )}
+        </div>
         <div className="legend">
           <span><i style={{ background: "var(--mb-red)", border: "1.5px solid var(--mb-ink)" }} />edition</span>
           <span><i style={{ border: "2.5px solid var(--mb-red)" }} />today</span>
@@ -122,6 +147,6 @@ export default function LibraryView({ editions }: { editions: LibraryEdition[] }
           </Link>
         )) : <div className="mono" style={{ color: "var(--mb-cream)", fontSize: 12, padding: 10 }}>Nothing here yet.</div>}
       </div>
-    </>
+    </div>
   );
 }

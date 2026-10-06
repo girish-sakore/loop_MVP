@@ -11,7 +11,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "db:seed": "node --env-file=.env --experimental-strip-types prisma/seed-daily-games.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

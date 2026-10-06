@@ -3,10 +3,22 @@ import BottomNav from "@/components/layout/bottom-nav";
 import { SummaryHero } from "@/components/summary/summary-hero";
 import { SummaryStats } from "@/components/summary/summary-stats";
 import { SummaryActions } from "@/components/summary/summary-actions";
-import { getFeaturedEdition } from "@/features/editions/edition-content";
+import { getEditionById, getFeaturedEdition } from "@/features/editions/edition-content";
 
-export default function SummaryPage() {
-  const edition = getFeaturedEdition();
+type SummaryPageProps = {
+  searchParams: Promise<{ editionId?: string | string[] }>;
+};
+
+export default async function SummaryPage({ searchParams }: SummaryPageProps) {
+  const editionId = (await searchParams).editionId;
+  const completedGame = typeof editionId === "string" ? await getEditionById(editionId) : null;
+  const edition = (completedGame ?? await getFeaturedEdition())?.edition ?? null;
+  const totalStages = edition?.nodes[0]?.subStages.length ?? 0;
+  const totalAnswers = edition?.nodes[0]?.subStages.reduce(
+    (count, stage) =>
+      count + (stage.type === "fill-blank-text" && stage.cards ? stage.cards.length : 1),
+    0,
+  ) ?? 0;
 
   return (
     <MobileContainer>
@@ -46,8 +58,8 @@ export default function SummaryPage() {
       </header>
 
       <main className="flex flex-col gap-6 px-6 pt-4 pb-32">
-        <SummaryHero editionTitle={edition.title} />
-        <SummaryStats totalStages={edition.nodes.length} />
+        <SummaryHero editionTitle={edition?.title ?? "Today's Game"} />
+        <SummaryStats totalStages={totalStages} totalAnswers={totalAnswers} />
         <SummaryActions />
       </main>
 

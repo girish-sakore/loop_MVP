@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { abril, dmSans } from "@/lib/fonts";
 import { themeInitScript } from "@/lib/matchbox/palettes";
+import { PendingCompletionRecovery } from "@/components/gameplay/pending-completion-recovery";
 import "./globals.css";
 import "./matchbox.css";
 
@@ -27,6 +28,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript() }} />
       </head>
       <body className="min-h-dvh w-full bg-surface font-jakarta">
+        <PendingCompletionRecovery />
         {children}
       </body>
     </html>

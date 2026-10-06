@@ -2,17 +2,32 @@
 
 import { useGameplayStore } from "@/stores/gameplay-store";
 
-export function SummaryStats({ totalStages }: { totalStages: number }) {
-  const { score, correctAnswers, totalAnswers } = useGameplayStore();
+type SummaryStatsProps = {
+  totalStages: number;
+  /** The number of answerable items in the game, including paged deck cards. */
+  totalAnswers: number;
+};
+
+export function SummaryStats({ totalStages, totalAnswers: answerCount }: SummaryStatsProps) {
+  const { score, correctAnswers, totalAnswers: answeredCount } = useGameplayStore();
+
+  // A paged game (e.g. fill-blank-text) answers N cards in one engine round,
+  // so the "cleared" denominator is the deck size, not engine stages.
+  // On the completion screen, the engine's recorded answer count belongs to
+  // the game that just ended. The page's edition can be a different featured
+  // game, so use the recorded count first and only fall back to page metadata
+  // before an answer has been registered.
+  const denominator = answeredCount > 0 ? answeredCount : answerCount > 0 ? answerCount : totalStages;
+  const clearedAnswers = Math.min(correctAnswers, denominator);
 
   const accuracy =
-    totalAnswers > 0
-      ? Math.round((correctAnswers / totalAnswers) * 100)
+    answeredCount > 0
+      ? Math.round((Math.min(correctAnswers, answeredCount) / answeredCount) * 100)
       : 0;
 
   const completion =
-    totalStages > 0
-      ? Math.round((correctAnswers / totalStages) * 100)
+    denominator > 0
+      ? Math.round((clearedAnswers / denominator) * 100)
       : 100;
 
   // Accuracy bar segments (5 bars)
@@ -194,22 +209,22 @@ export function SummaryStats({ totalStages }: { totalStages: number }) {
             className="text-[11px] font-bold tracking-widest uppercase"
             style={{ color: "var(--on-secondary-container)" }}
           >
-            Stages Cleared
+            Answers Cleared
           </span>
           <p
             className="text-[28px] font-extrabold leading-tight"
             style={{ color: "var(--on-secondary-container)" }}
           >
-            {correctAnswers}{" "}
+            {clearedAnswers}{" "}
             <span className="text-[16px] font-medium opacity-60">
-              / {totalStages}
+              / {denominator}
             </span>
           </p>
           <p
             className="text-xs opacity-70"
             style={{ color: "var(--on-secondary-container)" }}
           >
-            {correctAnswers === totalStages
+            {clearedAnswers === denominator
               ? "Flawless run!"
               : "Great effort this session."}
           </p>

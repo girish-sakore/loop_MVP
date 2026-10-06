@@ -1,7 +1,7 @@
 // features/streak/record-completion.server.ts
 import "server-only";
 import type { Prisma } from "@prisma/client";
-import { addDays, streakToday } from "./dates";
+import { addDays, streakToday, toIsoDay } from "./dates";
 
 export type StreakUpdate = {
   current: number;
@@ -10,12 +10,11 @@ export type StreakUpdate = {
 };
 
 /**
- * Call inside the same transaction that marks a node as passed.
+ * Call inside the same transaction that marks a game as completed.
  *
- * Once-per-day is enforced with compare-and-set: the update only applies if
- * lastCompletedDate is still the value we read. A duplicate or concurrent
- * request for the same day either sees today already recorded, or loses the
- * CAS (count 0), and exits without changing the streak.
+ * Call only for today's published game from the completion service. The
+ * compare-and-set on lastCompletedDate makes duplicate/concurrent completion
+ * requests idempotent.
  */
 export async function recordCompletionForStreak(
   tx: Prisma.TransactionClient,
@@ -28,19 +27,28 @@ export async function recordCompletionForStreak(
   // Make sure the row exists (no-op if it already does).
   await tx.userStreak.createMany({ data: [{ userId }], skipDuplicates: true });
 
-  const row = await tx.userStreak.findUniqueOrThrow({ where: { userId } });
-  const last = row.lastCompletedDate;
+  const row = await tx.userStreak.findUniqueOrThrow({
+    where: { userId },
+    select: {
+      currentStreak: true,
+      longestStreak: true,
+      lastCompletedDate: true,
+    },
+  });
+  const lastKey = row.lastCompletedDate ? toIsoDay(row.lastCompletedDate) : null;
+  const todayKey = toIsoDay(today);
+  const yesterdayKey = toIsoDay(yesterday);
 
-  if (last && last.getTime() >= today.getTime()) {
+  if (lastKey !== null && lastKey >= todayKey) {
     return { current: row.currentStreak, longest: row.longestStreak, incrementedToday: false };
   }
 
-  const continues = last !== null && last.getTime() === yesterday.getTime();
+  const continues = lastKey === yesterdayKey;
   const current = continues ? row.currentStreak + 1 : 1;
   const longest = Math.max(row.longestStreak, current);
 
   const res = await tx.userStreak.updateMany({
-    where: { userId, lastCompletedDate: last },
+    where: { userId, lastCompletedDate: row.lastCompletedDate },
     data: { currentStreak: current, longestStreak: longest, lastCompletedDate: today },
   });
 

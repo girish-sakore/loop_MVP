@@ -18,3 +18,4 @@ export type { GameplaySnapshot, InteractionState, StoredProgress } from "./resum
 
 export { useProgressSync } from "./use-progress-sync";
 export { useInteractionProgress } from "./use-interaction-progress";
+export { gameStageConfigs, validateSnapshotForGame } from "./validation";

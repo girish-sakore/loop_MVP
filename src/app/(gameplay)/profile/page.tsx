@@ -8,7 +8,10 @@ import ProfileView, {
 } from "@/components/profile/profile-view";
 import { getStreak } from "@/features/streak/get-streak";
 import { getRecentGames } from "@/features/recent-games/get-recent-games";
-import { buildVillageMapData } from "@/features/map/map-content";
+import { getAllEditions, lastDays } from "@/features/editions/edition-content";
+import { getAllGameProgress } from "@/features/gameplay/progress/daily-game-progress";
+
+const PROFILE_HISTORY_DAYS = 10;
 
 export default async function ProfilePage() {
   const session = await getAuthSession();
@@ -23,11 +26,13 @@ export default async function ProfilePage() {
     subscriptionEnd?: string | null;
   };
 
-  const [streak, recentGames, villages] = await Promise.all([
+  const [streak, recentGames, editions, progress] = await Promise.all([
     getStreak(session.user.id),
     getRecentGames(session.user.id),
-    buildVillageMapData(session.user.id),
+    getAllEditions(),
+    getAllGameProgress(session.user.id),
   ]);
+  const progressByGame = new Map(progress.map((p) => [p.game.id, p.progress]));
 
   const identity: ProfileIdentity = {
     name: user.name ?? "",
@@ -38,14 +43,21 @@ export default async function ProfilePage() {
     subscriptionEnd: user.subscriptionEnd ?? null,
   };
 
-  const villageProgress: ProfileVillage[] = villages.map((village) => ({
-    id: village.editionId,
-    title: village.title,
-    order: village.order,
-    completed: village.nodes.filter((n) => n.status === "completed").length,
-    total: village.nodes.length,
-    locked: village.status === "locked",
-  }));
+  const villageProgress: ProfileVillage[] = lastDays(editions, PROFILE_HISTORY_DAYS)
+    .map((edition) => {
+      const p = progressByGame.get(edition.game.id);
+      const total = edition.edition.nodes[0]?.subStages.length ?? 0;
+      const completed = p?.status === "completed" ? total : Math.min(p?.currentSubStage ?? 0, total);
+      return {
+        id: edition.dateKey,
+        title: edition.edition.title,
+        order: edition.edition.order,
+        completed,
+        total,
+        locked: false,
+      };
+    })
+    .reverse();
 
   return (
     <MobileContainer>

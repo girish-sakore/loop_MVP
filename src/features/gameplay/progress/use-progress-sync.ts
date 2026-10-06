@@ -11,8 +11,7 @@ import { toServerPayload, fromServerPayload, saveSnapshot, type GameplaySnapshot
 const PULL_INTERVAL_MS = 30_000;
 
 type Options = {
-  editionId: string;
-  nodeId: string;
+  gameId: string;
   storageKey: string;
   /** Turn syncing on only after the initial restore has finished. */
   enabled: boolean;
@@ -20,7 +19,7 @@ type Options = {
   onRemote: (remote: GameplaySnapshot) => void;
 };
 
-export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemote }: Options) {
+export function useProgressSync({ gameId, storageKey, enabled, onRemote }: Options) {
   const onRemoteRef = useRef(onRemote);
   useEffect(() => { onRemoteRef.current = onRemote; });
 
@@ -32,7 +31,7 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
         method: "POST",
         keepalive: true,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ editionId, nodeId, ...toServerPayload(snapshot) }),
+        body: JSON.stringify({ gameId, ...toServerPayload(snapshot) }),
       });
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json().catch(() => null);
@@ -43,7 +42,7 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
       // Offline or server error: keep it queued and retry on focus/online/next save.
       pending.current = snapshot;
     }
-  }, [editionId, nodeId]);
+  }, [gameId]);
 
   const flush = useCallback(() => {
     const snapshot = pending.current;
@@ -59,14 +58,14 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
 
   const pull = useCallback(async () => {
     try {
-      const params = new URLSearchParams({ editionId, nodeId });
+      const params = new URLSearchParams({ gameId });
       const res = await fetch(`/api/progress/sync?${params}`, { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json().catch(() => null);
       const remote = fromServerPayload(data?.progress);
       if (remote) onRemoteRef.current(remote);
     } catch { /* offline: try again later */ }
-  }, [editionId, nodeId]);
+  }, [gameId]);
 
   useEffect(() => {
     if (!enabled) return;

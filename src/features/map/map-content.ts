@@ -1,47 +1,49 @@
-import { getAllEditions } from "@/features/editions/edition-content";
-import { getAllUserNodeProgress } from "@/lib/edition-progress";
-import { getNodePosition } from "./village-layouts";
-import type { VillageMapData, MapNodeStatus } from "./types";
+// One "village" == one day's game. Each box has a single stop (the game);
+// progress is tracked as completed rounds inside it.
+
+import { getAllEditions, todayKey } from "@/features/editions/edition-content";
+import { getAllGameProgress } from "@/features/gameplay/progress/daily-game-progress";
+import type { VillageMapData, MapNode, MapNodeStatus } from "./types";
 
 export async function buildVillageMapData(userId: string): Promise<VillageMapData[]> {
-  const editions = getAllEditions();
+  const editions = await getAllEditions();
+  const now = new Date();
+  const today = todayKey(now);
+  const progress = await getAllGameProgress(userId);
+  const progressByGame = new Map(progress.map((p) => [p.game.id, p.progress]));
+
   const villages: VillageMapData[] = [];
-  let previousCompleted = true;
 
-  for (const edition of editions) {
-    const nodeProgressMap = await getAllUserNodeProgress(userId, edition.id); // 1 query per edition, not per node
+  for (const { game, edition, dateKey } of editions) {
+    const total = edition.nodes[0]?.subStages.length ?? 0;
+    const p = progressByGame.get(game.id);
+    const completed = p?.status === "completed" ? total : Math.min(p?.currentSubStage ?? 0, total);
 
-    const completedNodes = edition.nodes.filter((node) => {
-      return nodeProgressMap.get(node.id)?.status === "completed";
-    }).length;
-    const editionCompleted = completedNodes >= edition.nodes.length;
-    const villageStatus = !previousCompleted ? "locked" : editionCompleted ? "completed" : "unlocked";
+    let status: MapNodeStatus = "upcoming";
+    if (p?.status === "completed") status = "completed";
+    else if (dateKey <= today) status = "current";
 
-    const nodes = edition.nodes.map((node, index) => {
-      let status: MapNodeStatus;
-      if (villageStatus === "locked") status = "locked";
-      else if (nodeProgressMap.get(node.id)?.status === "completed") status = "completed";
-      else status = "current";
+    const node: MapNode = {
+      nodeId: game.id,
+      nodeIndex: 0,
+      status,
+      x: "50%",
+      y: "30%",
+      title: edition.nodes[0]?.mapTitle ?? game.title,
+      subtitle: edition.nodes[0]?.mapSubtitle ?? game.description ?? "",
+      stars: p?.stars ?? 0,
+      completedSubGames: completed,
+      totalSubGames: total,
+    };
 
-      const { x, y } = getNodePosition(edition.theme, index);
-      const nodeProgress = nodeProgressMap.get(node.id);
-      const totalSubGames = node.subStages.length;
-      const completedSubGames =
-        nodeProgress?.status === "completed"
-          ? totalSubGames
-          : Math.min(nodeProgress?.currentSubStage ?? 0, totalSubGames);
-
-      return {
-        nodeId: node.id, nodeIndex: index, status, x, y,
-        title: node.mapTitle, subtitle: node.mapSubtitle,
-        stars: nodeProgress?.stars ?? 0,
-        completedSubGames,
-        totalSubGames,
-      };
+    villages.push({
+      editionId: dateKey,
+      title: edition.title,
+      theme: edition.theme,
+      order: edition.order,
+      status: status === "completed" ? "completed" : "unlocked",
+      nodes: [node],
     });
-
-    villages.push({ editionId: edition.id, title: edition.title, theme: edition.theme, order: edition.order, status: villageStatus, nodes });
-    previousCompleted = editionCompleted;
   }
 
   return villages;

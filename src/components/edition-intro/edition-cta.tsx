@@ -26,7 +26,7 @@ export function EditionCta({
       await fetch("/api/progress/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ editionId: edition.id }),
+        body: JSON.stringify({ gameId: edition.nodes[0]?.id }),
       });
     } catch {
       // Non-blocking — still navigate even if record fails

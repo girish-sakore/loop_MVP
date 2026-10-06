@@ -1,17 +1,44 @@
+import { prisma } from "@/lib/db";
+import { streakDayKey } from "@/features/streak/dates";
 import type { RecentGame } from "./types";
 
-/** STATIC FOR NOW: replace the body with a DB query or fetch when the backend is ready. */
-export async function getRecentGames(_userId: string): Promise<RecentGame[]> {
-  const DAY = 864e5;
-  const now = Date.now();
-  const day = (n: number) => new Date(now - n * DAY).toISOString().slice(0, 10);
+const MAX_RECENT = 6;
 
-  return [
-    { id: "g42", editionNo: 42, gameType: "timeline-builder", gameLabel: "Chrono", topic: "Salt", playedAt: day(1), score: 3 },
-    { id: "g41", editionNo: 41, gameType: "swipe", gameLabel: "This or That", topic: "Bridges", playedAt: day(2), score: 2 },
-    { id: "g40", editionNo: 40, gameType: "color-match", gameLabel: "Palette", topic: "Tea", playedAt: day(3), score: 3 },
-    { id: "g39", editionNo: 39, gameType: "image-select", gameLabel: "Knockout", topic: "Volcanoes", playedAt: day(4), score: 1 },
-    { id: "g38", editionNo: 38, gameType: "drag-drop", gameLabel: "Links", topic: "Clocks", playedAt: day(5), score: 2 },
-    { id: "g37", editionNo: 37, gameType: "four-way-swipe", gameLabel: "Compass", topic: "Silk Road", playedAt: day(6), score: 3 },
-  ];
+/**
+ * The user's most recently touched games, newest day first.
+ * score is the star rating (0-3) of the completed round, maxScore is 3.
+ */
+export async function getRecentGames(userId: string): Promise<RecentGame[]> {
+  const published = await prisma.dailyGame.findMany({
+    where: { status: "published" },
+    orderBy: { scheduledFor: "asc" },
+    select: { scheduledFor: true },
+  });
+  const orderOf = new Map(
+    published.map((g, i) => [streakDayKey(g.scheduledFor), i + 1]),
+  );
+
+  const rows = await prisma.dailyGameProgress.findMany({
+    where: { userId, dailyGame: { status: "published" } },
+    include: {
+      dailyGame: { select: { id: true, type: true, title: true, category: true, scheduledFor: true } },
+    },
+    orderBy: { dailyGame: { scheduledFor: "desc" } },
+    take: MAX_RECENT,
+  });
+
+  return rows.map((row) => {
+    const game = row.dailyGame;
+    const dateKey = streakDayKey(game.scheduledFor);
+    return {
+      id: game.id,
+      editionNo: orderOf.get(dateKey) ?? 0,
+      gameType: game.type,
+      gameLabel: game.title,
+      topic: game.category ?? game.type,
+      playedAt: dateKey,
+      score: row.stars,
+      maxScore: 3,
+    };
+  });
 }

@@ -186,6 +186,22 @@ export type FillBlankTextStage = StageBase & {
     correct: string;
     incorrect: string;
   };
+  /**
+   * A fill-blank-text game plays as ONE round of several blanks. When present,
+   * the interaction pages through `cards` (each card is one fill-in prompt)
+   * instead of treating every sub-stage as a separate engine round.
+   */
+  cards?: Array<{
+    id: string;
+    prompt: string;
+    question?: string;
+    blanks: Array<{
+      id: string;
+      answer: string;
+      hint?: string;
+    }>;
+    feedback?: { correct?: string; incorrect?: string };
+  }>;
 };
 
 export type SwipeStage = StageBase & {

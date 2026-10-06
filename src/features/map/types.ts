@@ -9,7 +9,7 @@ export type MapNode = {
   y: string;
   title: string;
   subtitle: string;
-  stars: number; // 0-3, from UserNodeProgress
+  stars: number; // 0-3, from daily_game_progress
   completedSubGames: number;
   totalSubGames: number;
 };

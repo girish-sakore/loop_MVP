@@ -6,17 +6,13 @@ import { MobileContainer } from "@/components/layout/mobile-container";
 import { EditionHero } from "@/components/edition-intro/edition-hero";
 import CatButton from "@/components/matchbox/cat-button";
 import StrikeLink from "@/components/matchbox/strike-link";
-import ThemePicker from "@/components/matchbox/theme-picker";
 import { getAuthSession } from "@/lib/auth-session";
-import { getEditionById } from "@/features/editions/edition-content";
-import { buildVillageMapData } from "@/features/map/map-content";
-import type { MapNode, VillageMapData } from "@/features/map/types";
-import type { EditionNode } from "@/types/gameplay";
+import { getTodayEdition } from "@/features/editions/edition-content";
+import { getGameProgress } from "@/features/gameplay/progress/daily-game-progress";
 import StreakCard from "@/components/matchbox/streak-card";
 import { getStreak } from "@/features/streak/get-streak";
 import RecentGames from "@/components/matchbox/recent-games";
 import { getRecentGames } from "@/features/recent-games/get-recent-games";
-import { GAME_ORDER as gameOrder } from "@/lib/matchbox/game-order";
 
 type TileConfig = {
   key: string;
@@ -26,10 +22,11 @@ type TileConfig = {
   badge?: string;
 };
 
-type GameTile = TileConfig & {
-  editionId: string;
-  mapTitle: string;
-  node: MapNode;
+type RoundTileData = {
+  index: number;
+  total: number;
+  state: "completed" | "current" | "locked";
+  question: string;
 };
 
 // Colours now come from the active matchbox theme (--mb-t0..t10), picked by game order.
@@ -67,24 +64,38 @@ export default async function MapPage() {
     getRecentGames(session.user.id),
   ]);
 
-  const villages = await buildVillageMapData(session.user.id);
-  // const streak = await getStreak(session.user.id);
-  const currentVillage =
-    villages.find((village) =>
-      village.nodes.some((node) => node.status === "current"),
-    ) ?? villages[0];
-  const currentEdition = currentVillage
-    ? getEditionById(currentVillage.editionId)
+  // Today's game comes straight from the database (one DailyGame per day).
+  const today = await getTodayEdition();
+  const todayProgress = today ? await getGameProgress(session.user.id, today.game) : null;
+  const todayRounds = today?.edition.nodes[0]?.subStages.length ?? 0;
+  const todayDone = todayProgress?.status === "completed" ? todayRounds : Math.min(todayProgress?.currentSubStage ?? 0, todayRounds);
+  const allDone = today !== null && todayProgress?.status === "completed";
+  const anyProgress = (todayProgress?.currentSubStage ?? 0) > 0;
+  const todayHref = today ? `/edition/${today.dateKey}/${today.game.id}` : null;
+  const todayTileConfig = today
+    ? (gameTileConfig[today.game.type] ?? {
+        key: today.game.type,
+        title: today.game.title,
+        subtitle: today.game.description ?? "",
+        icon: "extension",
+      })
     : null;
-  const gameTiles = buildGameTiles(currentVillage, currentEdition?.nodes ?? []);
-
-  const total = gameTiles.length;
-  const completed = gameTiles.filter((t) => t.node.status === "completed").length;
-  const allDone = total > 0 && completed === total;
-  const anyProgress = gameTiles.some((t) => t.node.completedSubGames > 0);
-  const next =
-    gameTiles.find((t) => t.node.status === "current") ??
-    gameTiles.find((t) => t.node.status !== "completed" && t.node.status !== "locked");
+  const roundTiles: RoundTileData[] = today
+    ? today.edition.nodes[0].subStages.map((stage, index) => ({
+        index,
+        total: todayRounds,
+        state:
+          index < todayDone
+            ? "completed"
+            : index === todayDone && !allDone
+              ? "current"
+              : "locked",
+        question:
+          "question" in stage && typeof stage.question === "string" && stage.question
+            ? stage.question
+            : today.edition.nodes[0].mapTitle,
+      }))
+    : [];
 
   return (
     <MobileContainer>
@@ -110,21 +121,31 @@ export default async function MapPage() {
         {/* <ThemePicker /> */}
 
         <div className="sech">Today&apos;s game</div>
-        {currentEdition ? (
+        {today ? (
           <>
             <EditionHero
-              edition={currentEdition}
-              title={currentVillage?.title}
-              gamesDone={completed}
-              gamesTotal={total}
+              edition={today.edition}
+              gamesDone={todayDone}
+              gamesTotal={todayRounds}
               done={allDone}
             />
-            {allDone || !next ? (
-              <div className="go static" style={{ marginTop: 14 }}>{allDone ? "✓ STRUCK · ALL DONE TODAY" : "COMING SOON"}</div>
+            {allDone ? (
+              <div className="go static" style={{ marginTop: 14 }}>✓ STRUCK · ALL DONE TODAY</div>
             ) : (
-              <StrikeLink href={`/edition/${next.editionId}/${next.node.nodeId}`}>
+              <StrikeLink href={todayHref!}>
                 {anyProgress ? "KEEP STRIKING" : "STRIKE TODAY'S MATCH"}
               </StrikeLink>
+            )}
+            {todayRounds > 0 && (
+              <>
+                <div className="sech">Today&apos;s rounds</div>
+                <section className="mb-tiles">
+                  {roundTiles.map((tile) => (
+                    <RoundTile key={tile.index} tile={tile} icon={todayTileConfig?.icon ?? "extension"} />
+                  ))}
+                  {todayRounds % 2 === 1 ? <InviteTile /> : null}
+                </section>
+              </>
             )}
           </>
         ) : (
@@ -132,17 +153,6 @@ export default async function MapPage() {
         )}
         <div className="sech">Your streak</div>
         <StreakCard streak={streak} />
-        {gameTiles.length > 0 && (
-          <>
-            <div className="sech">Today&apos;s games</div>
-            <section className="mb-tiles">
-              {gameTiles.map((tile) => (
-                <TodayTile key={tile.node.nodeId} tile={tile} />
-              ))}
-              {gameTiles.length % 2 === 1 ? <InviteTile /> : null}
-            </section>
-          </>
-        )}
       <RecentGames games={recentGames} />
       </main>
       <BottomNav />
@@ -150,26 +160,24 @@ export default async function MapPage() {
   );
 }
 
-function TodayTile({ tile }: { tile: GameTile }) {
-  const isCompleted = tile.node.status === "completed";
-  const isLocked = isCompleted || tile.node.status === "locked";
-  const i = Math.max(0, gameOrder.indexOf(tile.key)) % 11;
+function RoundTile({ tile, icon }: { tile: RoundTileData; icon: string }) {
+  const isLocked = tile.state === "locked";
+  const i = 3; // theme index; the round tiles share the game's accent
 
   const content = (
     <>
-      {tile.badge ? <span className="new">{tile.badge}</span> : null}
       <div className="tp">
-        <span className="cnt">{tile.node.completedSubGames}/{tile.node.totalSubGames} games</span>
+        <span className="cnt">Round {tile.index + 1}/{tile.total}</span>
         {isLocked ? (
           <span className="st">
-            <span className="material-symbols-outlined">{isCompleted ? "check" : "lock"}</span>
+            <span className="material-symbols-outlined">{tile.state === "completed" ? "check" : "lock"}</span>
           </span>
         ) : null}
       </div>
-      <span className="material-symbols-outlined ico" aria-hidden="true">{tile.icon}</span>
+      <span className="material-symbols-outlined ico" aria-hidden="true">{icon}</span>
       <div>
-        <h2>{tile.title}</h2>
-        <p>{tile.mapTitle === tile.title ? tile.subtitle : tile.mapTitle}</p>
+        <h2>{tile.state === "completed" ? "Struck" : tile.state === "current" ? "Up next" : "Locked"}</h2>
+        <p>{tile.question}</p>
       </div>
     </>
   );
@@ -177,16 +185,16 @@ function TodayTile({ tile }: { tile: GameTile }) {
 
   if (isLocked) {
     return (
-      <div aria-label={`${tile.title} ${isCompleted ? "completed" : "locked"}`} className="mb-tile off" style={style}>
+      <div aria-label={`Round ${tile.index + 1} ${tile.state}`} className="mb-tile off" style={style}>
         {content}
       </div>
     );
   }
 
   return (
-    <Link href={`/edition/${tile.editionId}/${tile.node.nodeId}`} aria-label={tile.title} className="mb-tile" style={style}>
+    <div aria-label={`Round ${tile.index + 1}`} className="mb-tile" style={style}>
       {content}
-    </Link>
+    </div>
   );
 }
 
@@ -199,37 +207,3 @@ function InviteTile() {
   );
 }
 
-function buildGameTiles(
-  village: VillageMapData | undefined,
-  editionNodes: EditionNode[],
-): GameTile[] {
-  if (!village) return [];
-
-  const sortedNodes = [...editionNodes].sort((a, b) => {
-    const aOrder = gameOrder.indexOf(a.type);
-    const bOrder = gameOrder.indexOf(b.type);
-
-    return (aOrder === -1 ? 999 : aOrder) - (bOrder === -1 ? 999 : bOrder);
-  });
-
-  return sortedNodes.flatMap((editionNode) => {
-    const node = village.nodes.find((item) => item.nodeId === editionNode.id);
-    if (!node) return [];
-
-    const config = gameTileConfig[editionNode.type] ?? {
-      key: editionNode.type,
-      title: editionNode.mapTitle,
-      subtitle: editionNode.mapSubtitle,
-      icon: "extension",
-    };
-
-    return [{
-      ...config,
-      title: config.title || editionNode.mapTitle,
-      subtitle: config.subtitle || editionNode.mapSubtitle,
-      mapTitle: editionNode.mapTitle,
-      editionId: village.editionId,
-      node,
-    }];
-  });
-}
