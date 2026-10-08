@@ -7,6 +7,8 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import RecentGames from "@/components/matchbox/recent-games";
 import CatButton from "@/components/matchbox/cat-button";
+import EnablePush from "@/components/pwa/enable-push";
+import InstallPrompt from "@/components/pwa/install-prompt";
 import type { StreakData } from "@/features/streak/types";
 import type { RecentGame } from "@/features/recent-games/types";
 
@@ -119,6 +121,14 @@ export default function ProfileView({
         </div>
         <div className="mono lt2" style={{ marginTop: 10, color: "var(--mb-ink)", opacity: 0.6 }}>
           {renews}
+        </div>
+      </div>
+
+      <div className="card paper" style={{ padding: "14px 16px", marginTop: 12 }}>
+        <div className="sech" style={{ marginTop: 0 }}>Your app</div>
+        <div style={{ display: "grid", gap: 14, marginTop: 12 }}>
+         
+          <EnablePush />
         </div>
       </div>
 

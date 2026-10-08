@@ -21,7 +21,6 @@ import type { Stage, FillBlankTextStage } from "@/types/gameplay";
 
 type InteractionRendererProps = {
   stage: Stage;
-  stages?: Stage[];
   disabled?: boolean;
   retryCount?: number;
   attemptsRemaining?: number;
@@ -36,7 +35,6 @@ type InteractionRendererProps = {
 
 export function InteractionRenderer({
   stage,
-  stages,
   disabled,
   retryCount = 0,
   attemptsRemaining,
