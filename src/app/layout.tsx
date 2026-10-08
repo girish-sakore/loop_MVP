@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { abril, dmSans } from "@/lib/fonts";
 import { themeInitScript } from "@/lib/matchbox/palettes";
 import { PendingCompletionRecovery } from "@/components/gameplay/pending-completion-recovery";
@@ -6,8 +6,20 @@ import "./globals.css";
 import "./matchbox.css";
 
 export const metadata: Metadata = {
-  title: "Loop",
-  description: "Premium interactive weekly learning experience",
+  title: "Loopit",
+  description: "Learning trivia",
+  appleWebApp: {
+    capable: true,
+    title: "Loopit",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/icon-192.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#9b73f6",
 };
 
 export default function RootLayout({

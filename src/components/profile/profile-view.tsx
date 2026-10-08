@@ -127,7 +127,7 @@ export default function ProfileView({
       <div className="card paper" style={{ padding: "14px 16px", marginTop: 12 }}>
         <div className="sech" style={{ marginTop: 0 }}>Your app</div>
         <div style={{ display: "grid", gap: 14, marginTop: 12 }}>
-         
+          <InstallPrompt />
           <EnablePush />
         </div>
       </div>
