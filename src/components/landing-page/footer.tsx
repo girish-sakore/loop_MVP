@@ -82,10 +82,10 @@ export default function Footer() {
           © 2024 Loop Inc. All rights reserved.
         </p>
         <div className="flex gap-8 text-sm font-bold text-[#343238]">
-          <Link href="#" className="hover:text-[#9b73f6]">
+          <Link href="/privacy-policy" className="hover:text-[#9b73f6]">
             Privacy Policy
           </Link>
-          <Link href="#" className="hover:text-[#9b73f6]">
+          <Link href="/terms-of-service" className="hover:text-[#9b73f6]">
             Terms of Service
           </Link>
         </div>
