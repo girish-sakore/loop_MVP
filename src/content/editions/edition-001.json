@@ -85,52 +85,52 @@
       "subStages": [
         {
           "id": "node-2-stage-1",
-          "question": "Swipe left or right",
+          "question": "Swipe left for Original Name and right for Pen Name",
           "attemptsAllowed": 2,
           "points": 80,
-          "statement": "Salt was once more valuable than gold in some regions.",
+          "statement": "",
           "card": {
-            "title": "Salt Value",
-            "subtitle": "Fact or Myth?",
+            "title": "Ruskin Bond",
+            "subtitle": "Pen name or Original Name?",
             "image": "/images/cards/salt-value.png"
           },
           "left": {
-            "label": "Myth",
-            "icon": "close"
+            "label": "Original",
+            "icon": "check"
           },
           "right": {
-            "label": "Fact",
-            "icon": "check"
+            "label": "Pen Name",
+            "icon": "cross"
           },
           "correctDirection": "right",
           "feedback": {
-            "correct": "Correct! Salt was an extremely valuable commodity.",
+            "correct": "Correct!",
             "incorrect": "This statement is actually true."
           }
         },
         {
           "id": "node-2-stage-2",
-          "question": "Swipe left or right",
+          "question": "Swipe left for Original Name and right for Pen Name",
           "attemptsAllowed": 3,
           "points": 80,
-          "statement": "Kya aap Memes Review krna chahte hai??",
+          "statement": "",
           "card": {
-            "title": "Meme Quiz",
-            "subtitle": "Haa... or Nah!!?",
+            "title": "George Orwell",
+            "subtitle": "Pen name or Original Name?",
             "image": "https://img.buzzfeed.com/buzzfeed-static/static/2017-12/21/14/asset/buzzfeed-prod-fastlane-03/sub-buzz-13410-1513883496-9.png?downsize=900:*&output-format=auto&output-quality=auto"
           },
           "left": {
-            "label": "Time nahi hai bro..",
+            "label": "Original Name",
             "icon": "close"
           },
           "right": {
-            "label": "Memes he review krna hai!!!",
+            "label": "Pen Name",
             "icon": "check"
           },
           "correctDirection": "right",
           "feedback": {
-            "correct": "Hum is bat pr agree krte hai ki aapko memes review krna chahiye. (Daily 2 mins)",
-            "incorrect": "Thik hai yr koi na.."
+            "correct": "yes correct",
+            "incorrect": "wrong."
           }
         }
       ]
@@ -218,6 +218,168 @@
               "word": "dog"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "node-3b",
+      "type": "fill-blank-text",
+      "mapTitle": "Salt Phrases",
+      "mapSubtitle": "Complete the saying",
+      "subStages": [
+        {
+          "id": "node-3b-stage-1",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "Long ago in ancient Rome, salt was so valuable that it was sometimes used to pay people. A soldier's salt allowance was called his salarium, which is where our modern word \"salary\" comes from. If a worker did a poor job, people felt he had not earned the salt he was being paid. Today, when someone is not good enough at what they do, we say they are \"not worth their {{b1}}.\"",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "salt",
+              "hint": "It is the precious white mineral mentioned throughout the clue."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Someone who is not worth their salt is not considered good enough at their job.",
+            "incorrect": "Not quite. Think of the precious white mineral that was once used as payment."
+          }
+        },
+        {
+          "id": "node-3b-stage-2",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "Salt has long been associated with saving and protecting things because it can keep food from spoiling. This connection between salt and saving also influenced religious language. The word for the saving of a person's soul is called {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "salvation",
+              "hint": "This word means the saving of a person's soul."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Salvation means being saved, especially in a religious sense.",
+            "incorrect": "Not quite. Think of the religious word for the saving of a person's soul."
+          }
+        },
+        {
+          "id": "node-3b-stage-3",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing phrase",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "The ancient Roman writer Pliny the Elder wrote about medicine that was taken with a small pinch of salt. Over time, this became a way of saying that you should be a little doubtful when hearing something hard to believe. When you should not believe something completely, you should {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "take it with a grain of salt",
+              "hint": "The phrase tells you to add a tiny amount of doubt, like adding a tiny amount of salt."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! To take something with a grain of salt means to be slightly skeptical about it.",
+            "incorrect": "Not quite. Think of the expression that tells you to be a little skeptical."
+          }
+        },
+        {
+          "id": "node-3b-stage-4",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "In the periodic table, some elements are grouped together because they behave in similar ways. Group 17 contains elements such as chlorine, fluorine, and iodine. The group's name comes from Greek words meaning \"salt-producing.\" This group of elements is called the {{b1}} family.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "halogen",
+              "hint": "This is the name of the group 17 family that includes chlorine and fluorine."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! The halogen family is group 17 of the periodic table.",
+            "incorrect": "Not quite. Think of the group 17 family that includes chlorine, fluorine, and iodine."
+          }
+        },
+        {
+          "id": "node-3b-stage-5",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the word",
+          "question": "Fill in the missing word",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "Very salty water can create a sharp, stinging feeling on your skin, eyes, or lips. Salt water used for preserving foods such as pickles has a special name. This very salty preserving liquid is called {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "brine",
+              "hint": "It is the salty liquid commonly used to preserve pickles and other foods."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Brine is salty water used for preserving food.",
+            "incorrect": "Not quite. Think of the salty liquid used to preserve pickles."
+          }
+        },
+        {
+          "id": "node-3b-stage-6",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the saying",
+          "question": "Fill in the missing phrase",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "In medieval England, a valuable salt container was placed in the middle of a large dinner table. Important guests sat close to the salt, while lower-ranking guests sat farther away. Someone seated in the honored position was said to be {{b1}}.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "above the salt",
+              "hint": "Important guests sat closer to the salt, so they were described as being higher than it."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Being \"above the salt\" meant occupying an honored position at the table.",
+            "incorrect": "Not quite. Important guests sat closer to the salt and were said to be what the salt?"
+          }
+        },
+        {
+          "id": "node-3b-stage-7",
+          "type": "fill-blank-text",
+          "mapTitle": "Salt Phrases",
+          "mapSubtitle": "Complete the tradition",
+          "question": "Fill in the missing phrase",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Text Blank",
+          "prompt": "In Russia and other Slavic countries, an important guest may be welcomed with a decorated loaf of bread and a dish of salt. The guest takes some bread, dips it in the salt, and eats it as a sign of friendship and trust. This traditional ceremony is known as a {{b1}} welcome.",
+          "blanks": [
+            {
+              "id": "b1",
+              "answer": "bread and salt",
+              "hint": "Think of the two foods traditionally offered to an honored guest."
+            }
+          ],
+          "feedback": {
+            "correct": "Correct! Bread and salt are traditional symbols of hospitality and friendship.",
+            "incorrect": "Not quite. Think of the two foods offered together to welcome an honored guest."
+          }
         }
       ]
     },
@@ -828,34 +990,44 @@
       ]
     },
     {
-      "id": "node-6",
-      "type": "reorder",
-      "mapTitle": "Salt Sequence",
-      "mapSubtitle": "Put the clues in order.",
+      "id": "node-6b",
+      "type": "image-text-answer",
+      "mapTitle": "Visual Mystery",
+      "mapSubtitle": "Guess what you see",
       "subStages": [
         {
           "id": "node-6-stage-1",
-          "question": "Arrange the salt story",
-          "attemptsAllowed": 3,
+          "type": "image-text-answer",
+          "mapTitle": "Visual Mystery",
+          "mapSubtitle": "Guess what you see",
+          "question": "What famous landmark is this?",
+          "attemptsAllowed": 2,
           "points": 80,
-          "prompt": "Place these moments from earliest to latest.",
-          "items": [
-            {
-              "id": "salt-springs",
-              "label": "People boil brine from natural salt springs",
-              "order": 1
-            },
-            {
-              "id": "salt-trade",
-              "label": "Salt becomes a valuable trade good",
-              "order": 2
-            },
-            {
-              "id": "modern-table",
-              "label": "Iodized table salt becomes common at home",
-              "order": 3
-            }
-          ]
+          "introLabel": "Visual Guess",
+          "image": "/images/benji-bhai.jpg",
+          "answer": "Eiffel Tower",
+          "hint": "This famous Parisian landmark was built in 1889 and is made of iron.",
+          "feedback": {
+            "correct": "Correct! The Eiffel Tower is Paris's iconic iron lattice tower.",
+            "incorrect": "Not quite. Think of the famous Parisian iron tower built in 1889."
+          }
+        },
+        {
+          "id": "node-6-stage-2",
+          "type": "image-text-answer",
+          "mapTitle": "Visual Mystery",
+          "mapSubtitle": "Guess what you see",
+          "question": "What ancient civilization built this?",
+          "attemptsAllowed": 2,
+          "points": 80,
+          "introLabel": "Visual Guess",
+          "image": "/images/benji-bhai.jpg",
+          "answer": "Mayan",
+          "hint": "This civilization was known for their pyramids and complex calendar system.",
+          "feedback": {
+            "correct": "Correct! The Maya built incredible pyramids and developed a sophisticated calendar.",
+            "incorrect": "Not quite. Think of the ancient civilization known for their pyramids and calendar."
+          }
         }
       ]
     },
@@ -1119,6 +1291,34 @@
             "correct": "Every color found its story. Great eye!",
             "incorrect": "Not quite — try again and watch for the small details."
           }
+        }
+      ]
+    },
+    {
+      "id": "node-10",
+      "type": "border-hop",
+      "mapTitle": "Border Hop",
+      "mapSubtitle": "Find a path across land borders.",
+      "subStages": [
+        {
+          "id": "node-10-stage-1",
+          "question": "Cross Europe one border at a time.",
+          "startCountry": "Portugal",
+          "targetCountry": "Germany",
+          "maxGuesses": 7,
+          "hintsAllowed": 3,
+          "attemptsAllowed": 3,
+          "points": 100
+        },
+        {
+          "id": "node-10-stage-2",
+          "question": "Find your way across South America.",
+          "startCountry": "Colombia",
+          "targetCountry": "Chile",
+          "maxGuesses": 6,
+          "hintsAllowed": 3,
+          "attemptsAllowed": 3,
+          "points": 100
         }
       ]
     }

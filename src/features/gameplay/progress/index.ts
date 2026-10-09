@@ -1,4 +1,20 @@
-export function getProgressPercent(current: number, total: number): number {
-  if (total <= 0) return 0;
-  return Math.min(100, ((current + 1) / total) * 100);
-}
+// features/gameplay/progress/index.ts
+
+export {
+  SNAPSHOT_VERSION,
+  DEFAULT_HINT_BUDGET,
+  progressStorageKey,
+  normalizeSnapshot,
+  sanitizeInteractionState,
+  compareProgress,
+  mergeSnapshots,
+  pickSnapshot,
+  toServerPayload,
+  fromServerPayload,
+  saveSnapshot,
+  restoreSnapshot,
+} from "./resume";
+export type { GameplaySnapshot, InteractionState, StoredProgress } from "./resume";
+
+export { useProgressSync } from "./use-progress-sync";
+export { useInteractionProgress } from "./use-interaction-progress";

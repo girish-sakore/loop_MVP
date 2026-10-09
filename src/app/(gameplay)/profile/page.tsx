@@ -2,17 +2,18 @@ import { getAuthSession } from "@/lib/auth-session";
 import { redirect } from "next/navigation";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import BottomNav from "@/components/layout/bottom-nav";
-import { ProfileHeader } from "@/components/profile/profile-header";
-import { ProfileAvatar } from "@/components/profile/profile-avatar";
-import { ProfileStats } from "@/components/profile/profile-stats";
-import { ProfileEditions } from "@/components/profile/profile-editions";
-import { LogoutButton } from "@/components/profile/logout-button";
+import ProfileView, {
+  type ProfileIdentity,
+  type ProfileVillage,
+} from "@/components/profile/profile-view";
+import { getStreak } from "@/features/streak/get-streak";
+import { getRecentGames } from "@/features/recent-games/get-recent-games";
+import { buildVillageMapData } from "@/features/map/map-content";
 
 export default async function ProfilePage() {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const { name, email, image } = session.user;
   const user = session.user as {
     name?: string | null;
     email: string;
@@ -22,36 +23,40 @@ export default async function ProfilePage() {
     subscriptionEnd?: string | null;
   };
 
-  const isPremium = user.isPremium ?? false;
-  const plan = user.plan ?? null;
-  const subscriptionEnd = user.subscriptionEnd
-    ? new Date(user.subscriptionEnd)
-    : null;
+  const [streak, recentGames, villages] = await Promise.all([
+    getStreak(session.user.id),
+    getRecentGames(session.user.id),
+    buildVillageMapData(session.user.id),
+  ]);
+
+  const identity: ProfileIdentity = {
+    name: user.name ?? "",
+    email: user.email,
+    image: user.image ?? null,
+    isPremium: user.isPremium ?? false,
+    plan: user.plan ?? null,
+    subscriptionEnd: user.subscriptionEnd ?? null,
+  };
+
+  const villageProgress: ProfileVillage[] = villages.map((village) => ({
+    id: village.editionId,
+    title: village.title,
+    order: village.order,
+    completed: village.nodes.filter((n) => n.status === "completed").length,
+    total: village.nodes.length,
+    locked: village.status === "locked",
+  }));
 
   return (
     <MobileContainer>
-      <ProfileHeader name={name ?? ""} email={email} image={image} />
-
-      <main className="flex flex-col gap-12 px-6 pt-8 pb-32">
-        <ProfileAvatar name={name ?? ""} email={email} image={image} />
-        <ProfileStats
-          isPremium={isPremium}
-          plan={plan}
-          subscriptionEnd={subscriptionEnd}
+      <main className="mb mb-root mb-page">
+        <ProfileView
+          identity={identity}
+          streak={streak}
+          recentGames={recentGames}
+          villages={villageProgress}
         />
-        <ProfileEditions />
-
-        <section className="flex flex-col gap-4">
-          <LogoutButton />
-          <p
-            className="text-center text-[11px] font-bold tracking-widest uppercase opacity-50"
-            style={{ color: "var(--outline)" }}
-          >
-            App Version 2.4.1 (Stable)
-          </p>
-        </section>
       </main>
-
       <BottomNav />
     </MobileContainer>
   );

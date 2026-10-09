@@ -132,7 +132,10 @@ model UserNodeProgress {
   correctAnswers  Int       @default(0)
   totalAnswers    Int       @default(0)
   stars           Int       @default(0)             // 0-3, computed server-side on completion
-
+  hintsRemaining  Int       @default(3)
+ 
+  clientUpdatedAt BigInt    @default(0)
+  version         Int       @default(1)
   startedAt       DateTime?
   completedAt     DateTime?
   createdAt       DateTime  @default(now())

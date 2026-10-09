@@ -127,7 +127,7 @@ export function SwipeInteractionPlaceholder({
                 resetCard();
               }
             }}
-            className="relative grid h-[min(58dvh,430px)] min-h-[350px] w-full max-w-[330px] cursor-grab select-none grid-rows-[44%_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_8px_0_rgba(11,11,15,0.16)] active:cursor-grabbing"
+            className="relative grid h-[min(58dvh,430px)] min-h-[350px] w-full max-w-[330px] cursor-grab select-none grid-rows-[70%_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_8px_0_rgba(11,11,15,0.16)] active:cursor-grabbing"
             initial={{ scale: 0.96, opacity: 0, y: 16 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             transition={{
