@@ -302,6 +302,7 @@ export interface EditionNode {
   type: string; // or your existing StageType union, e.g. "image-select" | "swipe" | "fill-blank" | "timeline-builder" | "reorder"
   mapTitle: string;
   mapSubtitle: string;
+  isPremium?: boolean;
   subStages: Stage[]; // Stage = your existing per-question union type — unchanged
 }
 
