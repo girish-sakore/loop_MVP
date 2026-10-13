@@ -47,7 +47,7 @@ export async function DELETE(_req: Request, { params }: Ctx) {
     if (!e.date || e.date <= todayIST()) throw new HttpError(409, { error: "Edition is already live and can't be unscheduled." });
 
     await prisma.edition.update({ where: { id }, data: { status: "DRAFT", snapshot: Prisma.DbNull } });
-    revalidateTag("editions");
+    revalidateTag("editions", {expire: 0});
     return NextResponse.json({ ok: true });
   } catch (e) {
     return handleError(e, "admin/editions:unschedule");
