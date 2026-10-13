@@ -17,8 +17,10 @@ export async function requireCreator(): Promise<Result> {
     return { ok: false, response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   }
   const email = session.user.email.toLowerCase();
-  if (!allowed.includes(email)) {
+  if (!isCreatorEmail(email)) {
     return { ok: false, response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   }
   return { ok: true, email, userId: session.user.id };
 }
+
+export const isCreatorEmail = (email: string) => allowed.includes(email.toLowerCase());

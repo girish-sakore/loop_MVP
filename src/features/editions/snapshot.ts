@@ -40,9 +40,7 @@ export function buildSnapshot(edition: EditionRow, games: GameRow[]): Edition {
     }
 
     // clue-connect: one substage per case (same rule normalizeSubStage used)
-    const flat = (parsed.data.subStages as Record<string, any>[]).flatMap((s) =>
-      g.type === "clue-connect" && s.cases.length > 1 ? s.cases.map((c: unknown) => ({ ...s, cases: [c] })) : [s],
-    );
+    const flat = flattenSubStages(g.type, parsed.data.subStages as Record<string, any>[]);
 
     const subStages = flat.map((s, i) => {
       const stage: Record<string, unknown> = { ...s, id: `${g.id}-${i + 1}`, type: g.type };
@@ -80,4 +78,10 @@ export async function rebuildSnapshot(tx: Prisma.TransactionClient, editionId: s
   });
   const snapshot = buildSnapshot(edition, edition.games);
   await tx.edition.update({ where: { id: editionId }, data: { snapshot: snapshot as unknown as Prisma.InputJsonValue } });
+}
+
+export function flattenSubStages(type: string, subStages: Record<string, any>[]) {
+  return subStages.flatMap((s) =>
+    type === "clue-connect" && s.cases.length > 1 ? s.cases.map((c: unknown) => ({ ...s, cases: [c] })) : [s],
+  );
 }
