@@ -1,89 +1,76 @@
-import fs from "node:fs";
-import path from "node:path";
+import { unstable_cache } from "next/cache";
+import { prisma } from "@/lib/db";
+import { dayString, parseDay, todayIST } from "@/lib/date-ist";
+import type { Edition } from "@/types/gameplay";
 
-import type { BorderHopStage, ClueConnectStage, Edition, EditionNode, Stage } from "@/types/gameplay";
-import { validateRoute } from "@/features/interactions/border-hop/border-hop-rules";
+const TAG = "editions";
+const opts = { tags: [TAG], revalidate: 3600 }; // tag busts on admin changes; 1h is a safety net
 
-const editionsDirectory = path.join(process.cwd(), "src/content/editions");
+// Latest live edition for a given IST day (today's, or the most recent past one).
+const featuredForDay = unstable_cache(
+  async (day: string) => {
+    const row = await prisma.edition.findFirst({
+      where: { status: "SCHEDULED", date: { lte: parseDay(day) } },
+      orderBy: { date: "desc" },
+      select: { snapshot: true },
+    });
+    return (row?.snapshot as unknown as Edition | null) ?? null;
+  },
+  ["featured-edition"],
+  opts,
+);
 
-let editionCache: Edition[] | null = null;
+const editionRow = unstable_cache(
+  async (id: string) => {
+    const row = await prisma.edition.findUnique({
+      where: { id },
+      select: { status: true, date: true, snapshot: true },
+    });
+    if (!row || row.status !== "SCHEDULED" || !row.date || !row.snapshot) return null;
+    return { date: dayString(row.date), edition: row.snapshot as unknown as Edition };
+  },
+  ["edition-by-id"],
+  opts,
+);
 
-function loadEditions(): Edition[] {
-  if (editionCache) return editionCache;
+const weekFmt = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
 
-  const files = fs
-    .readdirSync(editionsDirectory)
-    .filter((file) => file.endsWith(".json"))
-    .sort();
+const summaries = unstable_cache(
+  async (day: string) =>
+    (
+      await prisma.edition.findMany({
+        where: { status: "SCHEDULED", date: { lte: parseDay(day) } },
+        orderBy: { date: "desc" },
+        select: {
+          id: true, title: true, description: true, theme: true, category: true, coverImage: true, date: true,
+          _count: { select: { games: true } },
+          games: { select: { id: true }, orderBy: { position: "asc" }, take: 1 },
+        },
+        take: 365,
+      })
+    ).map(({ date, _count, games, ...e }) => ({
+      ...e,
+      date: dayString(date!),
+      weekLabel: weekFmt.format(date!),
+      gameCount: _count.games,
+      firstGameId: games[0]?.id ?? null,
+    })),
+  ["edition-summaries"],
+  opts,
+);
 
-  editionCache = files
-    .map((file) => {
-      const content = fs.readFileSync(path.join(editionsDirectory, file), "utf8");
-      return normalizeEdition(JSON.parse(content) as Edition);
-    })
-    .sort((a, b) => a.order - b.order);
-
-  return editionCache;
+export async function getFeaturedEdition(): Promise<Edition | null> {
+  return featuredForDay(dayString(todayIST()));
 }
 
-export function getEditionById(editionId: string): Edition | null {
-  return loadEditions().find((edition) => edition.id === editionId) ?? null;
+/** Returns null for unknown, unscheduled, or not-yet-live editions. */
+export async function getEditionById(editionId: string): Promise<Edition | null> {
+  const row = await editionRow(editionId);
+  if (!row || row.date > dayString(todayIST())) return null;
+  return row.edition;
 }
 
-export function getFeaturedEdition(): Edition {
-  return loadEditions()[0];
-}
-
-export function getAllEditions(): Edition[] {
-  return loadEditions();
-}
-
-function normalizeEdition(edition: Edition): Edition {
-  return {
-    ...edition,
-    nodes: edition.nodes.map(normalizeNode),
-  };
-}
-
-function normalizeNode(node: EditionNode): EditionNode {
-  return {
-    ...node,
-    subStages: node.subStages.flatMap((stage, index) =>
-      normalizeSubStage(node, stage, index),
-    ),
-  };
-}
-
-function normalizeSubStage(
-  node: EditionNode,
-  stage: Stage,
-  index: number,
-): Stage[] {
-  if (node.type === "border-hop") {
-    const borderStage = stage as BorderHopStage;
-    try {
-      const route = validateRoute(borderStage);
-      return [{ ...borderStage, type: "border-hop", startCountry: route.start, targetCountry: route.target }];
-    } catch (error) {
-      throw new Error(`Invalid Border Hop stage ${node.id}/${stage.id ?? index}: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }
-  if (node.type !== "clue-connect" || !isClueConnectStage(stage)) {
-    return [stage];
-  }
-
-  if (stage.cases.length <= 1) {
-    return [stage];
-  }
-
-  const baseId = stage.id ?? `${node.id}-stage-${index + 1}`;
-  return stage.cases.map((clueCase, caseIndex) => ({
-    ...stage,
-    id: `${baseId}-${clueCase.id || caseIndex + 1}`,
-    cases: [clueCase],
-  }));
-}
-
-function isClueConnectStage(stage: Stage): stage is ClueConnectStage {
-  return "cases" in stage && Array.isArray(stage.cases);
+/** Light list (no games) for the library / archive. */
+export async function getEditionSummaries() {
+  return summaries(dayString(todayIST()));
 }
