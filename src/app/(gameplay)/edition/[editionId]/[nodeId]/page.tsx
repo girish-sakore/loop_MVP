@@ -1,10 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { GameplayEngine } from "@/features/gameplay/engine/gameplay-engine";
-import { getEditionById } from "@/features/editions/edition-content";
 import { getAuthSession } from "@/lib/auth-session";
 import { getUserNodeProgress } from "@/lib/edition-progress";
 import type { Stage, StageType } from "@/types/gameplay";
+import { getEditionById, getFeaturedEdition } from "@/features/editions/edition-content";
+import { hasPremium } from "@/lib/premium";
 
 type PageProps = { params: Promise<{ editionId: string; nodeId: string }> };
 
@@ -14,16 +15,21 @@ export default async function NodeGameplayPage({ params }: PageProps) {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const edition = getEditionById(editionId);
+  const [edition, featured] = await Promise.all([getEditionById(editionId), getFeaturedEdition()]);
   if (!edition) notFound();
+
+  const premium = hasPremium(session.user);
+  if (!premium && edition.id !== featured?.id) redirect("/pricing"); // archive is premium-only
 
   const nodeIndex = edition.nodes.findIndex((n) => n.id === nodeId);
   if (nodeIndex === -1) notFound();
 
+  const node = edition.nodes[nodeIndex];
+  if (node.isPremium && !premium) redirect("/pricing"); // real enforcement; UI lock is cosmetic
+
   const nodeProgress = await getUserNodeProgress(session.user.id, editionId, nodeId);
   if (nodeProgress.status === "completed") redirect("/map");
 
-  const node = edition.nodes[nodeIndex];
   const nodeType = node.type as StageType;
   const stages = node.subStages.map((stage, index) => ({
     ...stage,
@@ -46,15 +52,15 @@ export default async function NodeGameplayPage({ params }: PageProps) {
         initialProgress={
           nodeProgress.status === "in_progress"
             ? {
-                currentStage: nodeProgress.currentSubStage,
-                attemptsRemaining:
-                  nodeProgress.attemptsRemaining ??
-                  (stages[nodeProgress.currentSubStage]?.attemptsAllowed ?? 0),
-                stagePassed: nodeProgress.stagePassed,
-                score: nodeProgress.score,
-                correctAnswers: nodeProgress.correctAnswers,
-                totalAnswers: nodeProgress.totalAnswers,
-              }
+              currentStage: nodeProgress.currentSubStage,
+              attemptsRemaining:
+                nodeProgress.attemptsRemaining ??
+                (stages[nodeProgress.currentSubStage]?.attemptsAllowed ?? 0),
+              stagePassed: nodeProgress.stagePassed,
+              score: nodeProgress.score,
+              correctAnswers: nodeProgress.correctAnswers,
+              totalAnswers: nodeProgress.totalAnswers,
+            }
             : undefined
         }
         userId={session.user.id}

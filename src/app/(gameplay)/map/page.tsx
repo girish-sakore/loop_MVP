@@ -8,15 +8,23 @@ import CatButton from "@/components/matchbox/cat-button";
 import StrikeLink from "@/components/matchbox/strike-link";
 import ThemePicker from "@/components/matchbox/theme-picker";
 import { getAuthSession } from "@/lib/auth-session";
-import { getEditionById } from "@/features/editions/edition-content";
-import { buildVillageMapData } from "@/features/map/map-content";
-import type { MapNode, VillageMapData } from "@/features/map/types";
 import type { EditionNode } from "@/types/gameplay";
 import StreakCard from "@/components/matchbox/streak-card";
 import { getStreak } from "@/features/streak/get-streak";
 import RecentGames from "@/components/matchbox/recent-games";
 import { getRecentGames } from "@/features/recent-games/get-recent-games";
 import { GAME_ORDER as gameOrder, themeIndexFor } from "@/lib/matchbox/game-order";
+import { getFeaturedEdition } from "@/features/editions/edition-content";
+import { getAllUserNodeProgress, type NodeProgress } from "@/lib/edition-progress";
+import { hasPremium } from "@/lib/premium";
+import type { Edition } from "@/types/gameplay";
+
+type TileNode = {
+  nodeId: string;
+  status: "completed" | "current" | "locked";
+  completedSubGames: number;
+  totalSubGames: number;
+};
 
 type TileConfig = {
   key: string;
@@ -29,7 +37,7 @@ type TileConfig = {
 type GameTile = TileConfig & {
   editionId: string;
   mapTitle: string;
-  node: MapNode;
+  node: TileNode;
 };
 
 // Colours now come from the active matchbox theme (--mb-t0..t10), picked by game order.
@@ -62,29 +70,25 @@ export default async function MapPage() {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const [streak, recentGames] = await Promise.all([
+  const [streak, recentGames, currentEdition] = await Promise.all([
     getStreak(session.user.id),
     getRecentGames(session.user.id),
+    getFeaturedEdition(),
   ]);
+  const progress = currentEdition
+    ? await getAllUserNodeProgress(session.user.id, currentEdition.id)
+    : new Map<string, NodeProgress>();
 
-  const villages = await buildVillageMapData(session.user.id);
-  // const streak = await getStreak(session.user.id);
-  const currentVillage =
-    villages.find((village) =>
-      village.nodes.some((node) => node.status === "current"),
-    ) ?? villages[0];
-  const currentEdition = currentVillage
-    ? getEditionById(currentVillage.editionId)
-    : null;
-  const gameTiles = buildGameTiles(currentVillage, currentEdition?.nodes ?? []);
+  const gameTiles = currentEdition
+    ? buildGameTiles(currentEdition, progress, hasPremium(session.user))
+    : [];
 
-  const total = gameTiles.length;
-  const completed = gameTiles.filter((t) => t.node.status === "completed").length;
+  const playable = gameTiles.filter((t) => t.node.status !== "locked");
+  const total = playable.length;
+  const completed = playable.filter((t) => t.node.status === "completed").length;
   const allDone = total > 0 && completed === total;
   const anyProgress = gameTiles.some((t) => t.node.completedSubGames > 0);
-  const next =
-    gameTiles.find((t) => t.node.status === "current") ??
-    gameTiles.find((t) => t.node.status !== "completed" && t.node.status !== "locked");
+  const next = gameTiles.find((t) => t.node.status === "current");
 
   return (
     <MobileContainer>
@@ -114,7 +118,7 @@ export default async function MapPage() {
           <>
             <EditionHero
               edition={currentEdition}
-              title={currentVillage?.title}
+              title={currentEdition?.title}
               gamesDone={completed}
               gamesTotal={total}
               done={allDone}
@@ -143,7 +147,7 @@ export default async function MapPage() {
             </section>
           </>
         )} */}
-      <RecentGames games={recentGames} />
+        <RecentGames games={recentGames} />
       </main>
       <BottomNav />
     </MobileContainer>
@@ -199,37 +203,30 @@ function InviteTile() {
   );
 }
 
-function buildGameTiles(
-  village: VillageMapData | undefined,
-  editionNodes: EditionNode[],
-): GameTile[] {
-  if (!village) return [];
-
-  const sortedNodes = [...editionNodes].sort((a, b) => {
-    const aOrder = (gameOrder as readonly string[]).indexOf(a.type);
-    const bOrder = (gameOrder as readonly string[]).indexOf(b.type);
-
-    return (aOrder === -1 ? 999 : aOrder) - (bOrder === -1 ? 999 : bOrder);
+function buildGameTiles(edition: Edition, progress: Map<string, NodeProgress>, premium: boolean): GameTile[] {
+  const sorted = [...edition.nodes].sort((a, b) => {
+    const ai = (gameOrder as readonly string[]).indexOf(a.type);
+    const bi = (gameOrder as readonly string[]).indexOf(b.type);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
   });
 
-  return sortedNodes.flatMap((editionNode) => {
-    const node = village.nodes.find((item) => item.nodeId === editionNode.id);
-    if (!node) return [];
+  return sorted.map((n) => {
+    const p = progress.get(n.id);
+    const total = n.subStages.length;
+    const done = p?.status === "completed";
+    const status: TileNode["status"] = done ? "completed" : n.isPremium && !premium ? "locked" : "current";
+    const config = gameTileConfig[n.type] ?? { key: n.type, title: n.mapTitle, subtitle: n.mapSubtitle, icon: "extension" };
 
-    const config = gameTileConfig[editionNode.type] ?? {
-      key: editionNode.type,
-      title: editionNode.mapTitle,
-      subtitle: editionNode.mapSubtitle,
-      icon: "extension",
-    };
-
-    return [{
+    return {
       ...config,
-      title: config.title || editionNode.mapTitle,
-      subtitle: config.subtitle || editionNode.mapSubtitle,
-      mapTitle: editionNode.mapTitle,
-      editionId: village.editionId,
-      node,
-    }];
+      mapTitle: n.mapTitle,
+      editionId: edition.id,
+      node: {
+        nodeId: n.id,
+        status,
+        totalSubGames: total,
+        completedSubGames: done ? total : Math.min(p?.currentSubStage ?? 0, total),
+      },
+    };
   });
 }
