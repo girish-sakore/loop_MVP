@@ -6,10 +6,15 @@ import { getAuthSession } from "@/lib/auth-session";
 import { getUserNodeProgress } from "@/lib/edition-progress";
 import type { Stage, StageType } from "@/types/gameplay";
 
-type PageProps = { params: Promise<{ editionId: string; nodeId: string }> };
+type PageProps = {
+  params: Promise<{ editionId: string; nodeId: string }>;
+  searchParams: Promise<{ mode?: string | string[] }>;
+};
 
-export default async function NodeGameplayPage({ params }: PageProps) {
+export default async function NodeGameplayPage({ params, searchParams }: PageProps) {
   const { editionId, nodeId } = await params;
+  const { mode } = await searchParams;
+  const isReplay = mode === "replay";
 
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
@@ -21,7 +26,7 @@ export default async function NodeGameplayPage({ params }: PageProps) {
   if (nodeIndex === -1) notFound();
 
   const nodeProgress = await getUserNodeProgress(session.user.id, editionId, nodeId);
-  if (nodeProgress.status === "completed") redirect("/map");
+  if (nodeProgress.status === "completed" && !isReplay) redirect("/map");
 
   const node = edition.nodes[nodeIndex];
   const nodeType = node.type as StageType;
@@ -42,9 +47,10 @@ export default async function NodeGameplayPage({ params }: PageProps) {
         editionId={edition.id}
         nodeId={node.id}
         stages={stages}
-        initialStage={nodeProgress.currentSubStage}
+        mode={isReplay ? "replay" : "normal"}
+        initialStage={isReplay ? 0 : nodeProgress.currentSubStage}
         initialProgress={
-          nodeProgress.status === "in_progress"
+          !isReplay && nodeProgress.status === "in_progress"
             ? {
                 currentStage: nodeProgress.currentSubStage,
                 attemptsRemaining:

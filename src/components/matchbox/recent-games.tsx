@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { themeIndexFor } from "@/lib/matchbox/game-order";
 import type { RecentGame } from "@/features/recent-games/types";
 
@@ -16,11 +17,7 @@ function Flame({ lit }: { lit: boolean }) {
 const formatDate = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
-/**
- * Presentational: renders the "Recently struck" slider from props.
- * Cards are not interactive yet (games aren't replayable). When replay ships,
- * swap the <div> for a <Link> and drop the `static` class.
- */
+/** Renders completed games as links to an isolated, non-scoring replay. */
 export default function RecentGames({ games }: { games: RecentGame[] }) {
   return (
     <>
@@ -39,11 +36,12 @@ export default function RecentGames({ games }: { games: RecentGame[] }) {
             const max = g.maxScore ?? 3;
             const nr = `Nº ${String(g.editionNo).padStart(3, "0")}`;
             return (
-              <div
+              <Link
                 key={g.id}
                 role="listitem"
-                className="hbox static"
-                aria-label={`${nr}, ${g.gameLabel}, ${g.topic}, ${formatDate(g.playedAt)}, ${g.score} of ${max} correct`}
+                className="hbox"
+                href={`/edition/${g.editionId}/${g.nodeId}?mode=replay`}
+                aria-label={`Replay ${nr}, ${g.gameLabel}, ${g.topic}, ${formatDate(g.playedAt)}, ${g.score} of ${max} stars`}
                 style={{ ["--c" as string]: `var(--mb-t${i})`, ["--f" as string]: `var(--mb-tf${i})` }}
               >
                 <span className="hs" />
@@ -57,7 +55,7 @@ export default function RecentGames({ games }: { games: RecentGame[] }) {
                 </span>
                 <b>{g.gameLabel}</b>
                 <small>{g.topic} · {formatDate(g.playedAt)}</small>
-              </div>
+              </Link>
             );
           })}
         </div>
