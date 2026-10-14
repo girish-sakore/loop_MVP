@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, type ApiError } from "./api";
@@ -135,6 +136,7 @@ export function EditionBuilder(props: { editionId: string; mode: Mode; initialMe
                       <button style={s.danger} disabled={busy || dirty} onClick={() => remove(c.id)}>Remove</button>
                     </>
                   )}
+                  <Link href={`/admin/games/${c.id}`}>Edit</Link>{" "}
                 </td>
               </tr>
             ))}

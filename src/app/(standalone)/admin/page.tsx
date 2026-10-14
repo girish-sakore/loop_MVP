@@ -43,7 +43,11 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                     {g.editionId ? <Link href={`/admin/editions/${g.editionId}`}>In edition →</Link> : "Library"}
                     {g.isPremium && " · premium"}
                   </td>
-                  <td style={{ ...s.td, textAlign: "right" }}>{!g.editionId && <DeleteGameButton id={g.id} title={g.title} />}</td>
+                  <td style={{ ...s.td, textAlign: "right", whiteSpace: "nowrap" }}>
+                    <Link href={`/admin/games/${g.id}`}>Edit</Link>{" "}
+                    {!g.editionId && <DeleteGameButton id={g.id} title={g.title} />}
+                  </td>
+                  {/* <td style={{ ...s.td, textAlign: "right" }}>{!g.editionId && <DeleteGameButton id={g.id} title={g.title} />}</td> */}
                 </tr>
               ))}
               {games.length === 0 && <tr><td style={s.td} colSpan={5}>No games yet. Import a file above.</td></tr>}
