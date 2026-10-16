@@ -270,7 +270,7 @@ export function FillBlankTextInteraction({
   }
 
   return (
-    <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-y-auto bg-[#FDF9F1] px-4 pb-4 pt-6 text-[#2B2A25]">
+    <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden bg-[#FDF9F1] px-4 pb-4 pt-6 text-[#2B2A25]">
       {/* Heading — matches swipe game style */}
       <div className="flex shrink-0 flex-col items-center gap-4 text-center px-4 pt-2 mb-2">
         <span className="inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#53BCD1] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#2B2A25]">
@@ -288,12 +288,12 @@ export function FillBlankTextInteraction({
         </div>
       )}
       {/* Prompt card */}
-      <div className="min-h-0 flex-1 overflow-visible px-2">
-        <div className="relative mx-auto max-w-[380px]">
+      <div className="min-h-0 flex-1 px-2">
+        <div className="relative mx-auto flex h-full min-h-0 max-w-[380px]">
           <div className="absolute inset-0 translate-y-[10px] rounded-[28px] border-[3px] border-[#53BCD1] bg-[#FDF9F1]" />
 
-          <div className="relative rounded-[28px] border-[3px] border-[#2B2A25] bg-[#FFFDF7] p-4 shadow-[6px_6px_0_#2B2A25]">
-            <div className="flex items-center justify-between">
+          <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[28px] border-[3px] border-[#2B2A25] bg-[#FFFDF7] p-4 shadow-[6px_6px_0_#2B2A25]">
+            <div className="flex shrink-0 items-center justify-between">
               {status === "correct" && (
                 <span className="text-[12px] font-extrabold text-[#3FAE6A]">✓ Answered</span>
               )}
@@ -305,7 +305,7 @@ export function FillBlankTextInteraction({
               )}
             </div>
 
-            <div className="font-display mt-3 text-[16px] leading-relaxed text-[#2B2A25]">
+            <div className="font-display mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 text-[16px] leading-relaxed text-[#2B2A25]">
               {parts.map((part, index) =>
                 renderPart(part, index, answers, blanksById, handleInputChange, disabled),
               )}
@@ -314,7 +314,7 @@ export function FillBlankTextInteraction({
         </div>
       </div>
       {showPager && (
-        <div className="mx-auto mt-3 flex w-full max-w-[380px] items-center justify-center gap-2" role="tablist" aria-label="Fill-in-the-blank cards">
+        <div className="mx-auto mt-6 flex w-full max-w-[380px] items-center justify-center gap-2" role="tablist" aria-label="Fill-in-the-blank cards">
           {stageList.map((item, index) => {
             const itemStatus = statusByStage[item.id] ?? "unanswered";
             const isActive = index === currentIndex;
@@ -374,7 +374,7 @@ export function FillBlankTextInteraction({
         </div>
       )}
       {/* Check + Hint */}
-      <div className="sticky bottom-0 z-20 mx-auto mt-5 flex w-full max-w-[380px] shrink-0 gap-2 border-t-[3px] border-[#2B2A25] bg-[#FDF9F1] pt-4 pb-2">
+      <div className="z-20 mx-auto mt-5 flex w-full max-w-[380px] shrink-0 gap-2 border-t-[3px] border-[#2B2A25] bg-[#FDF9F1] pt-4 pb-2">
         <button
           type="button"
           onClick={handleCheckGuess}
