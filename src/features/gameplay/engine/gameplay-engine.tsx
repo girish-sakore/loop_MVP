@@ -33,11 +33,14 @@ interface GameplayEngineProps {
   initialStage?: number;
   initialProgress?: StoredProgress;
   userId: string;
+  /** Replays are deliberately local-only and never alter recorded progress. */
+  mode?: "normal" | "replay";
 }
 
 export function GameplayEngine({
-  editionId, nodeId, userId, stages, initialStage = 0, initialProgress }: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal" }: GameplayEngineProps) {
   const router = useRouter();
+  const isReplay = mode === "replay";
   const hasNavigated = useRef(false);
   const [initializedKey, setInitializedKey] = useState<string | null>(null);
   const answerLocked = useRef(true);
@@ -69,9 +72,12 @@ export function GameplayEngine({
   const totalAttempts = stage?.attemptsAllowed ?? 3;
   const progress = useMemo(() => (currentStage / stages.length) * 100, [currentStage, stages.length]);
   const gameplayKey = progressStorageKey(userId, editionId, nodeId);
+  // Distinguishes a replay navigation from normal play if Next preserves this
+  // client component while only the URL query string changes.
+  const sessionKey = isReplay ? `${gameplayKey}:replay` : gameplayKey;
   const legacyHintsKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
-  const introDismissed = introState?.key === gameplayKey ? introState.dismissed : false;
-  const ready = initializedKey === gameplayKey;
+  const introDismissed = introState?.key === sessionKey ? introState.dismissed : false;
+  const ready = initializedKey === sessionKey;
 
   const applySnapshot = useCallback((snapshot: GameplaySnapshot) => {
     restore(snapshot);
@@ -87,12 +93,13 @@ export function GameplayEngine({
     });
     const started = snapshot.totalAnswers > 0 || snapshot.currentStage > 0;
     setIntroState((prev) => ({
-      key: gameplayKey,
-      dismissed: (prev?.key === gameplayKey && prev.dismissed) || started,
+      key: sessionKey,
+      dismissed: (prev?.key === sessionKey && prev.dismissed) || started,
     }));
-  }, [restore, gameplayKey]);
+  }, [restore, sessionKey]);
 
   const handleRemote = useCallback((remote: GameplaySnapshot) => {
+    if (isReplay) return;
     if (hasNavigated.current) return;
     const local = pickSnapshot(useGameplayStore.getState());
     if (compareProgress(remote, local) > 0) {
@@ -106,23 +113,26 @@ export function GameplayEngine({
     } else if (remote.hintsRemaining < local.hintsRemaining) {
       applyRemoteHints(remote.hintsRemaining);
     }
-  }, [applySnapshot, applyRemoteHints, gameplayKey]);
+  }, [applySnapshot, applyRemoteHints, gameplayKey, isReplay]);
 
   const { save, flush } = useProgressSync({
     editionId,
     nodeId,
     storageKey: gameplayKey,
-    enabled: ready,
+    enabled: ready && !isReplay,
     onRemote: handleRemote,
   });
 
   // Stage-level change: local write + network push.
-  const syncStage = useCallback(() => save(pickSnapshot(useGameplayStore.getState())), [save]);
+  const syncStage = useCallback(() => {
+    if (!isReplay) save(pickSnapshot(useGameplayStore.getState()));
+  }, [isReplay, save]);
 
   // Game-state change (typing, hopping...): local only, no network call.
   const saveLocalOnly = useCallback(() => {
+    if (isReplay) return;
     try { saveSnapshot(localStorage, gameplayKey, pickSnapshot(useGameplayStore.getState())); } catch { /* storage blocked */ }
-  }, [gameplayKey]);
+  }, [gameplayKey, isReplay]);
 
   useEffect(() => {
     let cancelled = false;
@@ -130,11 +140,13 @@ export function GameplayEngine({
       if (cancelled) return;
 
       let legacyHints: number | undefined;
-      try {
-        const raw = localStorage.getItem(legacyHintsKey);
-        const parsed = raw === null ? NaN : parseInt(raw, 10);
-        if (Number.isSafeInteger(parsed) && parsed >= 0) legacyHints = parsed;
-      } catch { /* storage blocked */ }
+      if (!isReplay) {
+        try {
+          const raw = localStorage.getItem(legacyHintsKey);
+          const parsed = raw === null ? NaN : parseInt(raw, 10);
+          if (Number.isSafeInteger(parsed) && parsed >= 0) legacyHints = parsed;
+        } catch { /* storage blocked */ }
+      }
       const hintFallback = legacyHints ?? DEFAULT_HINT_BUDGET;
 
       const server: GameplaySnapshot = normalizeSnapshot(initialProgress, { hintsRemaining: hintFallback }) ?? {
@@ -151,19 +163,24 @@ export function GameplayEngine({
       };
 
       let snapshot = server;
-      try {
-        snapshot = restoreSnapshot(localStorage, gameplayKey, server, stages.map((item) => item.attemptsAllowed));
-      } catch { /* Fall back to server progress if storage is blocked. */ }
+      if (!isReplay) {
+        try {
+          snapshot = restoreSnapshot(localStorage, gameplayKey, server, stages.map((item) => item.attemptsAllowed));
+        } catch { /* Fall back to server progress if storage is blocked. */ }
+      }
 
       applySnapshot(snapshot);
-      setInitializedKey(gameplayKey);
-      save(snapshot);
-      try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
+      setInitializedKey(sessionKey);
+      if (!isReplay) {
+        save(snapshot);
+        try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
+      }
     });
     return () => { cancelled = true; };
-  }, [stages, initialStage, initialProgress, gameplayKey, legacyHintsKey, applySnapshot, save]);
+  }, [stages, initialStage, initialProgress, sessionKey, gameplayKey, legacyHintsKey, applySnapshot, isReplay, save]);
 
   const completeProgress = useCallback(async () => {
+    if (isReplay) return;
     flush();
     await fetch("/api/progress/complete", {
       method: "POST",
@@ -171,17 +188,17 @@ export function GameplayEngine({
       body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
     }).catch(() => { });
     try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers, gameplayKey, flush]);
+  }, [editionId, nodeId, score, correctAnswers, totalAnswers, gameplayKey, flush, isReplay]);
 
   useEffect(() => {
     if (!ready) return;
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
-        router.push("/summary");
+        router.push(isReplay ? "/map" : "/summary");
       });
     }
-  }, [ready, completed, stage, completeProgress, router]);
+  }, [ready, completed, stage, completeProgress, router, isReplay]);
 
   const handleInteractionStateChange = useCallback((stageId: string, state: InteractionState) => {
     setInteractionState(stageId, state);
@@ -280,7 +297,7 @@ export function GameplayEngine({
               attemptsRemaining={attemptsRemaining}
               onAnswer={handleAnswer}
               showIntro={!introDismissed}
-              onIntroComplete={() => setIntroState({ key: gameplayKey, dismissed: true })}
+              onIntroComplete={() => setIntroState({ key: sessionKey, dismissed: true })}
               hintsRemaining={hintsRemaining}
               onUseHint={handleUseHint}
               interactionState={interactionState[stage.id]}

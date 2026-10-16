@@ -1,6 +1,8 @@
-/** One previously played game. The backend will return an array of these. */
+/** One completed game that can be launched again in replay mode. */
 export type RecentGame = {
   id: string;
+  editionId: string;
+  nodeId: string;
   editionNo: number;
   gameType: string;
   gameLabel: string;
