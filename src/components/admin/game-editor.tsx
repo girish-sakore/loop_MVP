@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, type ApiError } from "./api";
 import { ErrorList, s } from "./ui";
+import { PreviewLink } from "./preview-buttons";
+import { Play } from "lucide-react";
 
 type Props = {
   id: string;
@@ -66,6 +68,7 @@ export function GameEditor({ id, mode, initial }: Props) {
       </label>
 
       <div style={{ ...s.row, marginTop: 12 }}>
+        <PreviewLink gameId={id} title="Preview" style={s.icon}><Play size={16} /></PreviewLink>
         <button style={s.primary} disabled={busy || locked || !dirty} onClick={save}>{busy ? "Saving…" : "Save"}</button>
         {msg && <span style={s.muted}>{msg}</span>}
       </div>

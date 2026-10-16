@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import type { Edition, EditionNode, Stage, BorderHopStage } from "@/types/gameplay";
 import { gameCardSchema, formatImportErrors } from "@/features/games/game-schemas";
 import { validateRoute } from "@/features/interactions/border-hop/border-hop-rules";
-import { dayString } from "@/lib/date-ist";
+import { dayString, todayIST } from "@/lib/date-ist";
 import { HttpError } from "@/lib/http-error";
 
 type EditionRow = {
@@ -84,4 +84,13 @@ export function flattenSubStages(type: string, subStages: Record<string, any>[])
   return subStages.flatMap((s) =>
     type === "clue-connect" && s.cases.length > 1 ? s.cases.map((c: unknown) => ({ ...s, cases: [c] })) : [s],
   );
+}
+
+/** Builds the playable node for a single card, with the same rules as scheduling. Throws SnapshotError if invalid. */
+export function buildPreviewNode(game: GameRow): EditionNode {
+  const snap = buildSnapshot(
+    { id: "preview", title: "Preview", description: "", theme: "", date: todayIST(), category: null, author: null, coverImage: null, estimatedTime: null },
+    [game],
+  );
+  return snap.nodes[0];
 }

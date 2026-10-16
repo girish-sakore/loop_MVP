@@ -15,6 +15,8 @@ export const s = {
   th: { textAlign: "left", padding: "6px 8px", fontSize: 12, opacity: 0.7 } as CSSProperties,
   td: { padding: "8px", borderTop: "1px solid rgba(0,0,0,.12)", verticalAlign: "middle" } as CSSProperties,
   muted: { opacity: 0.65, fontSize: 13 } as CSSProperties,
+  icon: { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 10, border: "2px solid #111", background: "#fff", color: "#111", cursor: "pointer", padding: 0 } as CSSProperties,
+  iconDanger: { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 10, border: "2px solid #b3261e", background: "#fff", color: "#b3261e", cursor: "pointer", padding: 0 } as CSSProperties,
 };
 
 export function ErrorList({ error }: { error: ApiError | null }) {
