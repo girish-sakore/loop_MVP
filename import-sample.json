@@ -1,0 +1,1302 @@
+[
+  {
+    "type": "image-select",
+    "title": "Salt Mine",
+    "subtitle": "Discover where it all begins.",
+    "subStages": [
+      {
+        "id": "node-1-stage-1",
+        "question": "Who is Marie Curie? GFHGFHGFHGF",
+        "attemptsAllowed": 3,
+        "points": 100,
+        "options": [
+          {
+            "id": "opt-1",
+            "label": "Marie Curie",
+            "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+            "isCorrect": true,
+            "feedback": "Correct. Curie pioneered research on radioactivity."
+          },
+          {
+            "id": "opt-2",
+            "label": "Ada Lovelace",
+            "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+            "isCorrect": false,
+            "feedback": "Not quite. Think of pioneer scientists in radioactivity."
+          },
+          {
+            "id": "opt-3",
+            "label": "Rosalind Franklin",
+            "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+            "isCorrect": false,
+            "feedback": "Not this time. Try looking for Curie's era portrait cues."
+          }
+        ]
+      },
+      {
+        "id": "node-1-stage-2",
+        "question": "Who is Thomas Edison?",
+        "attemptsAllowed": 3,
+        "points": 100,
+        "options": [
+          {
+            "id": "opt-1",
+            "label": "Marie Curie",
+            "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+            "isCorrect": true,
+            "feedback": "Correct. Curie pioneered research on radioactivity."
+          },
+          {
+            "id": "opt-2",
+            "label": "Ada Lovelace",
+            "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+            "isCorrect": false,
+            "feedback": "Not quite. Think of pioneer scientists in radioactivity."
+          },
+          {
+            "id": "opt-3",
+            "label": "Rosalind Franklin",
+            "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+            "isCorrect": false,
+            "feedback": "Not this time. Try looking for Curie's era portrait cues."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "swipe",
+    "title": "Salt Mine",
+    "subtitle": "Discover ancient beliefs",
+    "subStages": [
+      {
+        "id": "node-2-stage-1",
+        "question": "Swipe left for Original Name and right for Pen Name",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "statement": "",
+        "card": {
+          "title": "Ruskin Bond",
+          "subtitle": "Pen name or Original Name?",
+          "image": "/images/cards/salt-value.png"
+        },
+        "left": {
+          "label": "Original",
+          "icon": "check"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "cross"
+        },
+        "correctDirection": "right",
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "This statement is actually true."
+        }
+      },
+      {
+        "id": "node-2-stage-2",
+        "question": "Swipe left for Original Name and right for Pen Name",
+        "attemptsAllowed": 3,
+        "points": 80,
+        "statement": "",
+        "card": {
+          "title": "George Orwell",
+          "subtitle": "Pen name or Original Name?",
+          "image": "https://img.buzzfeed.com/buzzfeed-static/static/2017-12/21/14/asset/buzzfeed-prod-fastlane-03/sub-buzz-13410-1513883496-9.png?downsize=900:*&output-format=auto&output-quality=auto"
+        },
+        "left": {
+          "label": "Original Name",
+          "icon": "close"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "check"
+        },
+        "correctDirection": "right",
+        "feedback": {
+          "correct": "yes correct",
+          "incorrect": "wrong."
+        }
+      }
+    ]
+  },
+  {
+    "type": "fill-blank",
+    "title": "Salt Mine",
+    "subtitle": "Learn a famous phrase",
+    "subStages": [
+      {
+        "id": "node-3-stage-1",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "prompt": "The viral 'This is Fine' meme features a dog calmly sitting in a room that is on {{b1}}, saying the phrase 'This is {{b2}}'.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "fire"
+          },
+          {
+            "id": "b2",
+            "answer": "fine"
+          }
+        ],
+        "options": [
+          {
+            "id": "o1",
+            "word": "fire"
+          },
+          {
+            "id": "o2",
+            "word": "fine"
+          },
+          {
+            "id": "o3",
+            "word": "water"
+          },
+          {
+            "id": "o4",
+            "word": "okay"
+          },
+          {
+            "id": "o5",
+            "word": "smoke"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-2",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "prompt": "In the classic 'Distracted Boyfriend' meme, a man turns to look at another {{b1}} while walking with his {{b2}}.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "woman"
+          },
+          {
+            "id": "b2",
+            "answer": "girlfriend"
+          }
+        ],
+        "options": [
+          {
+            "id": "o1",
+            "word": "woman"
+          },
+          {
+            "id": "o2",
+            "word": "girlfriend"
+          },
+          {
+            "id": "o3",
+            "word": "car"
+          },
+          {
+            "id": "o4",
+            "word": "friend"
+          },
+          {
+            "id": "o5",
+            "word": "dog"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fill-blank-text",
+    "title": "Salt Phrases",
+    "subtitle": "Complete the saying",
+    "subStages": [
+      {
+        "id": "node-3b-stage-1",
+        "type": "fill-blank-text",
+        "mapTitle": "Salt Phrases",
+        "mapSubtitle": "Complete the saying",
+        "question": "Fill in the missing word",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Text Blank",
+        "prompt": "Long ago in ancient Rome, salt was so valuable that it was sometimes used to pay people. A soldier's salt allowance was called his salarium, which is where our modern word \"salary\" comes from. If a worker did a poor job, people felt he had not earned the salt he was being paid. Today, when someone is not good enough at what they do, we say they are \"not worth their {{b1}}.\"",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "salt",
+            "hint": "It is the precious white mineral mentioned throughout the clue."
+          }
+        ],
+        "feedback": {
+          "correct": "Correct! Someone who is not worth their salt is not considered good enough at their job.",
+          "incorrect": "Not quite. Think of the precious white mineral that was once used as payment."
+        }
+      },
+      {
+        "id": "node-3b-stage-2",
+        "type": "fill-blank-text",
+        "mapTitle": "Salt Phrases",
+        "mapSubtitle": "Complete the saying",
+        "question": "Fill in the missing word",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Text Blank",
+        "prompt": "Salt has long been associated with saving and protecting things because it can keep food from spoiling. This connection between salt and saving also influenced religious language. The word for the saving of a person's soul is called {{b1}}.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "salvation",
+            "hint": "This word means the saving of a person's soul."
+          }
+        ],
+        "feedback": {
+          "correct": "Correct! Salvation means being saved, especially in a religious sense.",
+          "incorrect": "Not quite. Think of the religious word for the saving of a person's soul."
+        }
+      },
+      {
+        "id": "node-3b-stage-3",
+        "type": "fill-blank-text",
+        "mapTitle": "Salt Phrases",
+        "mapSubtitle": "Complete the saying",
+        "question": "Fill in the missing phrase",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Text Blank",
+        "prompt": "The ancient Roman writer Pliny the Elder wrote about medicine that was taken with a small pinch of salt. Over time, this became a way of saying that you should be a little doubtful when hearing something hard to believe. When you should not believe something completely, you should {{b1}}.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "take it with a grain of salt",
+            "hint": "The phrase tells you to add a tiny amount of doubt, like adding a tiny amount of salt."
+          }
+        ],
+        "feedback": {
+          "correct": "Correct! To take something with a grain of salt means to be slightly skeptical about it.",
+          "incorrect": "Not quite. Think of the expression that tells you to be a little skeptical."
+        }
+      },
+      {
+        "id": "node-3b-stage-4",
+        "type": "fill-blank-text",
+        "mapTitle": "Salt Phrases",
+        "mapSubtitle": "Complete the saying",
+        "question": "Fill in the missing word",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Text Blank",
+        "prompt": "In the periodic table, some elements are grouped together because they behave in similar ways. Group 17 contains elements such as chlorine, fluorine, and iodine. The group's name comes from Greek words meaning \"salt-producing.\" This group of elements is called the {{b1}} family.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "halogen",
+            "hint": "This is the name of the group 17 family that includes chlorine and fluorine."
+          }
+        ],
+        "feedback": {
+          "correct": "Correct! The halogen family is group 17 of the periodic table.",
+          "incorrect": "Not quite. Think of the group 17 family that includes chlorine, fluorine, and iodine."
+        }
+      },
+      {
+        "id": "node-3b-stage-5",
+        "type": "fill-blank-text",
+        "mapTitle": "Salt Phrases",
+        "mapSubtitle": "Complete the word",
+        "question": "Fill in the missing word",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Text Blank",
+        "prompt": "Very salty water can create a sharp, stinging feeling on your skin, eyes, or lips. Salt water used for preserving foods such as pickles has a special name. This very salty preserving liquid is called {{b1}}.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "brine",
+            "hint": "It is the salty liquid commonly used to preserve pickles and other foods."
+          }
+        ],
+        "feedback": {
+          "correct": "Correct! Brine is salty water used for preserving food.",
+          "incorrect": "Not quite. Think of the salty liquid used to preserve pickles."
+        }
+      },
+      {
+        "id": "node-3b-stage-6",
+        "type": "fill-blank-text",
+        "mapTitle": "Salt Phrases",
+        "mapSubtitle": "Complete the saying",
+        "question": "Fill in the missing phrase",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Text Blank",
+        "prompt": "In medieval England, a valuable salt container was placed in the middle of a large dinner table. Important guests sat close to the salt, while lower-ranking guests sat farther away. Someone seated in the honored position was said to be {{b1}}.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "above the salt",
+            "hint": "Important guests sat closer to the salt, so they were described as being higher than it."
+          }
+        ],
+        "feedback": {
+          "correct": "Correct! Being \"above the salt\" meant occupying an honored position at the table.",
+          "incorrect": "Not quite. Important guests sat closer to the salt and were said to be what the salt?"
+        }
+      },
+      {
+        "id": "node-3b-stage-7",
+        "type": "fill-blank-text",
+        "mapTitle": "Salt Phrases",
+        "mapSubtitle": "Complete the tradition",
+        "question": "Fill in the missing phrase",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Text Blank",
+        "prompt": "In Russia and other Slavic countries, an important guest may be welcomed with a decorated loaf of bread and a dish of salt. The guest takes some bread, dips it in the salt, and eats it as a sign of friendship and trust. This traditional ceremony is known as a {{b1}} welcome.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "bread and salt",
+            "hint": "Think of the two foods traditionally offered to an honored guest."
+          }
+        ],
+        "feedback": {
+          "correct": "Correct! Bread and salt are traditional symbols of hospitality and friendship.",
+          "incorrect": "Not quite. Think of the two foods offered together to welcome an honored guest."
+        }
+      }
+    ]
+  },
+  {
+    "type": "timeline-builder",
+    "title": "Salt Through Time",
+    "subtitle": "Restore the Timeline",
+    "subStages": [
+      {
+        "id": "timeline-builder-001",
+        "question": "Put the events in chronological order",
+        "attemptsAllowed": 3,
+        "points": 100,
+        "estimatedTime": "3 mins",
+        "instructions": "Drag each historical event to its correct place on the timeline.",
+        "events": [
+          {
+            "id": "romania",
+            "order": 1,
+            "year": "6000 BC",
+            "title": "Romanian Salt Springs",
+            "description": "People living in what is now Romania boiled water from natural salt springs to collect salt. This is one of the oldest known salt-making sites in the world."
+          },
+          {
+            "id": "bulgaria",
+            "order": 2,
+            "year": "5500–4200 BC",
+            "title": "Solnitsata Salt Center",
+            "description": "At Solnitsata in present-day Bulgaria, people produced salt by boiling brine. The settlement later became one of Europe's earliest known towns."
+          },
+          {
+            "id": "egypt-tombs",
+            "order": 3,
+            "year": "3000–2000 BC",
+            "title": "Salt in Egyptian Tombs",
+            "description": "Ancient Egyptians placed salt, salted birds and fish inside tombs as valuable funeral offerings."
+          },
+          {
+            "id": "egypt-trade",
+            "order": 4,
+            "year": "2800 BC",
+            "title": "Egyptian Salt Trade",
+            "description": "Egypt exported salted fish to the Phoenicians in exchange for cedar wood, glass and the famous Tyrian purple dye."
+          }
+        ]
+      },
+      {
+        "id": "meme-timeline-001",
+        "question": "Put the memes in chronological order",
+        "attemptsAllowed": 3,
+        "points": 100,
+        "estimatedTime": "3 mins",
+        "instructions": "Drag each meme event to its correct place on the timeline.",
+        "events": [
+          {
+            "id": "all-your-base",
+            "order": 1,
+            "year": "2001",
+            "title": "All Your Base Are Belong to Us",
+            "description": "A poorly translated cutscene from the game Zero Wing spreads across the early internet, becoming one of the first major viral memes."
+          },
+          {
+            "id": "rickroll",
+            "order": 2,
+            "year": "2007",
+            "title": "Rickrolling Takes Off",
+            "description": "The bait-and-switch prank of linking to Rick Astley’s ‘Never Gonna Give You Up’ becomes a massive internet phenomenon."
+          },
+          {
+            "id": "doge",
+            "order": 3,
+            "year": "2013",
+            "title": "Doge Meme Rises",
+            "description": "The Shiba Inu photo paired with broken English captions like ‘such wow’ and ‘very meme’ explodes in popularity."
+          },
+          {
+            "id": "distracted-boyfriend",
+            "order": 4,
+            "year": "2017",
+            "title": "Distracted Boyfriend Goes Viral",
+            "description": "A stock photo of a man checking out another woman while walking with his girlfriend becomes one of the most widely used meme templates."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "drag-drop",
+    "title": "Space Links",
+    "subtitle": "Discover how everyday words connect to salt",
+    "subStages": [
+      {
+        "id": "salt-foundation-stage",
+        "type": "drag-drop",
+        "mapTitle": "Start With Salt",
+        "question": "Discover the root behind these words",
+        "attemptsAllowed": 3,
+        "points": 50,
+        "prompt": "Find the word connected to the Latin root.",
+        "introLabel": "Discover 1",
+        "learning": {
+          "title": "Start with the root",
+          "message": "The Latin word 'sal' means salt. Remember this connection because it will help you discover other words.",
+          "takeaway": "SAL = LATIN FOR SALT"
+        },
+        "map": {
+          "title": "Step 1",
+          "pattern": "lattice-3x4",
+          "pathStyle": "orthogonal",
+          "slots": [
+            {
+              "id": "slot-salt",
+              "label": "Latin word for salt",
+              "answerCardId": "salt",
+              "anchor": "r2c2"
+            }
+          ],
+          "relations": [
+            {
+              "id": "latin-sal",
+              "label": "Means salt in Latin",
+              "anchor": "r1c2",
+              "slotIds": [
+                "slot-salt"
+              ],
+              "color": "#c7a0ff"
+            }
+          ]
+        },
+        "cards": [
+          {
+            "id": "salt",
+            "title": "Salt",
+            "image": "/images/placeholders/salt.png",
+            "color": "#c7a0ff"
+          }
+        ],
+        "feedback": {
+          "correct": "Exactly. 'Sal' is the Latin word for salt.",
+          "incorrect": "Think about the Latin root 'sal'. What does it mean?"
+        }
+      },
+      {
+        "id": "salt-salad-stage",
+        "type": "drag-drop",
+        "mapTitle": "Follow the Root",
+        "question": "Discover how SAL became part of another everyday word",
+        "attemptsAllowed": 3,
+        "points": 60,
+        "prompt": "Use what you just learned to find the next connection.",
+        "introLabel": "Discover 2",
+        "learning": {
+          "title": "Follow SAL",
+          "message": "Romans ate vegetables and herbs that were salted. This helped give rise to the word 'salad'.",
+          "takeaway": "SAL → SALTED VEGETABLES → SALAD"
+        },
+        "map": {
+          "title": "Step 2",
+          "pattern": "lattice-3x4",
+          "pathStyle": "orthogonal",
+          "slots": [
+            {
+              "id": "slot-salt",
+              "label": "Latin word for salt",
+              "answerCardId": "salt",
+              "anchor": "r1c1"
+            },
+            {
+              "id": "slot-salad",
+              "label": "Named for salted vegetables and herbs",
+              "answerCardId": "salad",
+              "anchor": "r3c1"
+            }
+          ],
+          "relations": [
+            {
+              "id": "latin-root",
+              "label": "Latin root meaning salt",
+              "anchor": "r1c2",
+              "slotIds": [
+                "slot-salt",
+                "slot-salad"
+              ],
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "salted-vegetables",
+              "label": "Romans ate vegetables and herbs prepared with salt",
+              "anchor": "r2c2",
+              "slotIds": [
+                "slot-salad"
+              ],
+              "color": "#66cfd3"
+            }
+          ]
+        },
+        "cards": [
+          {
+            "id": "salt",
+            "title": "Sal",
+            "image": "/images/placeholders/salt.png",
+            "color": "#c7a0ff"
+          },
+          {
+            "id": "salad",
+            "title": "Salad",
+            "image": "/images/placeholders/salad.png",
+            "color": "#66cfd3"
+          }
+        ],
+        "feedback": {
+          "correct": "Nice. You discovered the connection between sal and salad.",
+          "incorrect": "Remember: sal means salt, and salad is connected to salted vegetables."
+        }
+      },
+      {
+        "id": "salarium-salary-stage",
+        "type": "drag-drop",
+        "mapTitle": "From Salt to Salary",
+        "question": "Discover the Roman connection",
+        "attemptsAllowed": 3,
+        "points": 70,
+        "prompt": "Follow the clues from salt to a modern word.",
+        "introLabel": "Discover 3",
+        "learning": {
+          "title": "Salt became an allowance",
+          "message": "Roman soldiers received a special allowance associated with salt. This allowance was called 'salarium'. The modern word 'salary' developed from this word.",
+          "takeaway": "SAL → SALARIUM → SALARY"
+        },
+        "map": {
+          "title": "Step 3",
+          "pattern": "lattice-3x4",
+          "pathStyle": "orthogonal",
+          "slots": [
+            {
+              "id": "slot-salt",
+              "label": "Latin word for salt",
+              "answerCardId": "salt",
+              "anchor": "r1c1"
+            },
+            {
+              "id": "slot-salary",
+              "label": "Modern word connected to a Roman allowance",
+              "answerCardId": "salary",
+              "anchor": "r3c1"
+            }
+          ],
+          "relations": [
+            {
+              "id": "root-sal",
+              "label": "Comes from the Latin word for salt",
+              "anchor": "r2c1",
+              "slotIds": [
+                "slot-salt",
+                "slot-salary"
+              ],
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "roman-allowance",
+              "label": "Given as a special Roman soldier's allowance",
+              "anchor": "r2c2",
+              "slotIds": [
+                "slot-salary"
+              ],
+              "color": "#86ce5d"
+            },
+            {
+              "id": "salarium",
+              "label": "This allowance was called 'salarium'",
+              "anchor": "r3c2",
+              "slotIds": [
+                "slot-salary"
+              ],
+              "color": "#ffb1bd"
+            }
+          ]
+        },
+        "cards": [
+          {
+            "id": "salt",
+            "title": "Sal",
+            "image": "/images/placeholders/salt.png",
+            "color": "#c7a0ff"
+          },
+          {
+            "id": "salary",
+            "title": "Salary",
+            "image": "/images/placeholders/salary.png",
+            "color": "#ffb1bd"
+          }
+        ],
+        "feedback": {
+          "correct": "You found the chain: sal → salarium → salary.",
+          "incorrect": "Think about the Roman soldier's special allowance. What was it called?"
+        }
+      },
+      {
+        "id": "salsus-descendants-stage",
+        "type": "drag-drop",
+        "mapTitle": "The SALS Family",
+        "question": "Discover words connected to the idea of 'salted'",
+        "attemptsAllowed": 3,
+        "points": 80,
+        "prompt": "Find the words connected to the Latin idea of 'salted'.",
+        "introLabel": "Discover 4",
+        "learning": {
+          "title": "Meet SALSUS",
+          "message": "The Latin word 'salsus' meant salted. Several food-related words developed from this Latin root.",
+          "takeaway": "SALSUS = SALTED"
+        },
+        "map": {
+          "title": "Step 4",
+          "pattern": "lattice-3x4",
+          "pathStyle": "orthogonal",
+          "slots": [
+            {
+              "id": "slot-salsa",
+              "label": "Spanish word meaning 'salted'",
+              "answerCardId": "salsa",
+              "anchor": "r1c1"
+            },
+            {
+              "id": "slot-sauce",
+              "label": "French word for a savory condiment",
+              "answerCardId": "sauce",
+              "anchor": "r3c1"
+            }
+          ],
+          "relations": [
+            {
+              "id": "salsus-root",
+              "label": "Ultimately comes from Latin 'salsus' meaning salted",
+              "anchor": "r1c2",
+              "slotIds": [
+                "slot-salsa",
+                "slot-sauce"
+              ],
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "savory-flavoring",
+              "label": "Both are savory, salt-based flavorings",
+              "anchor": "r2c2",
+              "slotIds": [
+                "slot-salsa",
+                "slot-sauce"
+              ],
+              "color": "#ffb65c"
+            }
+          ]
+        },
+        "cards": [
+          {
+            "id": "salsa",
+            "title": "Salsa",
+            "image": "/images/placeholders/salsa.png",
+            "color": "#c7a0ff"
+          },
+          {
+            "id": "sauce",
+            "title": "Sauce",
+            "image": "/images/placeholders/sauce.png",
+            "color": "#ffb65c"
+          }
+        ],
+        "feedback": {
+          "correct": "Good. You discovered another branch of the salt-related word family.",
+          "incorrect": "Look for the words connected to the Latin idea of 'salted'."
+        }
+      },
+      {
+        "id": "salt-preservation-stage",
+        "type": "drag-drop",
+        "mapTitle": "Why Salt Preserves Food",
+        "question": "Discover how salt helps preserve food",
+        "attemptsAllowed": 3,
+        "points": 90,
+        "prompt": "Connect salt with the way it preserves food.",
+        "introLabel": "Discover 5",
+        "learning": {
+          "title": "Salt does more than add flavor",
+          "message": "Salt draws moisture out of food. Reducing moisture helps preserve food, which is why salt has long been used when curing meat.",
+          "takeaway": "SALT → DRAWS OUT MOISTURE → HELPS PRESERVE FOOD"
+        },
+        "map": {
+          "title": "Step 5",
+          "pattern": "lattice-3x4",
+          "pathStyle": "orthogonal",
+          "slots": [
+            {
+              "id": "slot-salami",
+              "label": "Italian cured, salted meat",
+              "answerCardId": "salami",
+              "anchor": "r2c1"
+            },
+            {
+              "id": "slot-sausage",
+              "label": "Food preserved by curing with salt",
+              "answerCardId": "sausage",
+              "anchor": "r3c3"
+            }
+          ],
+          "relations": [
+            {
+              "id": "salt-preservative",
+              "label": "Made using salt as a preservative",
+              "anchor": "r2c2",
+              "slotIds": [
+                "slot-salami",
+                "slot-sausage"
+              ],
+              "color": "#86ce5d"
+            },
+            {
+              "id": "moisture",
+              "label": "Salt draws out moisture to help preserve food",
+              "anchor": "r3c2",
+              "slotIds": [
+                "slot-salami",
+                "slot-sausage"
+              ],
+              "color": "#fff27a"
+            }
+          ]
+        },
+        "cards": [
+          {
+            "id": "salami",
+            "title": "Salami",
+            "image": "/images/placeholders/salami.png",
+            "color": "#86ce5d"
+          },
+          {
+            "id": "sausage",
+            "title": "Sausage",
+            "image": "/images/placeholders/sausage.png",
+            "color": "#fff27a"
+          }
+        ],
+        "feedback": {
+          "correct": "Exactly. Salt can help preserve food by drawing out moisture.",
+          "incorrect": "Think about what salt does to moisture in food."
+        }
+      },
+      {
+        "id": "full-salt-network-stage",
+        "type": "drag-drop",
+        "mapTitle": "Connect the Whole Story",
+        "question": "Connect everything you've discovered",
+        "attemptsAllowed": 3,
+        "points": 120,
+        "prompt": "Use everything you have learned to complete the final map.",
+        "introLabel": "Final Challenge",
+        "learning": {
+          "title": "Put the whole story together",
+          "message": "You've discovered how salt connects language, history, food, and preservation. Now connect the ideas yourself.",
+          "takeaway": "SAL → SALAD and SALARIUM → SALARY. SALSUS → SALSA and SAUCE. Salt also helps preserve food by drawing out moisture."
+        },
+        "map": {
+          "title": "Final Map",
+          "pattern": "lattice-3x4",
+          "pathStyle": "orthogonal",
+          "slots": [
+            {
+              "id": "slot-sal",
+              "label": "Latin word for salt",
+              "answerCardId": "sal",
+              "anchor": "r1c1"
+            },
+            {
+              "id": "slot-salsa",
+              "label": "Spanish word meaning 'salted'",
+              "answerCardId": "salsa",
+              "anchor": "r1c3"
+            },
+            {
+              "id": "slot-salad",
+              "label": "Named for salted vegetables",
+              "answerCardId": "salad",
+              "anchor": "r2c2"
+            },
+            {
+              "id": "slot-salary",
+              "label": "Modern word connected to a Roman allowance",
+              "answerCardId": "salary",
+              "anchor": "r3c1"
+            },
+            {
+              "id": "slot-salami",
+              "label": "Italian cured, salted meat",
+              "answerCardId": "salami",
+              "anchor": "r3c3"
+            },
+            {
+              "id": "slot-sausage",
+              "label": "Food preserved by curing with salt",
+              "answerCardId": "sausage",
+              "anchor": "r4c2"
+            }
+          ],
+          "relations": [
+            {
+              "id": "sal-root",
+              "label": "Latin root connected to salt",
+              "anchor": "r1c2",
+              "slotIds": [
+                "slot-sal",
+                "slot-salad",
+                "slot-salary"
+              ],
+              "color": "#c7a0ff"
+            },
+            {
+              "id": "salsus-root",
+              "label": "Ultimately from Latin 'salsus' meaning salted",
+              "anchor": "r2c1",
+              "slotIds": [
+                "slot-salsa"
+              ],
+              "color": "#66cfd3"
+            },
+            {
+              "id": "salad-connection",
+              "label": "Salted vegetables and herbs",
+              "anchor": "r2c3",
+              "slotIds": [
+                "slot-salad"
+              ],
+              "color": "#ffb65c"
+            },
+            {
+              "id": "salary-connection",
+              "label": "Roman soldiers received a special allowance",
+              "anchor": "r3c2",
+              "slotIds": [
+                "slot-salary"
+              ],
+              "color": "#86ce5d"
+            },
+            {
+              "id": "preservation",
+              "label": "Salt used as a preservative",
+              "anchor": "r4c1",
+              "slotIds": [
+                "slot-salami",
+                "slot-sausage"
+              ],
+              "color": "#ffb1bd"
+            },
+            {
+              "id": "moisture",
+              "label": "Salt draws out moisture to help preserve food",
+              "anchor": "r4c3",
+              "slotIds": [
+                "slot-salami",
+                "slot-sausage"
+              ],
+              "color": "#fff27a"
+            }
+          ]
+        },
+        "cards": [
+          {
+            "id": "sal",
+            "title": "Sal",
+            "image": "/images/placeholders/salt.png",
+            "color": "#c7a0ff"
+          },
+          {
+            "id": "salsa",
+            "title": "Salsa",
+            "image": "/images/placeholders/salsa.png",
+            "color": "#66cfd3"
+          },
+          {
+            "id": "salad",
+            "title": "Salad",
+            "image": "/images/placeholders/salad.png",
+            "color": "#ffb65c"
+          },
+          {
+            "id": "salary",
+            "title": "Salary",
+            "image": "/images/placeholders/salary.png",
+            "color": "#86ce5d"
+          },
+          {
+            "id": "salami",
+            "title": "Salami",
+            "image": "/images/placeholders/salami.png",
+            "color": "#ffb1bd"
+          },
+          {
+            "id": "sausage",
+            "title": "Sausage",
+            "image": "/images/placeholders/sausage.png",
+            "color": "#fff27a"
+          }
+        ],
+        "feedback": {
+          "correct": "Brilliant. You connected the complete salt network.",
+          "incorrect": "You've learned the pieces. Now look for the relationships between salt, word origins, history, and preservation."
+        }
+      }
+    ]
+  },
+  {
+    "type": "image-text-answer",
+    "title": "Visual Mystery",
+    "subtitle": "Guess what you see",
+    "subStages": [
+      {
+        "id": "node-6-stage-1",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What famous landmark is this?",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Visual Guess",
+        "image": "/images/benji-bhai.jpg",
+        "answer": "Eiffel Tower",
+        "hint": "This famous Parisian landmark was built in 1889 and is made of iron.",
+        "feedback": {
+          "correct": "Correct! The Eiffel Tower is Paris's iconic iron lattice tower.",
+          "incorrect": "Not quite. Think of the famous Parisian iron tower built in 1889."
+        }
+      },
+      {
+        "id": "node-6-stage-2",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What ancient civilization built this?",
+        "attemptsAllowed": 2,
+        "points": 80,
+        "introLabel": "Visual Guess",
+        "image": "/images/benji-bhai.jpg",
+        "answer": "Mayan",
+        "hint": "This civilization was known for their pyramids and complex calendar system.",
+        "feedback": {
+          "correct": "Correct! The Maya built incredible pyramids and developed a sophisticated calendar.",
+          "incorrect": "Not quite. Think of the ancient civilization known for their pyramids and calendar."
+        }
+      }
+    ]
+  },
+  {
+    "type": "four-way-swipe",
+    "title": "Salt Compass",
+    "subtitle": "Swipe toward the answer.",
+    "subStages": [
+      {
+        "id": "node-7-stage-1",
+        "question": "Which mineral is common table salt mostly made from?",
+        "attemptsAllowed": 3,
+        "points": 80,
+        "category": "Science",
+        "prompt": "Choose the chemical pairing.",
+        "answers": {
+          "up": {
+            "label": "Iron + Oxygen"
+          },
+          "down": {
+            "label": "Sodium + Chlorine"
+          },
+          "left": {
+            "label": "Carbon + Hydrogen"
+          },
+          "right": {
+            "label": "Calcium + Carbon"
+          }
+        },
+        "correctDirection": "down",
+        "feedback": {
+          "correct": "Correct. Table salt is sodium chloride.",
+          "incorrect": "Not quite. Table salt is sodium chloride."
+        }
+      },
+      {
+        "id": "node-7-stage-2",
+        "question": "Which direction did salt caravans often cross in the Sahara?",
+        "attemptsAllowed": 3,
+        "points": 80,
+        "category": "History",
+        "prompt": "Follow the old trade routes.",
+        "answers": {
+          "up": {
+            "label": "North and south"
+          },
+          "down": {
+            "label": "Only east"
+          },
+          "left": {
+            "label": "Only west"
+          },
+          "right": {
+            "label": "Underwater"
+          }
+        },
+        "correctDirection": "up",
+        "feedback": {
+          "correct": "Correct. Salt moved along north-south desert trade routes.",
+          "incorrect": "Not this one. Think of desert routes connecting North and West Africa."
+        }
+      }
+    ]
+  },
+  {
+    "type": "clue-connect",
+    "title": "Clue Board",
+    "subtitle": "Connect every true clue.",
+    "subStages": [
+      {
+        "id": "node-8-stage-1",
+        "question": "Connect the Clues",
+        "attemptsAllowed": 1,
+        "points": 150,
+        "prompt": "Drag a string from the mystery card to each clue that truly belongs. Tap clues if you prefer.",
+        "introLabel": "Clue Board",
+        "maxMistakes": 3,
+        "cases": [
+          {
+            "id": "marie-curie",
+            "category": "History",
+            "answer": "Marie Curie",
+            "fact": "She was the first person to win Nobel Prizes in two different scientific fields.",
+            "clueSlots": [
+              {
+                "x": 18,
+                "y": 19
+              },
+              {
+                "x": 82,
+                "y": 18
+              },
+              {
+                "x": 15,
+                "y": 50
+              },
+              {
+                "x": 85,
+                "y": 53
+              },
+              {
+                "x": 23,
+                "y": 83
+              },
+              {
+                "x": 78,
+                "y": 84
+              }
+            ],
+            "clues": [
+              {
+                "id": "curie-polonium-radium",
+                "text": "Discovered polonium and radium",
+                "isCorrect": true
+              },
+              {
+                "id": "curie-two-nobels",
+                "text": "Won Nobel Prizes in Physics and Chemistry",
+                "isCorrect": true
+              },
+              {
+                "id": "curie-radioactivity",
+                "text": "Pioneered radioactivity research",
+                "isCorrect": true
+              },
+              {
+                "id": "curie-radiation",
+                "text": "Illness was linked to radiation exposure",
+                "isCorrect": true
+              },
+              {
+                "id": "curie-light-bulb",
+                "text": "Invented the light bulb",
+                "isCorrect": false
+              },
+              {
+                "id": "curie-first-space",
+                "text": "Was the first woman in space",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "japan",
+            "category": "Geography",
+            "answer": "Japan",
+            "fact": "Japan is an island nation in the Pacific with Tokyo as its capital.",
+            "clueSlots": [
+              {
+                "x": 18,
+                "y": 19
+              },
+              {
+                "x": 82,
+                "y": 18
+              },
+              {
+                "x": 15,
+                "y": 50
+              },
+              {
+                "x": 85,
+                "y": 53
+              },
+              {
+                "x": 23,
+                "y": 83
+              },
+              {
+                "x": 78,
+                "y": 84
+              }
+            ],
+            "clues": [
+              {
+                "id": "japan-islands",
+                "text": "Made up of thousands of Pacific islands",
+                "isCorrect": true
+              },
+              {
+                "id": "japan-fuji",
+                "text": "Home to Mount Fuji",
+                "isCorrect": true
+              },
+              {
+                "id": "japan-tokyo",
+                "text": "Its capital is Tokyo",
+                "isCorrect": true
+              },
+              {
+                "id": "japan-yen",
+                "text": "Uses the yen as currency",
+                "isCorrect": true
+              },
+              {
+                "id": "japan-china-border",
+                "text": "Shares a land border with China",
+                "isCorrect": false
+              },
+              {
+                "id": "japan-seoul",
+                "text": "Its capital is Seoul",
+                "isCorrect": false
+              }
+            ]
+          }
+        ],
+        "feedback": {
+          "correct": "Every clue is connected. The board is solved.",
+          "incorrect": "Too many decoys were connected. Look for clues that all point to the same answer."
+        }
+      }
+    ]
+  },
+  {
+    "type": "color-match",
+    "title": "Color Stories",
+    "subtitle": "Drag each color to its true story.",
+    "subStages": [
+      {
+        "id": "node-9-stage-1",
+        "question": "Colors with Real Stories",
+        "attemptsAllowed": 3,
+        "points": 100,
+        "prompt": "When you finish this world, keep exploring the hidden colors around you.",
+        "introLabel": "Palette",
+        "clues": [
+          {
+            "id": "saffron",
+            "hex": "#F1A83D",
+            "clue1": "It takes about 150,000 hand-picked, dried crocus flowers to produce just 1 kilogram of this dye.",
+            "hint": "For most of history this dye traded at nearly the same value as gold and silver by weight. Only three stigmas can be hand-plucked per flower, which is why the price has never really dropped.",
+            "name": "Saffron"
+          },
+          {
+            "id": "prussianblue",
+            "hex": "#003153",
+            "clue1": "A dye-maker in 1704 was trying to invent a red pigment from crushed cochineal insects but accidentally created this instead.",
+            "hint": "The resulting compound is now an FDA-approved antidote for radioactive cesium and thallium poisoning, kept in nuclear emergency kits worldwide. It also gave photography the cyanotype process, the original technique behind architectural blueprints.",
+            "name": "Prussian Blue"
+          },
+          {
+            "id": "tyrianpurple",
+            "hex": "#66023C",
+            "clue1": "Dye-makers had to crack open roughly 12,000 sea snails to extract enough gland fluid to color a single garment hem.",
+            "hint": "In 2024, Paris Olympics organizers chose this exact hue for the running track at the Stade de France, the first time in Olympic history the surface was not red or blue.",
+            "name": "Tyrian Purple"
+          },
+          {
+            "id": "pompeianred",
+            "hex": "#B33A3A",
+            "clue1": "In 2023, scientists found that many walls at this ancient Roman site were never actually painted this color — it appeared by accident.",
+            "hint": "Lab analysis showed the original pigment was yellow ochre, chemically transformed in moments by superheated volcanic gas during the 79 CE eruption.",
+            "name": "Pompeian Red"
+          }
+        ],
+        "feedback": {
+          "correct": "Every color found its story. Great eye!",
+          "incorrect": "Not quite — try again and watch for the small details."
+        }
+      }
+    ]
+  },
+  {
+    "type": "border-hop",
+    "title": "Border Hop",
+    "subtitle": "Find a path across land borders.",
+    "subStages": [
+      {
+        "id": "node-10-stage-1",
+        "question": "Cross Europe one border at a time.",
+        "startCountry": "Portugal",
+        "targetCountry": "Germany",
+        "maxGuesses": 7,
+        "hintsAllowed": 3,
+        "attemptsAllowed": 3,
+        "points": 100
+      },
+      {
+        "id": "node-10-stage-2",
+        "question": "Find your way across South America.",
+        "startCountry": "Colombia",
+        "targetCountry": "Chile",
+        "maxGuesses": 6,
+        "hintsAllowed": 3,
+        "attemptsAllowed": 3,
+        "points": 100
+      }
+    ]
+  }
+]

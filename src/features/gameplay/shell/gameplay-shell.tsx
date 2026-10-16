@@ -7,6 +7,7 @@ type GameplayShellProps = {
   attemptsRemaining: number;
   totalAttempts: number;
   children: ReactNode;
+  onClose?: () => void;
 };
 
 export function GameplayShell({
@@ -15,6 +16,7 @@ export function GameplayShell({
   attemptsRemaining,
   totalAttempts,
   children,
+  onClose,
 }: GameplayShellProps) {
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[#f6f2ec]">
@@ -22,17 +24,29 @@ export function GameplayShell({
         className="flex h-[86px] w-full flex-shrink-0 items-center justify-between border-b-[3px] border-[#0b0b0f] bg-[#f6f2ec] px-4"
       >
         <div className="flex items-center gap-4 flex-1">
-          <Link
-            href="/map"
-            className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] transition active:scale-95"
-          >
-            <span
-              className="material-symbols-outlined"
-              style={{ color: "var(--on-surface)" }}
-            >
-              close
-            </span>
-          </Link>
+          {
+            onClose ?
+              <button onClick={onClose} aria-label="Close"><span
+                className="material-symbols-outlined"
+                style={{ color: "var(--on-surface)" }}
+              >
+                close
+              </span>
+              </button>
+              :
+              <Link
+                href="/map"
+                className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] transition active:scale-95"
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ color: "var(--on-surface)" }}
+                >
+                  close
+                </span>
+              </Link>
+          }
+
           <div
             className="relative h-5 max-w-xs flex-1 overflow-hidden rounded-full border-[3px] border-[#0b0b0f]"
             style={{ backgroundColor: "#f6f2ec" }}

@@ -3,27 +3,24 @@ import { redirect } from "next/navigation";
 import BottomNav from "@/components/layout/bottom-nav";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import LibraryView, { type LibraryEdition } from "@/components/matchbox/library-view";
-import { getAllEditions } from "@/features/editions/edition-content";
 import { getAuthSession } from "@/lib/auth-session";
+import { getEditionSummaries } from "@/features/editions/edition-content";
 
 export default async function LibraryPage() {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  // Only plain, serialisable fields cross into the client component.
-  const editions: LibraryEdition[] = getAllEditions().map((edition) => {
-    const nodeId = edition.nodes[0]?.id;
-    return {
-      id: edition.id,
-      title: edition.title,
-      category: edition.category ?? "Featured",
-      publishedAt: edition.publishedAt,
-      weekLabel: edition.weekLabel,
-      order: edition.order,
-      games: edition.nodes.length,
-      href: nodeId ? `/edition/${edition.id}/${nodeId}` : "/map",
-    };
-  });
+  const summaries = await getEditionSummaries();
+  const editions: LibraryEdition[] = summaries.map((e, i) => ({
+    id: e.id,
+    title: e.title,
+    category: e.category ?? "Featured",
+    publishedAt: e.date,
+    weekLabel: e.weekLabel,
+    order: summaries.length - i, // oldest = 1; the list is newest-first
+    games: e.gameCount,
+    href: e.firstGameId ? `/edition/${e.id}/${e.firstGameId}` : "/map",
+  }));
 
   return (
     <MobileContainer>

@@ -1,3 +1,6 @@
+import { prisma } from "@/lib/db";
+import { getEditionSummaries } from "@/features/editions/edition-content";
+import { hasPremium } from "@/lib/premium";
 import { getAuthSession } from "@/lib/auth-session";
 import { redirect } from "next/navigation";
 import { MobileContainer } from "@/components/layout/mobile-container";
@@ -8,7 +11,6 @@ import ProfileView, {
 } from "@/components/profile/profile-view";
 import { getStreak } from "@/features/streak/get-streak";
 import { getRecentGames } from "@/features/recent-games/get-recent-games";
-import { buildVillageMapData } from "@/features/map/map-content";
 
 export default async function ProfilePage() {
   const session = await getAuthSession();
@@ -23,12 +25,6 @@ export default async function ProfilePage() {
     subscriptionEnd?: string | null;
   };
 
-  const [streak, recentGames, villages] = await Promise.all([
-    getStreak(session.user.id),
-    getRecentGames(session.user.id),
-    buildVillageMapData(session.user.id),
-  ]);
-
   const identity: ProfileIdentity = {
     name: user.name ?? "",
     email: user.email,
@@ -38,13 +34,26 @@ export default async function ProfilePage() {
     subscriptionEnd: user.subscriptionEnd ?? null,
   };
 
-  const villageProgress: ProfileVillage[] = villages.map((village) => ({
-    id: village.editionId,
-    title: village.title,
-    order: village.order,
-    completed: village.nodes.filter((n) => n.status === "completed").length,
-    total: village.nodes.length,
-    locked: village.status === "locked",
+  const [streak, recentGames, summaries, doneRows] = await Promise.all([
+    getStreak(session.user.id),
+    getRecentGames(session.user.id),
+    getEditionSummaries(),
+    prisma.userNodeProgress.groupBy({
+      by: ["editionId"],
+      where: { userId: session.user.id, status: "completed" },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const done = new Map(doneRows.map((r) => [r.editionId, r._count._all]));
+  const premium = hasPremium(session.user);
+  const villageProgress: ProfileVillage[] = summaries.slice(0, 30).map((e, i) => ({
+    id: e.id,
+    title: e.title,
+    order: summaries.length - i,
+    completed: done.get(e.id) ?? 0,
+    total: e.gameCount,
+    locked: !premium && i > 0, // free users only have the featured (newest) edition
   }));
 
   return (
