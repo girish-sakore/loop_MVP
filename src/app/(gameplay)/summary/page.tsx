@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import BottomNav from "@/components/layout/bottom-nav";
 import { SummaryHero } from "@/components/summary/summary-hero";
@@ -5,8 +6,9 @@ import { SummaryStats } from "@/components/summary/summary-stats";
 import { SummaryActions } from "@/components/summary/summary-actions";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 
-export default function SummaryPage() {
-  const edition = getFeaturedEdition();
+export default async function SummaryPage() {
+  const edition = await getFeaturedEdition();
+  if (!edition) redirect("/map");
 
   return (
     <MobileContainer>

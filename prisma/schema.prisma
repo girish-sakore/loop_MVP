@@ -147,3 +147,66 @@ model UserNodeProgress {
   @@map("user_node_progress")
 }
 
+enum EditionStatus {
+  DRAFT
+  SCHEDULED
+  ARCHIVED
+}
+
+model ImportBatch {
+  id         String   @id @default(cuid())
+  fileName   String
+  totalCount Int
+  importedBy String?  // userId or email, nullable until roles exist
+  createdAt  DateTime @default(now())
+  games      Game[]
+
+  @@map("import_batch")
+}
+
+model Game {
+  id            String       @id @default(cuid())
+  type          String       // StageType, validated by Zod, not by the DB
+  title         String
+  subtitle      String?
+  isPremium     Boolean      @default(false)
+  subStages     Json         // array of stages, shape depends on `type`
+  schemaVersion Int          @default(1)
+
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
+  editionId     String?      // null = unassigned library
+  edition       Edition?     @relation(fields: [editionId], references: [id], onDelete: SetNull)
+  position      Int?
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // One card per type per edition. Postgres treats NULLs as distinct,
+  // so unassigned library games can still share a type.
+  @@unique([editionId, type])
+  @@index([editionId, position])
+  @@index([type])
+  @@map("game")
+}
+
+model Edition {
+  id            String        @id @default(cuid())
+  title         String
+  description   String
+  theme         String
+  category      String?
+  author        String?
+  coverImage    String?
+  estimatedTime String?
+  status        EditionStatus @default(DRAFT)
+  date          DateTime?     @unique @db.Date // the IST calendar day it goes live
+  snapshot      Json?
+  games         Game[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status, date])
+  @@map("edition")
+}
