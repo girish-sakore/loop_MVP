@@ -28,6 +28,7 @@ model User {
   editionProgress UserEditionProgress[]
   nodeProgress    UserNodeProgress[]
   streak UserStreak?
+  streakDays UserStreakDay[]
 
   @@map("user")
 }
@@ -41,6 +42,17 @@ model UserStreak {
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_streak")
+}
+
+// One row for every IST day on which the user completed at least one game.
+// This is the source of truth for the calendar; UserStreak is its summary.
+model UserStreakDay {
+  userId String
+  date   DateTime @db.Date
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, date])
+  @@map("user_streak_day")
 }
 
 model Subscription {

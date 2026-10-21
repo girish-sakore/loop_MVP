@@ -1,7 +1,7 @@
 // features/streak/record-completion.server.ts
 import "server-only";
 import type { Prisma } from "@prisma/client";
-import { addDays, streakToday } from "./dates";
+import { getStreakMetrics, streakToday } from "./dates";
 
 export type StreakUpdate = {
   current: number;
@@ -12,10 +12,9 @@ export type StreakUpdate = {
 /**
  * Call inside the same transaction that marks a node as passed.
  *
- * Once-per-day is enforced with compare-and-set: the update only applies if
- * lastCompletedDate is still the value we read. A duplicate or concurrent
- * request for the same day either sees today already recorded, or loses the
- * CAS (count 0), and exits without changing the streak.
+ * The composite primary key on UserStreakDay enforces once per IST day. The
+ * summary is then rebuilt from those durable daily records, so a replay can
+ * never add a day and historical completions can be backfilled safely.
  */
 export async function recordCompletionForStreak(
   tx: Prisma.TransactionClient,
@@ -23,32 +22,36 @@ export async function recordCompletionForStreak(
   now: Date = new Date(),
 ): Promise<StreakUpdate> {
   const today = streakToday(now);
-  const yesterday = addDays(today, -1);
 
-  // Make sure the row exists (no-op if it already does).
-  await tx.userStreak.createMany({ data: [{ userId }], skipDuplicates: true });
+  const created = await tx.userStreakDay.createMany({
+    data: [{ userId, date: today }],
+    skipDuplicates: true,
+  });
+  const days = await tx.userStreakDay.findMany({
+    where: { userId },
+    select: { date: true },
+    orderBy: { date: "asc" },
+  });
+  const metrics = getStreakMetrics(days.map((day) => day.date), today);
 
-  const row = await tx.userStreak.findUniqueOrThrow({ where: { userId } });
-  const last = row.lastCompletedDate;
-
-  if (last && last.getTime() >= today.getTime()) {
-    return { current: row.currentStreak, longest: row.longestStreak, incrementedToday: false };
-  }
-
-  const continues = last !== null && last.getTime() === yesterday.getTime();
-  const current = continues ? row.currentStreak + 1 : 1;
-  const longest = Math.max(row.longestStreak, current);
-
-  const res = await tx.userStreak.updateMany({
-    where: { userId, lastCompletedDate: last },
-    data: { currentStreak: current, longestStreak: longest, lastCompletedDate: today },
+  await tx.userStreak.upsert({
+    where: { userId },
+    create: {
+      userId,
+      currentStreak: metrics.current,
+      longestStreak: metrics.longest,
+      lastCompletedDate: today,
+    },
+    update: {
+      currentStreak: metrics.current,
+      longestStreak: metrics.longest,
+      lastCompletedDate: today,
+    },
   });
 
-  if (res.count === 0) {
-    // A concurrent request recorded today first.
-    const fresh = await tx.userStreak.findUniqueOrThrow({ where: { userId } });
-    return { current: fresh.currentStreak, longest: fresh.longestStreak, incrementedToday: false };
-  }
-
-  return { current, longest, incrementedToday: true };
+  return {
+    current: metrics.current,
+    longest: metrics.longest,
+    incrementedToday: created.count === 1,
+  };
 }
