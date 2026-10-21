@@ -1,64 +1,246 @@
 [
   {
     "type": "image-select",
-    "title": "Salt Mine",
-    "subtitle": "Discover where it all begins.",
+    "title": "Statues of the World",
+    "subtitle": "Can you identify the statue?",
     "subStages": [
       {
         "id": "node-1-stage-1",
-        "question": "Who is Marie Curie? GFHGFHGFHGF",
-        "attemptsAllowed": 3,
-        "points": 100,
+        "question": "Tallest statue in the world",
+        "attemptsAllowed": 1,
+        "points": 1,
         "options": [
           {
             "id": "opt-1",
-            "label": "Marie Curie",
-            "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+            "label": "Statue of Unity",
+            "hint": "Gujarat, India",
+            "image": "Statue of Unity",
             "isCorrect": true,
-            "feedback": "Correct. Curie pioneered research on radioactivity."
+            "feedback": "Correct! The Statue of Unity depicts Sardar Vallabhbhai Patel."
           },
           {
             "id": "opt-2",
-            "label": "Ada Lovelace",
-            "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+            "label": "Spring Temple Buddha",
+            "hint": "Henan, China",
+            "image": "Spring Temple Buddha",
             "isCorrect": false,
-            "feedback": "Not quite. Think of pioneer scientists in radioactivity."
+            "feedback": "Not quite! The Spring Temple Buddha was the world's tallest statue before 2018."
           },
           {
             "id": "opt-3",
-            "label": "Rosalind Franklin",
-            "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+            "label": "Laykyun Sekkya",
+            "hint": "Myanmar",
+            "image": "Laykyun Sekkya",
             "isCorrect": false,
-            "feedback": "Not this time. Try looking for Curie's era portrait cues."
+            "feedback": "Not quite! Laykyun Sekkya is a giant standing Buddha statue in Myanmar."
+          },
+          {
+            "id": "opt-4",
+            "label": "Ushiku Daibutsu",
+            "hint": "Japan",
+            "image": "Ushiku Daibutsu",
+            "isCorrect": false,
+            "feedback": "Not quite! Ushiku Daibutsu is a giant bronze Buddha statue in Japan."
           }
         ]
       },
       {
         "id": "node-1-stage-2",
-        "question": "Who is Thomas Edison?",
-        "attemptsAllowed": 3,
-        "points": 100,
+        "question": "Second-tallest statue in the world",
+        "attemptsAllowed": 1,
+        "points": 1,
         "options": [
           {
             "id": "opt-1",
-            "label": "Marie Curie",
-            "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
-            "isCorrect": true,
-            "feedback": "Correct. Curie pioneered research on radioactivity."
+            "label": "Statue of Unity",
+            "hint": "Gujarat, India",
+            "image": "Statue of Unity",
+            "isCorrect": false,
+            "feedback": "Not quite! The Statue of Unity is currently the tallest statue."
           },
           {
             "id": "opt-2",
-            "label": "Ada Lovelace",
-            "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-            "isCorrect": false,
-            "feedback": "Not quite. Think of pioneer scientists in radioactivity."
+            "label": "Spring Temple Buddha",
+            "hint": "Henan, China",
+            "image": "Spring Temple Buddha",
+            "isCorrect": true,
+            "feedback": "Correct! The Spring Temple Buddha held the tallest-statue record before 2018."
           },
           {
             "id": "opt-3",
-            "label": "Rosalind Franklin",
-            "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+            "label": "Laykyun Sekkya",
+            "hint": "Myanmar",
+            "image": "Laykyun Sekkya",
             "isCorrect": false,
-            "feedback": "Not this time. Try looking for Curie's era portrait cues."
+            "feedback": "Not quite! Laykyun Sekkya is another monumental Buddha statue."
+          },
+          {
+            "id": "opt-4",
+            "label": "Ushiku Daibutsu",
+            "hint": "Japan",
+            "image": "Ushiku Daibutsu",
+            "isCorrect": false,
+            "feedback": "Not quite! Ushiku Daibutsu is famous for its enormous bronze construction."
+          }
+        ]
+      },
+      {
+        "id": "node-1-stage-3",
+        "question": "Tallest bronze statue in the world (Guinness, 1995)",
+        "attemptsAllowed": 1,
+        "points": 1,
+        "options": [
+          {
+            "id": "opt-1",
+            "label": "Grand Buddha of Lingshan",
+            "hint": "Wuxi, China",
+            "image": "Grand Buddha of Lingshan",
+            "isCorrect": false,
+            "feedback": "Not quite! The Grand Buddha of Lingshan is a famous bronze Buddha."
+          },
+          {
+            "id": "opt-2",
+            "label": "Guishan Guanyin",
+            "hint": "Hunan, China",
+            "image": "Guishan Guanyin",
+            "isCorrect": false,
+            "feedback": "Not quite! Guishan Guanyin is a towering gilded bronze statue."
+          },
+          {
+            "id": "opt-3",
+            "label": "Spring Temple Buddha",
+            "hint": "Henan, China",
+            "image": "Spring Temple Buddha",
+            "isCorrect": false,
+            "feedback": "Not quite! This enormous statue is not the answer given for this record in the source."
+          },
+          {
+            "id": "opt-4",
+            "label": "Ushiku Daibutsu",
+            "hint": "Ushiku, Japan",
+            "image": "Ushiku Daibutsu",
+            "isCorrect": true,
+            "feedback": "Correct! Ushiku Daibutsu was recognized by Guinness in 1995 as the world's tallest bronze statue."
+          }
+        ]
+      },
+      {
+        "id": "node-1-stage-4",
+        "question": "Tallest gilded bronze statue",
+        "attemptsAllowed": 1,
+        "points": 1,
+        "options": [
+          {
+            "id": "opt-1",
+            "label": "Ushiku Daibutsu",
+            "hint": "Ushiku, Japan",
+            "image": "Ushiku Daibutsu",
+            "isCorrect": false,
+            "feedback": "Not quite! Ushiku Daibutsu is a bronze statue, but it is not gilded."
+          },
+          {
+            "id": "opt-2",
+            "label": "Guishan Guanyin",
+            "hint": "Hunan, China",
+            "image": "Guishan Guanyin",
+            "isCorrect": true,
+            "feedback": "Correct! Guishan Guanyin is identified in the source as the tallest gilded bronze statue."
+          },
+          {
+            "id": "opt-3",
+            "label": "Tian Tan Buddha",
+            "hint": "Lantau Island, Hong Kong",
+            "image": "Tian Tan Buddha",
+            "isCorrect": false,
+            "feedback": "Not quite! Tian Tan Buddha is a famous outdoor bronze Buddha."
+          },
+          {
+            "id": "opt-4",
+            "label": "Grand Buddha of Lingshan",
+            "hint": "Wuxi, China",
+            "image": "Grand Buddha of Lingshan",
+            "isCorrect": false,
+            "feedback": "Not quite! This statue is bronze but is not identified as the tallest gilded bronze statue."
+          }
+        ]
+      },
+      {
+        "id": "node-1-stage-5",
+        "question": "Tallest statue of the Virgin Mary in the world",
+        "attemptsAllowed": 1,
+        "points": 1,
+        "options": [
+          {
+            "id": "opt-1",
+            "label": "Monument of the Holy Mother of God",
+            "hint": "Haskovo, Bulgaria",
+            "image": "Monument of the Holy Mother of God",
+            "isCorrect": false,
+            "feedback": "Not quite! This monument represents Mary with the Infant Jesus, a more specific category."
+          },
+          {
+            "id": "opt-2",
+            "label": "Virgen de la Paz",
+            "hint": "Venezuela",
+            "image": "Virgen de la Paz",
+            "isCorrect": false,
+            "feedback": "Not quite! Virgen de la Paz is another monumental Marian statue."
+          },
+          {
+            "id": "opt-3",
+            "label": "Our Lady of Fátima",
+            "hint": "Brazil",
+            "image": "Our Lady of Fátima",
+            "isCorrect": false,
+            "feedback": "Not quite! This is a Marian statue in Brazil, but it is not the answer listed in the source."
+          },
+          {
+            "id": "opt-4",
+            "label": "Mother of All Asia – Tower of Peace",
+            "hint": "Batangas, Philippines",
+            "image": "Mother of All Asia – Tower of Peace",
+            "isCorrect": true,
+            "feedback": "Correct! The source identifies the Mother of All Asia as the world's tallest statue of the Virgin Mary."
+          }
+        ]
+      },
+      {
+        "id": "node-1-stage-6",
+        "question": "Tallest statue of a Hindu deity",
+        "attemptsAllowed": 1,
+        "points": 1,
+        "options": [
+          {
+            "id": "opt-1",
+            "label": "Statue of Belief (Shiva)",
+            "hint": "Nathdwara, Rajasthan, India",
+            "image": "Statue of Belief (Shiva)",
+            "isCorrect": false,
+            "feedback": "Not quite! Some sources classify this statue as a contender, depending on how the record is defined."
+          },
+          {
+            "id": "opt-2",
+            "label": "Garuda Wisnu Kencana",
+            "hint": "Bali, Indonesia",
+            "image": "Garuda Wisnu Kencana",
+            "isCorrect": true,
+            "feedback": "Correct! Garuda Wisnu Kencana depicts Lord Vishnu riding Garuda."
+          },
+          {
+            "id": "opt-3",
+            "label": "Statue of Equality (Ramanuja)",
+            "hint": "Hyderabad, India",
+            "image": "Statue of Equality (Ramanuja)",
+            "isCorrect": false,
+            "feedback": "Not quite! The Statue of Equality is approximately 65.8 metres tall."
+          },
+          {
+            "id": "opt-4",
+            "label": "Kailashnath Mahadev",
+            "hint": "Sanga, Nepal",
+            "image": "Kailashnath Mahadev",
+            "isCorrect": false,
+            "feedback": "Not quite! This statue depicts Lord Shiva and is located in Nepal."
           }
         ]
       }
@@ -71,14 +253,14 @@
     "subStages": [
       {
         "id": "node-2-stage-1",
-        "question": "Swipe left for Original Name and right for Pen Name",
-        "attemptsAllowed": 2,
-        "points": 80,
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
         "statement": "",
         "card": {
           "title": "Ruskin Bond",
           "subtitle": "Pen name or Original Name?",
-          "image": "/images/cards/salt-value.png"
+          "image": "Ruskin Bond"
         },
         "left": {
           "label": "Original",
@@ -88,26 +270,26 @@
           "label": "Pen Name",
           "icon": "cross"
         },
-        "correctDirection": "right",
+        "correctDirection": "left",
         "feedback": {
-          "correct": "Correct!",
-          "incorrect": "This statement is actually true."
+          "correct": "Correct! Ruskin Bond is his original name.",
+          "incorrect": "Incorrect. Ruskin Bond is his original name."
         }
       },
       {
         "id": "node-2-stage-2",
-        "question": "Swipe left for Original Name and right for Pen Name",
-        "attemptsAllowed": 3,
-        "points": 80,
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
         "statement": "",
         "card": {
           "title": "George Orwell",
           "subtitle": "Pen name or Original Name?",
-          "image": "https://img.buzzfeed.com/buzzfeed-static/static/2017-12/21/14/asset/buzzfeed-prod-fastlane-03/sub-buzz-13410-1513883496-9.png?downsize=900:*&output-format=auto&output-quality=auto"
+          "image": "George Orwell"
         },
         "left": {
           "label": "Original Name",
-          "icon": "close"
+          "icon": "cross"
         },
         "right": {
           "label": "Pen Name",
@@ -115,336 +297,529 @@
         },
         "correctDirection": "right",
         "feedback": {
-          "correct": "yes correct",
-          "incorrect": "wrong."
+          "correct": "Correct! George Orwell was the pen name of Eric Arthur Blair.",
+          "incorrect": "Incorrect. George Orwell was the pen name of Eric Arthur Blair."
+        }
+      },
+      {
+        "id": "node-2-stage-3",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "Lewis Carroll",
+          "subtitle": "Pen name or Original Name?",
+          "image": "Lewis Carroll"
+        },
+        "left": {
+          "label": "Original Name",
+          "icon": "cross"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "check"
+        },
+        "correctDirection": "right",
+        "feedback": {
+          "correct": "Correct! Lewis Carroll was the pen name of Charles Lutwidge Dodgson.",
+          "incorrect": "Incorrect. Lewis Carroll was the pen name of Charles Lutwidge Dodgson."
+        }
+      },
+      {
+        "id": "node-2-stage-4",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "Richard Bachman",
+          "subtitle": "Pen name or Original Name?",
+          "image": "Richard Bachman"
+        },
+        "left": {
+          "label": "Original Name",
+          "icon": "cross"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "check"
+        },
+        "correctDirection": "right",
+        "feedback": {
+          "correct": "Correct! Richard Bachman is a pen name used by Stephen King.",
+          "incorrect": "Incorrect. Richard Bachman is a pen name used by Stephen King."
+        }
+      },
+      {
+        "id": "node-2-stage-5",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "Leo Tolstoy",
+          "subtitle": "Pen name or Original Name?",
+          "image": "Leo Tolstoy"
+        },
+        "left": {
+          "label": "Original",
+          "icon": "check"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "cross"
+        },
+        "correctDirection": "left",
+        "feedback": {
+          "correct": "Correct! Leo Tolstoy is his original name.",
+          "incorrect": "Incorrect. Leo Tolstoy is his original name."
+        }
+      },
+      {
+        "id": "node-2-stage-6",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "O. Henry",
+          "subtitle": "Pen name or Original Name?",
+          "image": "O. Henry"
+        },
+        "left": {
+          "label": "Original Name",
+          "icon": "cross"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "check"
+        },
+        "correctDirection": "right",
+        "feedback": {
+          "correct": "Correct! O. Henry was the pen name of William Sydney Porter.",
+          "incorrect": "Incorrect. O. Henry was the pen name of William Sydney Porter."
+        }
+      },
+      {
+        "id": "node-2-stage-7",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "Emily Bronte",
+          "subtitle": "Pen name or Original Name?",
+          "image": "Emily Bronte"
+        },
+        "left": {
+          "label": "Original",
+          "icon": "check"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "cross"
+        },
+        "correctDirection": "left",
+        "feedback": {
+          "correct": "Correct! Emily Brontë published under her own name.",
+          "incorrect": "Incorrect. Emily Brontë published under her own name."
+        }
+      },
+      {
+        "id": "node-2-stage-8",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "Franz Kafka",
+          "subtitle": "Pen name or Original Name?",
+          "image": "Franz Kafka"
+        },
+        "left": {
+          "label": "Original",
+          "icon": "check"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "cross"
+        },
+        "correctDirection": "left",
+        "feedback": {
+          "correct": "Correct! Franz Kafka is his original name.",
+          "incorrect": "Incorrect. Franz Kafka is his original name."
+        }
+      },
+      {
+        "id": "node-2-stage-9",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "Mark Twain",
+          "subtitle": "Pen name or Original Name?",
+          "image": "Mark Twain"
+        },
+        "left": {
+          "label": "Original Name",
+          "icon": "cross"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "check"
+        },
+        "correctDirection": "right",
+        "feedback": {
+          "correct": "Correct! Mark Twain was the pen name of Samuel Langhorne Clemens.",
+          "incorrect": "Incorrect. Mark Twain was the pen name of Samuel Langhorne Clemens."
+        }
+      },
+      {
+        "id": "node-2-stage-10",
+        "question": "Swipe Left for Original Name and Right for Pen Name",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "statement": "",
+        "card": {
+          "title": "Benjamin Franklin",
+          "subtitle": "Pen name or Original Name?",
+          "image": "Benjamin Franklin"
+        },
+        "left": {
+          "label": "Original",
+          "icon": "check"
+        },
+        "right": {
+          "label": "Pen Name",
+          "icon": "cross"
+        },
+        "correctDirection": "left",
+        "feedback": {
+          "correct": "Correct! Benjamin Franklin is his original name.",
+          "incorrect": "Incorrect. Benjamin Franklin is his original name."
         }
       }
     ]
   },
   {
-    "type": "fill-blank",
-    "title": "Salt Mine",
-    "subtitle": "Learn a famous phrase",
+    "type": "fill-blank-text",
+    "title": "Sufism",
+    "subtitle": "",
     "subStages": [
       {
         "id": "node-3-stage-1",
         "question": "Fill in the missing words",
-        "attemptsAllowed": 2,
-        "points": 80,
-        "prompt": "The viral 'This is Fine' meme features a dog calmly sitting in a room that is on {{b1}}, saying the phrase 'This is {{b2}}'.",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "In 1192, {{b1}}, the legendary Rajput warrior, was defeated by Muizuddin Muhammad bin Sam at the Second Battle of Tarain, opening India to Islamic mysticism. Four years later, Khwaja Moinuddin Chishti arrived from Afghanistan and established the Chishti Order, a spiritual movement that would transform Indian spirituality for the next 800 years.",
         "blanks": [
           {
             "id": "b1",
-            "answer": "fire"
-          },
-          {
-            "id": "b2",
-            "answer": "fine"
-          }
-        ],
-        "options": [
-          {
-            "id": "o1",
-            "word": "fire"
-          },
-          {
-            "id": "o2",
-            "word": "fine"
-          },
-          {
-            "id": "o3",
-            "word": "water"
-          },
-          {
-            "id": "o4",
-            "word": "okay"
-          },
-          {
-            "id": "o5",
-            "word": "smoke"
+            "answer": "Prithviraj Chauhan"
           }
         ]
       },
       {
         "id": "node-3-stage-2",
         "question": "Fill in the missing words",
-        "attemptsAllowed": 2,
-        "points": 80,
-        "prompt": "In the classic 'Distracted Boyfriend' meme, a man turns to look at another {{b1}} while walking with his {{b2}}.",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "{{b1}}, Rajasthan, became the heart of Indian Sufism after Khwaja Moinuddin Chishti settled there in 1196, establishing Islam’s most visited shrine, which attracts 20,000+ pilgrims daily and 400,000+ during the annual Urs in Rajab, the 7th Islamic month. Its most sacred ceremony, Chhati Sharif, held on the 6th day, the recitation of the Chishti Order’s genealogical tree and concludes with a 21 gun salute.",
         "blanks": [
           {
             "id": "b1",
-            "answer": "woman"
-          },
-          {
-            "id": "b2",
-            "answer": "girlfriend"
-          }
-        ],
-        "options": [
-          {
-            "id": "o1",
-            "word": "woman"
-          },
-          {
-            "id": "o2",
-            "word": "girlfriend"
-          },
-          {
-            "id": "o3",
-            "word": "car"
-          },
-          {
-            "id": "o4",
-            "word": "friend"
-          },
-          {
-            "id": "o5",
-            "word": "dog"
+            "answer": "Ajmer"
           }
         ]
+      },
+      {
+        "id": "node-3-stage-3",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "Delhi's Nizamuddin Dargah celebrates {{b1}}, the 5th day of the Hindu lunar month Phalgun, marking spring's arrival. Devotees drape the dargah in yellow flowers, symbolizing renewal and the Sufi concept of \"noor\" (divine light). This Hindu-Islamic fusion, 700+ years old, shows how Sufism wove spirituality across religious boundaries.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "Basant Panchami"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-4",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "In 1244–1325, {{b1}} became one of Sufism’s greatest voices, was known as the “Nightingale of India.\" Though his master Hazrat Nizamuddin Auliya had 600+ khalifas (authorized disciples), he alone was declared his most beloved. The irony was profound: despite Nizamuddin’s view that musical instruments were haram (forbidden), his beloved disciple is credited with inventing the musical instrument and creating Qawwali, the musical form that made Sufism globally famous.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "Amir Khusrow"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-5",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "According to legend, he split the traditional pakhawaj (barrel drum) into two drums for Sufi music one the high-pitched dayan and deep bass bayan, creating the {{b1}}. Another tale claims Mughal musician Tansen's accompanist's pakhawaj cracked during performance, and Tansen exclaimed \"Tab bhi bola!\" (It still sounds!) supposedly naming the instrument from that moment.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "Tabla"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-6",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "The Turkish Mevlevi Order expressed spiritual devotion through {{b1}}, a ritual association with Rumi that was proclaimed a UNESCO Masterpiece of Oral and Intangible Heritage in 2005. The Arabic word samāʿ means \"listening\" or \"hearing\", making this movement a physical expression of spiritual listening through music, poetry, and prayer.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "Whirling"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-7",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "{{b1}} (the First Woman Sufi Saint), born into 8th-century Basra poverty, her name meaning 'fourth daughter' became history's first feminist mystic. Orphaned and enslaved, she prayed all night until her master witnessed divine light surrounding her. She rejected all marriage proposals, declaring marriage would distract her from God, act of radical autonomy in 8th-century Arabia.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "Rabia"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-8",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "{{b1}}, a Persian institution within the Chishti Order, gives food and drink to the needy regardless of background. Sugar represents piety's sweetness; salt symbolizes purity; bread's transformation mirrors Sufi spiritual development and nafs (ego) purification.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "Langar"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-9",
+        "question": "Fill in the missing words",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "Sufi {{b1}} was an act of worship, not decoration. Each letter of Allah's name was traced with spiritual intention, making the scribe a mystic. \"Tezhip\" (gilding) the golden illuminations in Qur'an manuscripts—served as spiritual technology to lift consciousness toward Paradise. Ink, paper, and brush became meditation tools as powerful as prayer.",
+        "blanks": [
+          {
+            "id": "b1",
+            "answer": "Calligraphy"
+          }
+        ]
+      },
+      {
+        "id": "node-3-stage-10",
+        "question": "Read the passage",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "prompt": "Through saints and musicians, food and flowers, ink and rhythm, Sufism transformed from a response to political upheaval into a comprehensive spiritual path. The divine is reached through listening, service, love, and surrender of the self—the greatest transformation of all.",
+        "blanks": []
       }
     ]
   },
   {
     "type": "fill-blank-text",
-    "title": "Salt Phrases",
-    "subtitle": "Complete the saying",
+    "title": "Prison",
+    "subtitle": "Identify X",
     "subStages": [
       {
-        "id": "node-3b-stage-1",
+        "id": "node-3b-prison-stage-1",
         "type": "fill-blank-text",
-        "mapTitle": "Salt Phrases",
-        "mapSubtitle": "Complete the saying",
-        "question": "Fill in the missing word",
+        "mapTitle": "Prison",
+        "mapSubtitle": "Identify X",
+        "question": "Identify X",
         "attemptsAllowed": 2,
-        "points": 80,
+        "points": 10,
         "introLabel": "Text Blank",
-        "prompt": "Long ago in ancient Rome, salt was so valuable that it was sometimes used to pay people. A soldier's salt allowance was called his salarium, which is where our modern word \"salary\" comes from. If a worker did a poor job, people felt he had not earned the salt he was being paid. Today, when someone is not good enough at what they do, we say they are \"not worth their {{b1}}.\"",
+        "prompt": "While serving time in a late-18th-century English prison for inciting a riot, William Addis fashioned the first mass-producible version of {{b1}} from a carved bone handle and boar bristles held in place by wire. He went on to die a wealthy man. In 1938, DuPont reworked it with nylon fibers, which proved sturdier and more efficient than animal hair. In the United States, daily use became widespread only after World War II veterans returned home with military hygiene habits. Identify X.",
         "blanks": [
           {
             "id": "b1",
-            "answer": "salt",
-            "hint": "It is the precious white mineral mentioned throughout the clue."
+            "answer": "Toothbrush",
+            "hint": "It is used to clean your teeth."
           }
         ],
         "feedback": {
-          "correct": "Correct! Someone who is not worth their salt is not considered good enough at their job.",
-          "incorrect": "Not quite. Think of the precious white mineral that was once used as payment."
+          "correct": "Correct!",
+          "incorrect": "Not quite. Think of the everyday hygiene tool William Addis helped popularize."
         }
       },
       {
-        "id": "node-3b-stage-2",
+        "id": "node-3b-prison-stage-2",
         "type": "fill-blank-text",
-        "mapTitle": "Salt Phrases",
-        "mapSubtitle": "Complete the saying",
-        "question": "Fill in the missing word",
+        "mapTitle": "Prison",
+        "mapSubtitle": "Identify X",
+        "question": "Identify X",
         "attemptsAllowed": 2,
-        "points": 80,
+        "points": 10,
         "introLabel": "Text Blank",
-        "prompt": "Salt has long been associated with saving and protecting things because it can keep food from spoiling. This connection between salt and saving also influenced religious language. The word for the saving of a person's soul is called {{b1}}.",
+        "prompt": "Built between 1896 and 1906 with bricks from Burma, {{b1}} followed Jeremy Bentham's panopticon: seven wings radiated from a central watchtower, with cells positioned so each faced the back of another wing, preventing communication. In 1872, Viceroy Lord Mayo was assassinated by Sher Ali Afridi, a convict in the earlier penal settlement here. In 1942, Subhas Chandra Bose's Azad Hind government took notional control of the islands and hoisted the Indian National Flag. Only the watchtower and three wings survive today, and it became a national memorial in 1979. Its popular name evokes the sea crossing that threatened convicts with loss of caste. Identify X.",
         "blanks": [
           {
             "id": "b1",
-            "answer": "salvation",
-            "hint": "This word means the saving of a person's soul."
+            "answer": "Cellular Jail",
+            "hint": "It is the historic prison in the Andaman Islands, also associated with the term Kala Pani."
           }
         ],
         "feedback": {
-          "correct": "Correct! Salvation means being saved, especially in a religious sense.",
-          "incorrect": "Not quite. Think of the religious word for the saving of a person's soul."
+          "correct": "Correct! The answer is Cellular Jail, also known as Kala Pani.",
+          "incorrect": "Not quite. Think of the historic prison in the Andaman Islands."
         }
       },
       {
-        "id": "node-3b-stage-3",
+        "id": "node-3b-prison-stage-3",
         "type": "fill-blank-text",
-        "mapTitle": "Salt Phrases",
-        "mapSubtitle": "Complete the saying",
-        "question": "Fill in the missing phrase",
+        "mapTitle": "Prison",
+        "mapSubtitle": "Identify X",
+        "question": "Identify X",
         "attemptsAllowed": 2,
-        "points": 80,
+        "points": 10,
         "introLabel": "Text Blank",
-        "prompt": "The ancient Roman writer Pliny the Elder wrote about medicine that was taken with a small pinch of salt. Over time, this became a way of saying that you should be a little doubtful when hearing something hard to believe. When you should not believe something completely, you should {{b1}}.",
+        "prompt": "{{b1}} is a psychological phenomenon in which large numbers of people share the same false memory. It was named by paranormal researcher Fiona Broome after she and others wrongly recalled a world leader dying in prison in the 1980s. Examples include people recalling the Monopoly Man wearing a monocle, remembering a cornucopia in the Fruit of the Loom logo, and misquoting a famous Star Wars line as \"Luke, I am your father\" instead of \"No, I am your father.\" Identify X.",
         "blanks": [
           {
             "id": "b1",
-            "answer": "take it with a grain of salt",
-            "hint": "The phrase tells you to add a tiny amount of doubt, like adding a tiny amount of salt."
+            "answer": "The Mandela Effect",
+            "hint": "It is named after Nelson Mandela and describes shared false memories."
           }
         ],
         "feedback": {
-          "correct": "Correct! To take something with a grain of salt means to be slightly skeptical about it.",
-          "incorrect": "Not quite. Think of the expression that tells you to be a little skeptical."
+          "correct": "Correct! This phenomenon is known as the Mandela Effect.",
+          "incorrect": "Not quite. Think of the term for shared false memories."
         }
       },
       {
-        "id": "node-3b-stage-4",
+        "id": "node-3b-prison-stage-4",
         "type": "fill-blank-text",
-        "mapTitle": "Salt Phrases",
-        "mapSubtitle": "Complete the saying",
-        "question": "Fill in the missing word",
+        "mapTitle": "Prison",
+        "mapSubtitle": "Identify X",
+        "question": "Identify X",
         "attemptsAllowed": 2,
-        "points": 80,
+        "points": 10,
         "introLabel": "Text Blank",
-        "prompt": "In the periodic table, some elements are grouped together because they behave in similar ways. Group 17 contains elements such as chlorine, fluorine, and iodine. The group's name comes from Greek words meaning \"salt-producing.\" This group of elements is called the {{b1}} family.",
+        "prompt": "Gandhi was jailed in 1908 in the same Johannesburg prison where Nelson Mandela was held 54 years later, in 1962. Its Section 4 now houses an exhibition on Gandhi, and a bust of him was unveiled nearby in 2012. In the mid-1990s, the Awaiting Trial Block where Mandela was held was demolished to make way for {{b1}}, which was built using the block's original bricks. It is now South Africa's highest court on matters of constitutional law. Identify X.",
         "blanks": [
           {
             "id": "b1",
-            "answer": "halogen",
-            "hint": "This is the name of the group 17 family that includes chlorine and fluorine."
+            "answer": "Constitutional Court of South Africa",
+            "hint": "It is South Africa's highest court for constitutional matters and is located at Constitution Hill."
           }
         ],
         "feedback": {
-          "correct": "Correct! The halogen family is group 17 of the periodic table.",
-          "incorrect": "Not quite. Think of the group 17 family that includes chlorine, fluorine, and iodine."
+          "correct": "Correct! The answer is the Constitutional Court of South Africa.",
+          "incorrect": "Not quite. Think of South Africa's highest constitutional court."
         }
       },
       {
-        "id": "node-3b-stage-5",
+        "id": "node-3b-prison-stage-5",
         "type": "fill-blank-text",
-        "mapTitle": "Salt Phrases",
-        "mapSubtitle": "Complete the word",
-        "question": "Fill in the missing word",
+        "mapTitle": "Prison",
+        "mapSubtitle": "Identify X",
+        "question": "Identify X",
         "attemptsAllowed": 2,
-        "points": 80,
+        "points": 10,
         "introLabel": "Text Blank",
-        "prompt": "Very salty water can create a sharp, stinging feeling on your skin, eyes, or lips. Salt water used for preserving foods such as pickles has a special name. This very salty preserving liquid is called {{b1}}.",
+        "prompt": "{{b1}} is an improvised stabbing weapon in American prison slang, often made by melting a razor blade into the end of a toothbrush or by filing down a metal bucket handle. Its name comes from a steel support rib once found in men's boots and work boots, which 19th-century prisoners extracted and sharpened. In 1882, authorities holding Charles Guiteau confiscated his shoes for this very reason, though the slang then was \"cheeser.\" Its British counterpart derives its name from the Romani word for blade. Identify X.",
         "blanks": [
           {
             "id": "b1",
-            "answer": "brine",
-            "hint": "It is the salty liquid commonly used to preserve pickles and other foods."
+            "answer": "Shank",
+            "hint": "It is a slang term for an improvised prison weapon."
           }
         ],
         "feedback": {
-          "correct": "Correct! Brine is salty water used for preserving food.",
-          "incorrect": "Not quite. Think of the salty liquid used to preserve pickles."
-        }
-      },
-      {
-        "id": "node-3b-stage-6",
-        "type": "fill-blank-text",
-        "mapTitle": "Salt Phrases",
-        "mapSubtitle": "Complete the saying",
-        "question": "Fill in the missing phrase",
-        "attemptsAllowed": 2,
-        "points": 80,
-        "introLabel": "Text Blank",
-        "prompt": "In medieval England, a valuable salt container was placed in the middle of a large dinner table. Important guests sat close to the salt, while lower-ranking guests sat farther away. Someone seated in the honored position was said to be {{b1}}.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "above the salt",
-            "hint": "Important guests sat closer to the salt, so they were described as being higher than it."
-          }
-        ],
-        "feedback": {
-          "correct": "Correct! Being \"above the salt\" meant occupying an honored position at the table.",
-          "incorrect": "Not quite. Important guests sat closer to the salt and were said to be what the salt?"
-        }
-      },
-      {
-        "id": "node-3b-stage-7",
-        "type": "fill-blank-text",
-        "mapTitle": "Salt Phrases",
-        "mapSubtitle": "Complete the tradition",
-        "question": "Fill in the missing phrase",
-        "attemptsAllowed": 2,
-        "points": 80,
-        "introLabel": "Text Blank",
-        "prompt": "In Russia and other Slavic countries, an important guest may be welcomed with a decorated loaf of bread and a dish of salt. The guest takes some bread, dips it in the salt, and eats it as a sign of friendship and trust. This traditional ceremony is known as a {{b1}} welcome.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "bread and salt",
-            "hint": "Think of the two foods traditionally offered to an honored guest."
-          }
-        ],
-        "feedback": {
-          "correct": "Correct! Bread and salt are traditional symbols of hospitality and friendship.",
-          "incorrect": "Not quite. Think of the two foods offered together to welcome an honored guest."
+          "correct": "Correct! The answer is a shank.",
+          "incorrect": "Not quite. Think of the prison slang term for an improvised stabbing weapon."
         }
       }
     ]
   },
   {
     "type": "timeline-builder",
-    "title": "Salt Through Time",
-    "subtitle": "Restore the Timeline",
+    "title": "Colours Through Time",
+    "subtitle": "Arrange the events in chronological order.",
     "subStages": [
       {
         "id": "timeline-builder-001",
-        "question": "Put the events in chronological order",
-        "attemptsAllowed": 3,
-        "points": 100,
-        "estimatedTime": "3 mins",
+        "question": "Arrange the events in chronological order.",
+        "attemptsAllowed": 1,
+        "points": 10,
+        "estimatedTime": "5 mins",
         "instructions": "Drag each historical event to its correct place on the timeline.",
         "events": [
           {
-            "id": "romania",
+            "id": "timeline-event-001",
             "order": 1,
-            "year": "6000 BC",
-            "title": "Romanian Salt Springs",
-            "description": "People living in what is now Romania boiled water from natural salt springs to collect salt. This is one of the oldest known salt-making sites in the world."
+            "year": "2500 BCE",
+            "title": "Ancient Egypt's Invention of Blue",
+            "description": "Egyptian artisans heated sand, copper, and limestone together to create Egyptian Blue, considered the oldest known synthetic pigment in history. It was used for coloring the skin of gods and the beards of pharaohs' statues to represent the heavens, the Nile, and rebirth."
           },
           {
-            "id": "bulgaria",
+            "id": "timeline-event-002",
             "order": 2,
-            "year": "5500–4200 BC",
-            "title": "Solnitsata Salt Center",
-            "description": "At Solnitsata in present-day Bulgaria, people produced salt by boiling brine. The settlement later became one of Europe's earliest known towns."
+            "year": "1666",
+            "title": "Isaac Newton Discovers the Colours in White Light",
+            "description": "Isaac Newton, working alone at Woolsthorpe Manor after Cambridge University closed due to plague, darkened his room, drilled a small hole in the shutter, and passed a beam of sunlight through a glass prism. He proved that white light is made of red, orange, yellow, green, blue, indigo, and violet combined."
           },
           {
-            "id": "egypt-tombs",
+            "id": "timeline-event-003",
             "order": 3,
-            "year": "3000–2000 BC",
-            "title": "Salt in Egyptian Tombs",
-            "description": "Ancient Egyptians placed salt, salted birds and fish inside tombs as valuable funeral offerings."
+            "year": "1840",
+            "title": "The White Wedding Gown Tradition",
+            "description": "Queen Victoria wore a plain white gown for her wedding to Prince Albert, instead of the elaborate, richly coloured robes expected of royalty. Newspapers described the white dress in detail, and brides across Britain began copying her choice, helping popularize the white wedding dress tradition."
           },
           {
-            "id": "egypt-trade",
+            "id": "timeline-event-004",
             "order": 4,
-            "year": "2800 BC",
-            "title": "Egyptian Salt Trade",
-            "description": "Egypt exported salted fish to the Phoenicians in exchange for cedar wood, glass and the famous Tyrian purple dye."
-          }
-        ]
-      },
-      {
-        "id": "meme-timeline-001",
-        "question": "Put the memes in chronological order",
-        "attemptsAllowed": 3,
-        "points": 100,
-        "estimatedTime": "3 mins",
-        "instructions": "Drag each meme event to its correct place on the timeline.",
-        "events": [
-          {
-            "id": "all-your-base",
-            "order": 1,
-            "year": "2001",
-            "title": "All Your Base Are Belong to Us",
-            "description": "A poorly translated cutscene from the game Zero Wing spreads across the early internet, becoming one of the first major viral memes."
+            "year": "1901–1904",
+            "title": "The Blue Period in Art",
+            "description": "After the suicide of his close friend Carlos Casagemas, Pablo Picasso painted almost exclusively in shades of blue and blue-green for several years. Art historians now call this his Blue Period."
           },
           {
-            "id": "rickroll",
-            "order": 2,
-            "year": "2007",
-            "title": "Rickrolling Takes Off",
-            "description": "The bait-and-switch prank of linking to Rick Astley’s ‘Never Gonna Give You Up’ becomes a massive internet phenomenon."
+            "id": "timeline-event-005",
+            "order": 5,
+            "year": "1978",
+            "title": "The Eight-Striped Rainbow Flag",
+            "description": "Gilbert Baker, an artist and U.S. Army veteran living in San Francisco, hand-dyed and hand-sewed an eight-striped flag featuring hot pink, red, orange, yellow, green, turquoise, indigo, and violet, to fly at the San Francisco Gay Freedom Day Parade. Within about a year, the hot pink and turquoise stripes were dropped because the dyed fabric was too hard to source in bulk, leaving the six-colour rainbow flag recognised today."
           },
           {
-            "id": "doge",
-            "order": 3,
-            "year": "2013",
-            "title": "Doge Meme Rises",
-            "description": "The Shiba Inu photo paired with broken English captions like ‘such wow’ and ‘very meme’ explodes in popularity."
+            "id": "timeline-event-006",
+            "order": 6,
+            "year": "2012",
+            "title": "Pink for Girls, Blue for Boys?",
+            "description": "Psychologist Marco Del Giudice used Google's book-scanning database to search millions of printed books for the phrases 'blue for boys' and 'pink for girls.' He found the pink-for-girls, blue-for-boys pairing had actually been consistent since the late 1800s, contradicting the popular claim that the colours were once reversed."
           },
           {
-            "id": "distracted-boyfriend",
-            "order": 4,
-            "year": "2017",
-            "title": "Distracted Boyfriend Goes Viral",
-            "description": "A stock photo of a man checking out another woman while walking with his girlfriend becomes one of the most widely used meme templates."
+            "id": "timeline-event-007",
+            "order": 7,
+            "year": "2015",
+            "title": "Cricket's First Day-Night Test with a Pink Ball",
+            "description": "Australia and New Zealand played the first day-night Test match in cricket's 138-year history, at Adelaide Oval. Since a traditional red ball is nearly invisible under floodlights, organisers used a specially coated pink ball instead, chosen after years of trials for staying visible against both grass and a darkening sky."
+          },
+          {
+            "id": "timeline-event-008",
+            "order": 8,
+            "year": "2016",
+            "title": "The Millennial Pink Trend",
+            "description": "Starbucks released the limited-edition Unicorn Frappuccino, a pink-and-blue layered drink, for a single weekend. It sold out at locations worldwide within hours and became one of the defining products of the 'millennial pink' wave that had already been building across fashion, design, and Instagram since the term was first coined by New York Magazine."
           }
         ]
       }
@@ -981,16 +1356,16 @@
         "type": "image-text-answer",
         "mapTitle": "Visual Mystery",
         "mapSubtitle": "Guess what you see",
-        "question": "What famous landmark is this?",
+        "question": "What's the name of this famous painting?",
         "attemptsAllowed": 2,
-        "points": 80,
+        "points": 10,
         "introLabel": "Visual Guess",
-        "image": "/images/benji-bhai.jpg",
-        "answer": "Eiffel Tower",
-        "hint": "This famous Parisian landmark was built in 1889 and is made of iron.",
+        "image": "scream_by_edvard_munch.jpg",
+        "answer": "The Scream",
+        "hint": "The artist behind this work was a Norwegian painter whose art often explored anxiety, loneliness, love, and death.",
         "feedback": {
-          "correct": "Correct! The Eiffel Tower is Paris's iconic iron lattice tower.",
-          "incorrect": "Not quite. Think of the famous Parisian iron tower built in 1889."
+          "correct": "Correct! The Scream is a painting by Edvard Munch.",
+          "incorrect": "Not quite. The painting is The Scream by Edvard Munch."
         }
       },
       {
@@ -998,16 +1373,152 @@
         "type": "image-text-answer",
         "mapTitle": "Visual Mystery",
         "mapSubtitle": "Guess what you see",
-        "question": "What ancient civilization built this?",
+        "question": "What's the name of this famous painting?",
         "attemptsAllowed": 2,
-        "points": 80,
+        "points": 10,
         "introLabel": "Visual Guess",
-        "image": "/images/benji-bhai.jpg",
-        "answer": "Mayan",
-        "hint": "This civilization was known for their pyramids and complex calendar system.",
+        "image": "las_meninas_by_diego_velazquez.jpg",
+        "answer": "Las Meninas",
+        "hint": "The title of this painting refers to the young women who served at the Spanish royal court. Look at the little girl in the centre—she is Infanta Margarita, the daughter of King Philip IV, surrounded by her ladies-in-waiting.",
         "feedback": {
-          "correct": "Correct! The Maya built incredible pyramids and developed a sophisticated calendar.",
-          "incorrect": "Not quite. Think of the ancient civilization known for their pyramids and calendar."
+          "correct": "Correct! Las Meninas by Diego Velázquez.",
+          "incorrect": "Not quite. The painting is Las Meninas by Diego Velázquez."
+        }
+      },
+      {
+        "id": "node-6-stage-3",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "the_swing_by_jean-honore_fragonard.jpg",
+        "answer": "The Swing",
+        "hint": "The painting was originally commissioned as a romantic scene involving a young woman, her lover, and her husband.",
+        "feedback": {
+          "correct": "Correct! The Swing by Jean-Honoré Fragonard.",
+          "incorrect": "Not quite. The painting is The Swing by Jean-Honoré Fragonard."
+        }
+      },
+      {
+        "id": "node-6-stage-4",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "musicians_by_caravaggio.jpg",
+        "answer": "The Musicians",
+        "hint": "Look closely at the figures. They are dressed in elaborate, almost theatrical clothing, and several are holding or playing musical instruments.",
+        "feedback": {
+          "correct": "Correct! It's The Musicians by Caravaggio.",
+          "incorrect": "Not quite. It's The Musicians by Caravaggio."
+        }
+      },
+      {
+        "id": "node-6-stage-5",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "primavera_by_sandro_botticelli.jpg",
+        "answer": "Primavera",
+        "hint": "The central figure is Venus, the Roman goddess of love, surrounded by other mythological characters.",
+        "feedback": {
+          "correct": "Correct! The painting is Primavera by Sandro Botticelli.",
+          "incorrect": "Not quite. The painting is Primavera by Sandro Botticelli."
+        }
+      },
+      {
+        "id": "node-6-stage-6",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "the_gleaners_by_jean-francois_millet.jpg",
+        "answer": "The Gleaners",
+        "hint": "The title comes from the act of collecting the small amounts of grain left behind after harvesting.",
+        "feedback": {
+          "correct": "Correct! It is The Gleaners by Jean-François Millet.",
+          "incorrect": "Not quite. It is The Gleaners by Jean-François Millet."
+        }
+      },
+      {
+        "id": "node-6-stage-7",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "olympia_by_edouard_manet.jpg",
+        "answer": "Olympia",
+        "hint": "The title is a woman's name that was often associated with courtesans in 19th-century Paris.",
+        "feedback": {
+          "correct": "Correct! The painting is Olympia by Édouard Manet.",
+          "incorrect": "Not quite. The painting is Olympia by Édouard Manet."
+        }
+      },
+      {
+        "id": "node-6-stage-8",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "the_astronomer_by_johannes_vermeer.jpg",
+        "answer": "The Astronomer",
+        "hint": "The person in the painting is studying the stars and planets rather than the Earth; his profession gives the painting its title.",
+        "feedback": {
+          "correct": "Correct! It is The Astronomer by Johannes Vermeer.",
+          "incorrect": "Not quite. It is The Astronomer by Johannes Vermeer."
+        }
+      },
+      {
+        "id": "node-6-stage-9",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "the_night_cafe_by_vincent_van_gogh.jpg",
+        "answer": "The Night Cafe",
+        "hint": "The title tells you both when the scene takes place and the kind of place we are looking at.",
+        "feedback": {
+          "correct": "Correct! The painting is The Night Cafe by Vincent van Gogh.",
+          "incorrect": "Not quite. The painting is The Night Cafe by Vincent van Gogh."
+        }
+      },
+      {
+        "id": "node-6-stage-10",
+        "type": "image-text-answer",
+        "mapTitle": "Visual Mystery",
+        "mapSubtitle": "Guess what you see",
+        "question": "What's the name of this famous painting?",
+        "attemptsAllowed": 2,
+        "points": 10,
+        "introLabel": "Visual Guess",
+        "image": "Water_Lilies_by_Claude_Monet.jpg",
+        "answer": "Water Lilies",
+        "hint": "The French artist painted this subject again and again, inspired by the water garden at his home in Giverny.",
+        "feedback": {
+          "correct": "Correct! It is Water Lilies by Claude Monet.",
+          "incorrect": "Not quite. It is Water Lilies by Claude Monet."
         }
       }
     ]
@@ -1225,48 +1736,62 @@
   },
   {
     "type": "color-match",
-    "title": "Color Stories",
-    "subtitle": "Drag each color to its true story.",
+    "title": "Color",
+    "subtitle": "Drag each color to its story.",
     "subStages": [
       {
         "id": "node-9-stage-1",
-        "question": "Colors with Real Stories",
+        "question": "Colors and their Stories",
         "attemptsAllowed": 3,
         "points": 100,
-        "prompt": "When you finish this world, keep exploring the hidden colors around you.",
-        "introLabel": "Palette",
+        "prompt": "",
+        "label": "",
         "clues": [
           {
-            "id": "saffron",
-            "hex": "#F1A83D",
+            "id": "Saffron",
+            "hex": "#F4C430",
             "clue1": "It takes about 150,000 hand-picked, dried crocus flowers to produce just 1 kilogram of this dye.",
             "hint": "For most of history this dye traded at nearly the same value as gold and silver by weight. Only three stigmas can be hand-plucked per flower, which is why the price has never really dropped.",
             "name": "Saffron"
           },
           {
-            "id": "prussianblue",
+            "id": "Prussian Blue",
             "hex": "#003153",
             "clue1": "A dye-maker in 1704 was trying to invent a red pigment from crushed cochineal insects but accidentally created this instead.",
-            "hint": "The resulting compound is now an FDA-approved antidote for radioactive cesium and thallium poisoning, kept in nuclear emergency kits worldwide. It also gave photography the cyanotype process, the original technique behind architectural blueprints.",
+            "hint": "The compound became an FDA-approved antidote for radioactive cesium and thallium poisoning, is stocked in nuclear emergency kits worldwide, enabled cyanotype blueprints, and was quickly adopted for Prussian army uniforms.",
             "name": "Prussian Blue"
           },
           {
-            "id": "tyrianpurple",
+            "id": "Tyrian Purple",
             "hex": "#66023C",
             "clue1": "Dye-makers had to crack open roughly 12,000 sea snails to extract enough gland fluid to color a single garment hem.",
             "hint": "In 2024, Paris Olympics organizers chose this exact hue for the running track at the Stade de France, the first time in Olympic history the surface was not red or blue.",
             "name": "Tyrian Purple"
           },
           {
-            "id": "pompeianred",
-            "hex": "#B33A3A",
-            "clue1": "In 2023, scientists found that many walls at this ancient Roman site were never actually painted this color — it appeared by accident.",
-            "hint": "Lab analysis showed the original pigment was yellow ochre, chemically transformed in moments by superheated volcanic gas during the 79 CE eruption.",
+            "id": "Pompeian Red",
+            "hex": "#A4292E",
+            "clue1": "In 2023, scientists found that many walls at this ancient Roman site were never actually painted this color—it appeared by accident.",
+            "hint": "Lab analysis found the original pigment was yellow ochre, transformed within moments by superheated volcanic gas during the 79 CE eruption, inspiring the same colour on government buildings across many Indian cities.",
             "name": "Pompeian Red"
+          },
+          {
+            "id": "Indigo",
+            "hex": "#4B0082",
+            "clue1": "A dye helped start a movement against the British Raj in Colonial India.",
+            "hint": "Colonial planters coercively forced Bengali and Bihari farmers to grow this crop for the European dye trade, sparking the 1859 revolt and later leading Gandhi to Champaran in 1917 for his first satyagraha.",
+            "name": "Indigo"
+          },
+          {
+            "id": "Mummy Brown",
+            "hex": "#824B27",
+            "clue1": "From the 1500s to the early 1900s, this paint was made by grinding up actual embalmed human remains.",
+            "hint": "Art suppliers sourced Egyptian mummies specifically to grind their wrappings, resin, and tissue into pigment for oil painting.",
+            "name": "Mummy Brown"
           }
         ],
         "feedback": {
-          "correct": "Every color found its story. Great eye!",
+          "correct": "Great Eye!",
           "incorrect": "Not quite — try again and watch for the small details."
         }
       }
