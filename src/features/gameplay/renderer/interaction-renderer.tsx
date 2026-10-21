@@ -1,3 +1,7 @@
+"use client"; // only if it isn't already imported from a client module
+import { useMemo } from "react";
+import { mapImages } from "@/lib/image-refs";
+import { assetUrl } from "@/lib/assets";
 import { FillBlankInteraction } from "@/features/interactions/fill-blank/fill-blank-interaction";
 import { FillBlankTextInteraction } from "@/features/interactions/fill-blank-text/fill-blank-text-interaction";
 import { ImageSelectInteraction } from "@/features/interactions/image-select/image-select-interaction";
@@ -11,7 +15,7 @@ import { ColorMatchInteraction } from "@/features/interactions/color-match/color
 import { WordRootInteraction } from "@/features/interactions/word-root/word-root-interaction";
 import { ImageTextSAnswerInteraction } from "@/features/interactions/image-text-sanswer/image-text-sanswer-interaction";
 import dynamic from "next/dynamic";
-import type { InteractionState } from "@/features/gameplay/progress/resume"; // NEW
+import type { InteractionState } from "@/features/gameplay/progress/resume";
 
 const BorderHopInteraction = dynamic(() =>
   import("@/features/interactions/border-hop/border-hop-interaction").then((module) => module.BorderHopInteraction),
@@ -30,12 +34,12 @@ type InteractionRendererProps = {
   onIntroComplete: () => void;
   hintsRemaining?: number;
   onUseHint?: () => void;
-  interactionState?: InteractionState;                          // NEW
-  onInteractionStateChange?: (state: InteractionState) => void; // NEW
+  interactionState?: InteractionState;
+  onInteractionStateChange?: (state: InteractionState) => void;
 };
 
 export function InteractionRenderer({
-  stage,
+  stage: rawStage,
   stages,
   disabled,
   retryCount = 0,
@@ -45,9 +49,11 @@ export function InteractionRenderer({
   onIntroComplete,
   hintsRemaining,
   onUseHint,
-  interactionState,          // NEW
-  onInteractionStateChange,  // NEW
+  interactionState,
+  onInteractionStateChange,
 }: InteractionRendererProps) {
+  const stage = useMemo(() => mapImages(rawStage, assetUrl), [rawStage]);
+
   switch (stage.type) {
     case "border-hop":
       return (
@@ -61,8 +67,8 @@ export function InteractionRenderer({
           onIntroComplete={onIntroComplete}
           hintsRemaining={hintsRemaining}
           onUseHint={onUseHint}
-          interactionState={interactionState}                   // NEW
-          onInteractionStateChange={onInteractionStateChange}   // NEW
+          interactionState={interactionState}
+          onInteractionStateChange={onInteractionStateChange}
         />
       );
     case "image-select":
@@ -110,7 +116,7 @@ export function InteractionRenderer({
     case "fill-blank-text":
       return (
         <FillBlankTextInteraction
-          key={`${stage.id}:${retryCount}`}   // NEW: retry remounts with a fresh deck
+          key={`${stage.id}:${retryCount}`} // retry remounts with a fresh deck
           stages={(stages ?? [stage]).filter((item): item is Extract<Stage, { type: "fill-blank-text" }> => item.type === "fill-blank-text")}
           onAnswer={onAnswer}
           disabled={disabled}
@@ -119,8 +125,8 @@ export function InteractionRenderer({
           onIntroComplete={onIntroComplete}
           hintsRemaining={hintsRemaining}
           onUseHint={onUseHint}
-          interactionState={interactionState}                   // NEW
-          onInteractionStateChange={onInteractionStateChange}   // NEW
+          interactionState={interactionState}
+          onInteractionStateChange={onInteractionStateChange}
         />
       );
     case "drag-drop":

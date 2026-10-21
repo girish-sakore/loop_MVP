@@ -9,7 +9,10 @@ const optText = z.string().trim().optional();
 const imageUrl = z
   .string()
   .trim()
-  .refine((v) => v.startsWith("https://") || v.startsWith("/"), "Must be an https:// URL or a /public path");
+  .refine(
+    (v) => v.startsWith("https://") || v.startsWith("/") || /^img\/[a-f0-9]{12}-[a-z0-9-]+\.webp$/.test(v),
+    "Must be an uploaded image, an https:// URL or a /public path",
+  );
 const feedback = z.object({ correct: text, incorrect: text });
 const direction = z.enum(["up", "down", "left", "right"]);
 
