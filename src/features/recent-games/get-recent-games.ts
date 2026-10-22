@@ -1,17 +1,50 @@
 import type { RecentGame } from "./types";
+import { prisma } from "@/lib/db";
+import { getFeaturedEdition, getEditionById } from "@/features/editions/edition-content";
 
-/** STATIC FOR NOW: replace the body with a DB query or fetch when the backend is ready. */
-export async function getRecentGames(_userId: string): Promise<RecentGame[]> {
-  const DAY = 864e5;
-  const now = Date.now();
-  const day = (n: number) => new Date(now - n * DAY).toISOString().slice(0, 10);
+const SHOW_ALL_GAMES_FOR_TESTING = true;
 
-  return [
-    { id: "g42", editionNo: 42, gameType: "timeline-builder", gameLabel: "Chrono", topic: "Salt", playedAt: day(1), score: 3 },
-    { id: "g41", editionNo: 41, gameType: "swipe", gameLabel: "This or That", topic: "Bridges", playedAt: day(2), score: 2 },
-    { id: "g40", editionNo: 40, gameType: "color-match", gameLabel: "Palette", topic: "Tea", playedAt: day(3), score: 3 },
-    { id: "g39", editionNo: 39, gameType: "image-select", gameLabel: "Knockout", topic: "Volcanoes", playedAt: day(4), score: 1 },
-    { id: "g38", editionNo: 38, gameType: "drag-drop", gameLabel: "Links", topic: "Clocks", playedAt: day(5), score: 2 },
-    { id: "g37", editionNo: 37, gameType: "four-way-swipe", gameLabel: "Compass", topic: "Silk Road", playedAt: day(6), score: 3 },
-  ];
+/** The latest completed nodes, enriched from the edition content files for display. */
+export async function getRecentGames(userId: string): Promise<RecentGame[]> {
+  if (SHOW_ALL_GAMES_FOR_TESTING) {
+    const edition = getFeaturedEdition(); // or getEditionById("edition-001")
+
+    return edition.nodes.map((node) => ({
+      id: `test-${edition.id}-${node.id}`,
+      editionId: edition.id,
+      nodeId: node.id,
+      editionNo: edition.order,
+      gameType: node.type,
+      gameLabel: node.mapTitle,
+      topic: node.mapSubtitle,
+      playedAt: edition.publishedAt ?? "2026-01-01",
+      score: 0,
+      maxScore: 3,
+    }));
+  }
+  const rows = await prisma.userNodeProgress.findMany({
+    where: { userId, status: "completed" },
+    orderBy: { completedAt: "desc" },
+    take: 6,
+  });
+
+  return rows.flatMap((row) => {
+
+    const edition = getEditionById(row.editionId);
+    const node = edition?.nodes.find((item) => item.id === row.nodeId);
+    if (!edition || !node || !row.completedAt) return [];
+
+    return [{
+      id: row.id,
+      editionId: row.editionId,
+      nodeId: row.nodeId,
+      editionNo: edition.order,
+      gameType: node.type,
+      gameLabel: node.mapTitle,
+      topic: node.mapSubtitle,
+      playedAt: row.completedAt.toISOString().slice(0, 10),
+      score: row.stars,
+      maxScore: 3,
+    }];
+  });
 }

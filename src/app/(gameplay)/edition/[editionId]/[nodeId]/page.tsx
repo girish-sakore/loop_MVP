@@ -7,10 +7,15 @@ import type { Stage, StageType } from "@/types/gameplay";
 import { getEditionById, getFeaturedEdition } from "@/features/editions/edition-content";
 import { hasPremium } from "@/lib/premium";
 
-type PageProps = { params: Promise<{ editionId: string; nodeId: string }> };
+type PageProps = {
+  params: Promise<{ editionId: string; nodeId: string }>;
+  searchParams: Promise<{ mode?: string | string[] }>;
+};
 
-export default async function NodeGameplayPage({ params }: PageProps) {
+export default async function NodeGameplayPage({ params, searchParams }: PageProps) {
   const { editionId, nodeId } = await params;
+  const { mode } = await searchParams;
+  const isReplay = mode === "replay";
 
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
@@ -28,7 +33,7 @@ export default async function NodeGameplayPage({ params }: PageProps) {
   if (node.isPremium && !premium) redirect("/pricing"); // real enforcement; UI lock is cosmetic
 
   const nodeProgress = await getUserNodeProgress(session.user.id, editionId, nodeId);
-  if (nodeProgress.status === "completed") redirect("/map");
+  if (nodeProgress.status === "completed" && !isReplay) redirect("/map");
 
   const nodeType = node.type as StageType;
   const stages = node.subStages.map((stage, index) => ({
@@ -48,9 +53,10 @@ export default async function NodeGameplayPage({ params }: PageProps) {
         editionId={edition.id}
         nodeId={node.id}
         stages={stages}
-        initialStage={nodeProgress.currentSubStage}
+        mode={isReplay ? "replay" : "normal"}
+        initialStage={isReplay ? 0 : nodeProgress.currentSubStage}
         initialProgress={
-          nodeProgress.status === "in_progress"
+          !isReplay && nodeProgress.status === "in_progress"
             ? {
               currentStage: nodeProgress.currentSubStage,
               attemptsRemaining:
