@@ -7,7 +7,8 @@ const SHOW_ALL_GAMES_FOR_TESTING = true;
 /** The latest completed nodes, enriched from the edition content files for display. */
 export async function getRecentGames(userId: string): Promise<RecentGame[]> {
   if (SHOW_ALL_GAMES_FOR_TESTING) {
-    const edition = getFeaturedEdition(); // or getEditionById("edition-001")
+    const edition = await getFeaturedEdition(); // or getEditionById("edition-001")
+    if (!edition) return [];
 
     return edition.nodes.map((node) => ({
       id: `test-${edition.id}-${node.id}`,
@@ -28,9 +29,10 @@ export async function getRecentGames(userId: string): Promise<RecentGame[]> {
     take: 6,
   });
 
-  return rows.flatMap((row) => {
+  const editions = await Promise.all(rows.map((row) => getEditionById(row.editionId)));
 
-    const edition = getEditionById(row.editionId);
+  return rows.flatMap((row, index) => {
+    const edition = editions[index];
     const node = edition?.nodes.find((item) => item.id === row.nodeId);
     if (!edition || !node || !row.completedAt) return [];
 
