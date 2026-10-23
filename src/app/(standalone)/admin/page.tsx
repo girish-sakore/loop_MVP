@@ -4,6 +4,8 @@ import { listGames } from "@/features/games/queries";
 import { UploadForm } from "@/components/admin/upload-form";
 import { DeleteGameButton } from "@/components/admin/delete-game-button";
 import { s } from "@/components/admin/ui";
+import { PreviewLink } from "@/components/admin/preview-buttons";
+import { Pencil, Play } from "lucide-react";
 
 export default async function LibraryPage({ searchParams }: { searchParams: Promise<{ type?: string; unassigned?: string }> }) {
   await requireCreatorPage();
@@ -43,11 +45,13 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                     {g.editionId ? <Link href={`/admin/editions/${g.editionId}`}>In edition →</Link> : "Library"}
                     {g.isPremium && " · premium"}
                   </td>
-                  <td style={{ ...s.td, textAlign: "right", whiteSpace: "nowrap" }}>
-                    <Link href={`/admin/games/${g.id}`}>Edit</Link>{" "}
-                    {!g.editionId && <DeleteGameButton id={g.id} title={g.title} />}
+                  <td style={s.td}>
+                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                      <Link href={`/admin/games/${g.id}`} title="Edit" aria-label="Edit" style={s.icon}><Pencil size={16} /></Link>
+                      <PreviewLink gameId={g.id} title="Preview" style={s.icon}><Play size={16} /></PreviewLink>
+                      {!g.editionId && <DeleteGameButton id={g.id} title={g.title} />}
+                    </div>
                   </td>
-                  {/* <td style={{ ...s.td, textAlign: "right" }}>{!g.editionId && <DeleteGameButton id={g.id} title={g.title} />}</td> */}
                 </tr>
               ))}
               {games.length === 0 && <tr><td style={s.td} colSpan={5}>No games yet. Import a file above.</td></tr>}

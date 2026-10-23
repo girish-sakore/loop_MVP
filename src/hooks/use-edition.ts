@@ -1,3 +1,3 @@
-export function useEdition() {
+export function useEdition(editionId: string) {
   
 }

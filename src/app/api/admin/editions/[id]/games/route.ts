@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireCreator } from "@/lib/require-creator";
 import { HttpError, handleError } from "@/lib/http-error";
@@ -41,13 +40,9 @@ export async function POST(req: Request, { params }: Ctx) {
       }
 
       if (existing) {
-        const subStages = [
-          ...(existing.subStages as unknown[]),
-          ...(game.subStages as unknown[]),
-        ];
         await tx.game.update({
           where: { id: existing.id },
-          data: { subStages: subStages as Prisma.InputJsonValue },
+          data: { subStages: [...(existing.subStages as unknown[]), ...(game.subStages as unknown[])] as any },
         });
         await tx.game.delete({ where: { id: game.id } });
         return { merged: true, gameId: existing.id };

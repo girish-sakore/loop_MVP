@@ -18,15 +18,18 @@ type Options = {
   enabled: boolean;
   /** Called with the server's merged view after every push and pull. */
   onRemote: (remote: GameplaySnapshot) => void;
+  /** Preview mode: no network calls, no storage writes, no polling. */
+  preview?: boolean;
 };
 
-export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemote }: Options) {
+export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemote, preview = false }: Options) {
   const onRemoteRef = useRef(onRemote);
   useEffect(() => { onRemoteRef.current = onRemote; });
 
   const pending = useRef<GameplaySnapshot | null>(null);
 
   const post = useCallback(async (snapshot: GameplaySnapshot) => {
+    if (preview) return;
     try {
       const res = await fetch("/api/progress/sync", {
         method: "POST",
@@ -43,7 +46,7 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
       // Offline or server error: keep it queued and retry on focus/online/next save.
       pending.current = snapshot;
     }
-  }, [editionId, nodeId]);
+  }, [editionId, nodeId, preview]);
 
   const flush = useCallback(() => {
     const snapshot = pending.current;
@@ -53,11 +56,13 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
 
   /** Local write is always immediate. Call only on discrete stage events. */
   const save = useCallback((snapshot: GameplaySnapshot) => {
+    if (preview) return;
     try { saveSnapshot(localStorage, storageKey, snapshot); } catch { /* storage blocked */ }
     void post(snapshot);
-  }, [storageKey, post]);
+  }, [storageKey, post, preview]);
 
   const pull = useCallback(async () => {
+    if (preview) return;
     try {
       const params = new URLSearchParams({ editionId, nodeId });
       const res = await fetch(`/api/progress/sync?${params}`, { cache: "no-store" });
@@ -66,10 +71,10 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
       const remote = fromServerPayload(data?.progress);
       if (remote) onRemoteRef.current(remote);
     } catch { /* offline: try again later */ }
-  }, [editionId, nodeId]);
+  }, [editionId, nodeId, preview]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || preview) return;
     const onVisibility = () => {
       flush();
       if (document.visibilityState === "visible") void pull();
@@ -87,7 +92,7 @@ export function useProgressSync({ editionId, nodeId, storageKey, enabled, onRemo
       window.removeEventListener("online", onOnline);
       clearInterval(interval);
     };
-  }, [enabled, flush, pull]);
+  }, [enabled, preview, flush, pull]);
 
   return { save, pull, flush };
 }

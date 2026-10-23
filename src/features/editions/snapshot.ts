@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import type { Edition, EditionNode, Stage, BorderHopStage } from "@/types/gameplay";
 import { gameCardSchema, formatImportErrors } from "@/features/games/game-schemas";
 import { validateRoute } from "@/features/interactions/border-hop/border-hop-rules";
-import { dayString } from "@/lib/date-ist";
+import { dayString, todayIST } from "@/lib/date-ist";
 import { HttpError } from "@/lib/http-error";
 
 type EditionRow = {
@@ -40,7 +40,7 @@ export function buildSnapshot(edition: EditionRow, games: GameRow[]): Edition {
     }
 
     // clue-connect: one substage per case (same rule normalizeSubStage used)
-    const flat = flattenSubStages(g.type, parsed.data.subStages as Record<string, unknown>[]);
+    const flat = flattenSubStages(g.type, parsed.data.subStages as Record<string, any>[]);
 
     const subStages = flat.map((s, i) => {
       const stage: Record<string, unknown> = { ...s, id: `${g.id}-${i + 1}`, type: g.type };
@@ -80,12 +80,17 @@ export async function rebuildSnapshot(tx: Prisma.TransactionClient, editionId: s
   await tx.edition.update({ where: { id: editionId }, data: { snapshot: snapshot as unknown as Prisma.InputJsonValue } });
 }
 
-export function flattenSubStages(type: string, subStages: Record<string, unknown>[]) {
-  return subStages.flatMap((stage) => {
-    const cases = stage.cases;
-    if (type === "clue-connect" && Array.isArray(cases) && cases.length > 1) {
-      return cases.map((item) => ({ ...stage, cases: [item] }));
-    }
-    return [stage];
-  });
+export function flattenSubStages(type: string, subStages: Record<string, any>[]) {
+  return subStages.flatMap((s) =>
+    type === "clue-connect" && s.cases.length > 1 ? s.cases.map((c: unknown) => ({ ...s, cases: [c] })) : [s],
+  );
+}
+
+/** Builds the playable node for a single card, with the same rules as scheduling. Throws SnapshotError if invalid. */
+export function buildPreviewNode(game: GameRow): EditionNode {
+  const snap = buildSnapshot(
+    { id: "preview", title: "Preview", description: "", theme: "", date: todayIST(), category: null, author: null, coverImage: null, estimatedTime: null },
+    [game],
+  );
+  return snap.nodes[0];
 }

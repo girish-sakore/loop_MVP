@@ -25,6 +25,7 @@ import {
   type StoredProgress,
 } from "@/features/gameplay/progress/resume";
 import type { Stage } from "@/types/gameplay";
+import { closePreviewTab } from "@/features/gameplay/preview/close-preview";
 
 interface GameplayEngineProps {
   editionId: string;
@@ -35,10 +36,13 @@ interface GameplayEngineProps {
   userId: string;
   /** Replays are deliberately local-only and never alter recorded progress. */
   mode?: "normal" | "replay";
+  preview?: boolean;
+  exitHref?: string; //  fallback if the tab can't close
+  summaryHref?: string;  // where a finished preview goes
 }
 
 export function GameplayEngine({
-  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal" }: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal", preview = false, exitHref, summaryHref = "" }: GameplayEngineProps) {
   const router = useRouter();
   const isReplay = mode === "replay";
   const hasNavigated = useRef(false);
@@ -121,6 +125,7 @@ export function GameplayEngine({
     storageKey: gameplayKey,
     enabled: ready && !isReplay,
     onRemote: handleRemote,
+    preview,
   });
 
   // Stage-level change: local write + network push.
@@ -130,9 +135,10 @@ export function GameplayEngine({
 
   // Game-state change (typing, hopping...): local only, no network call.
   const saveLocalOnly = useCallback(() => {
+    if (preview) return;
     if (isReplay) return;
     try { saveSnapshot(localStorage, gameplayKey, pickSnapshot(useGameplayStore.getState())); } catch { /* storage blocked */ }
-  }, [gameplayKey, isReplay]);
+  }, [gameplayKey, isReplay, preview]);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,7 +169,7 @@ export function GameplayEngine({
       };
 
       let snapshot = server;
-      if (!isReplay) {
+      if ((!isReplay) || (!preview)) {
         try {
           snapshot = restoreSnapshot(localStorage, gameplayKey, server, stages.map((item) => item.attemptsAllowed));
         } catch { /* Fall back to server progress if storage is blocked. */ }
@@ -173,13 +179,14 @@ export function GameplayEngine({
       setInitializedKey(sessionKey);
       if (!isReplay) {
         save(snapshot);
-        try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
+        if (!preview) try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
       }
     });
     return () => { cancelled = true; };
   }, [stages, initialStage, initialProgress, sessionKey, gameplayKey, legacyHintsKey, applySnapshot, isReplay, save]);
 
   const completeProgress = useCallback(async () => {
+    if (preview) return;
     if (isReplay) return;
     flush();
     await fetch("/api/progress/complete", {
@@ -188,17 +195,18 @@ export function GameplayEngine({
       body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
     }).catch(() => { });
     try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
-  }, [editionId, nodeId, score, correctAnswers, totalAnswers, gameplayKey, flush, isReplay]);
+  }, [editionId, nodeId, preview, score, correctAnswers, totalAnswers, gameplayKey, flush, isReplay]);
 
   useEffect(() => {
     if (!ready) return;
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
-        router.push(isReplay ? "/map" : "/summary");
+        router.push(preview ? (summaryHref ?? exitHref ?? "/admin") : (isReplay ? "/map" : "/summary"));
       });
     }
-  }, [ready, completed, stage, completeProgress, router, isReplay]);
+  }, [ready, completed, stage, completeProgress, router, preview, exitHref, isReplay]);
+
 
   const handleInteractionStateChange = useCallback((stageId: string, state: InteractionState) => {
     setInteractionState(stageId, state);
@@ -280,6 +288,7 @@ export function GameplayEngine({
         progress={progress}
         attemptsRemaining={attemptsRemaining}
         totalAttempts={totalAttempts}
+        onClose={preview ? () => closePreviewTab(exitHref ?? "/admin", router.push) : undefined}
       >
         <AnimatePresence mode="wait">
           <motion.div

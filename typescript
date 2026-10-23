@@ -1,0 +1,368 @@
+Script started on 2026-10-16 13:30:27+05:30 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="146" LINES="40"]
+[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP[00m$ ls
+[?2004lAGENTS.md                import-sample.json  [0m[01;34mnode_modules[0m        [01;34mprisma[0m            [01;34mscripts[0m             tsconfig.json
+CLAUDE.md                middleware.ts       package.json        prisma.config.ts  [01;34msrc[0m                 tsconfig.tsbuildinfo
+directory_structure.txt  next.config.ts      package-lock.json   [01;34mpublic[0m            tailwind.config.ts  typescript
+eslint.config.mjs        next-env.d.ts       postcss.config.mjs  README.md         [01;34mtests[0m
+[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP[00m$ cd scripts/
+[?2004l[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ ls
+[?2004lconvert-edition.cjs
+[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ node convert-edition.cjs 
+[?2004l[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ npm run edv[K[K[Kdev
+[?2004l
+> LoopMVP@0.1.0 dev
+> NODE_OPTIONS=--max-old-space-size=2048 next dev -H 0.0.0.0
+
+[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.2.4[39m[22m (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+- Environments: .env
+[32m[1m✓[22m[39m Ready in 574ms
+
+[37m[1m○[22m[39m Compiling /admin ...
+ GET /admin [32m200[39m in 6.4s[2m (next.js: 5.1s, application-code: 1267ms)[22m
+[admin/import] TypeError: Cannot read properties of undefined (reading 'create')
+    at POST (src/app/api/admin/import/route.ts:48:44)
+  [90m46 |[0m
+  [90m47 |[0m     [90m// 4. Nested create runs as one transaction: batch + all games, or nothing[0m
+[31m[1m>[0m [90m48 |[0m     [36mconst[0m batch = [36mawait[0m prisma.importBatch.create({
+  [90m   |[0m                                            [31m[1m^[0m
+  [90m49 |[0m       data: {
+  [90m50 |[0m         fileName: file.name,
+  [90m51 |[0m         totalCount: parsed.data.length,
+ POST /api/admin/import [31m500[39m in 617ms[2m (next.js: 334ms, application-code: 283ms)[22m
+[31m[1m⨯[22m[39m TypeError: Cannot read properties of undefined (reading 'findMany')
+    at EditionsPage (src/app/(standalone)/admin/editions/page.tsx:10:41)
+  [90m 8 |[0m [36mexport[0m [36mdefault[0m [36masync[0m [36mfunction[0m [33mEditionsPage[0m() {
+  [90m 9 |[0m   [36mawait[0m requireCreatorPage();
+[31m[1m>[0m [90m10 |[0m   [36mconst[0m editions = [36mawait[0m prisma.edition.findMany({
+  [90m   |[0m                                         [31m[1m^[0m
+  [90m11 |[0m     select: { id: [36mtrue[0m, title: [36mtrue[0m, status: [36mtrue[0m, date: [36mtrue[0m, _count: { select: { games: [36mtrue[0m } } },
+  [90m12 |[0m     orderBy: [{ date: { sort: [32m"desc"[0m, nulls: [32m"first"[0m } }, { createdAt: [32m"desc"[0m }],
+  [90m13 |[0m     take: [35m200[0m, {
+  digest: [32m'744791076'[39m
+}
+ GET /admin/editions [31m500[39m in 321ms[2m (next.js: 69ms, application-code: 252ms)[22m
+[36m[browser][39m Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+[36m[browser][39m [31mUncaught TypeError: Cannot read properties of undefined (reading 'findMany')[39m
+[31m    at EditionsPage (src/app/(standalone)/admin/editions/page.tsx:10:41)[39m
+  [90m 8 |[0m [36mexport[0m [36mdefault[0m [36masync[0m [36mfunction[0m [33mEditionsPage[0m() {
+  [90m 9 |[0m   [36mawait[0m requireCreatorPage();
+[31m[1m>[0m [90m10 |[0m   [36mconst[0m editions = [36mawait[0m prisma.edition.findMany({
+  [90m   |[0m                                         [31m[1m^[0m
+  [90m11 |[0m     select: { id: [36mtrue[0m, title: [36mtrue[0m, status: [36mtrue[0m, date: [36mtrue[0m, _count: { select: { games: [36mtrue[0m } } },
+  [90m12 |[0m     orderBy: [{ date: { sort: [32m"desc"[0m, nulls: [32m"first"[0m } }, { createdAt: [32m"desc"[0m }],
+  [90m13 |[0m     take: [35m200[0m,
+ GET /admin [32m200[39m in 127ms[2m (next.js: 5ms, application-code: 122ms)[22m
+ GET /admin [32m200[39m in 139ms[2m (next.js: 7ms, application-code: 132ms)[22m
+revalidating cache with key: async (day)=>{
+    const row = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].edition.findFirst({
+        where: {
+            status: "SCHEDULED",
+            date: {
+                lte: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$date$2d$ist$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["parseDay"])(day)
+            }
+        },
+        orderBy: {
+            date: "desc"
+        },
+        select: {
+            snapshot: true
+        }
+    });
+    return row?.snapshot ?? null;
+}-featured-edition-["2026-10-16"] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at <unknown> (src/features/editions/edition-content.ts:12:38)
+    at async MapPage (src/app/(gameplay)/map/page.tsx:73:49)
+  [90m10 |[0m [36mconst[0m featuredForDay = unstable_cache(
+  [90m11 |[0m   [36masync[0m (day: string) => {
+[31m[1m>[0m [90m12 |[0m     [36mconst[0m row = [36mawait[0m prisma.edition.findFirst({
+  [90m   |[0m                                      [31m[1m^[0m
+  [90m13 |[0m       where: { status: [32m"SCHEDULED"[0m, date: { lte: parseDay(day) } },
+  [90m14 |[0m       orderBy: { date: [32m"desc"[0m },
+  [90m15 |[0m       select: { snapshot: [36mtrue[0m },
+ GET /map [32m200[39m in 516ms[2m (next.js: 63ms, application-code: 453ms)[22m
+[31m[1m⨯[22m[39m TypeError: Cannot read properties of undefined (reading 'findMany')
+    at <unknown> (src/features/editions/edition-content.ts:41:28)
+    at async ProfilePage (src/app/(gameplay)/profile/page.tsx:37:54)
+  [90m39 |[0m   [36masync[0m (day: string) =>
+  [90m40 |[0m     (
+[31m[1m>[0m [90m41 |[0m       [36mawait[0m prisma.edition.findMany({
+  [90m   |[0m                            [31m[1m^[0m
+  [90m42 |[0m         where: { status: [32m"SCHEDULED"[0m, date: { lte: parseDay(day) } },
+  [90m43 |[0m         orderBy: { date: [32m"desc"[0m },
+  [90m44 |[0m         select: { {
+  digest: [32m'1014089613'[39m
+}
+ GET /profile [32m200[39m in 160ms[2m (next.js: 41ms, application-code: 119ms)[22m
+[36m[browser][39m [31mUncaught TypeError: Cannot read properties of undefined (reading 'findMany')[39m
+[31m    at <anonymous> (src/features/editions/edition-content.ts:41:28)
+    at Function.all (<anonymous>:1:21)
+    at ProfilePage (src/app/(gameplay)/profile/page.tsx:37:54)[39m
+  [90m39 |[0m   [36masync[0m (day: string) =>
+  [90m40 |[0m     (
+[31m[1m>[0m [90m41 |[0m       [36mawait[0m prisma.edition.findMany({
+  [90m   |[0m                            [31m[1m^[0m
+  [90m42 |[0m         where: { status: [32m"SCHEDULED"[0m, date: { lte: parseDay(day) } },
+  [90m43 |[0m         orderBy: { date: [32m"desc"[0m },
+  [90m44 |[0m         select: {
+^C^C^C[?25h
+
+[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ ^C[?2004l[?2004h[?2004l
+[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ npx prisma migrate reset
+[?2004l[1G[0K[1m[31mError: [39m[22mCould not find Prisma Schema that is required for this command.
+You can either provide it with [32m`--schema`[39m argument,
+set it in your Prisma Config file (e.g., [32m`prisma.config.ts`[39m),
+set it as [32m`prisma.schema`[39m in your [32mpackage.json[39m,
+or put it into the default location ([32m`./prisma/schema.prisma`[39m, or [32m`./schema.prisma`[39m.
+Checked following paths:
+
+schema.prisma: file not found
+prisma/schema.prisma: file not found
+
+See also https://pris.ly/d/prisma-schema-location
+[1G[0K\[1G[0K[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ npx prisma migrate reset[K[K[K[K[K[K[K[K[K[K[K[K[Kreset
+[?2004l[1G[0K
+[1m[31m![39m[22m Unknown command "reset"
+
+    [1m[32m◭  [39m[22mPrisma is a modern DB toolkit to query, migrate and model your database (]8;;https://prisma.iohttps://prisma.io]8;;)
+
+    [1mUsage[22m
+
+      [2m$[22m prisma [command]
+
+    [1mCommands[22m
+
+                init   Set up Prisma for your app
+           bootstrap   Bootstrap a Prisma Postgres project
+                 dev   Start a local Prisma Postgres server for development
+            generate   Generate artifacts (e.g. Prisma Client)
+                  db   Manage your database schema and lifecycle
+             migrate   Migrate your database
+              studio   Browse your data with Prisma Studio
+            validate   Validate your Prisma schema
+              format   Format your Prisma schema
+             version   Displays Prisma version info
+               debug   Displays Prisma debug info
+            platform   Prisma Data Platform commands
+            postgres   Manage Prisma Postgres databases
+                 mcp   Starts an MCP server to use with AI development tools
+
+    [1mFlags[22m
+
+         --preview-feature   Run Preview Prisma commands
+         --help, -h          Show additional information about a command
+
+[90m[90m┌─[39m[90m[90m──────────────────────────────────────────────────────────────────────────────────────┐[39m[90m
+[90m│[39m[90m  [0mOptimize performance through connection pooling and caching with Prisma Accelerate.[0m  [90m│[39m[90m
+[90m│[39m[90m  [0mLearn more at ]8;;https://pris.ly/cli/pdphttps://pris.ly/cli/pdp]8;;[0m                                                [90m│[39m[90m
+└───────────────────────────────────────────────────────────────────────────────────────┘[39m
+
+    [1mExamples[22m
+
+      Set up a new local Prisma Postgres `prisma dev`-ready project
+      [2m$[22m prisma init
+
+      Start a local Prisma Postgres server for development
+      [2m$[22m prisma dev
+
+      Generate artifacts (e.g. Prisma Client)
+      [2m$[22m prisma generate
+
+      Browse your data
+      [2m$[22m prisma studio
+
+      Create migrations from your Prisma schema, apply them to the database, generate artifacts (e.g. Prisma Client)
+      [2m$[22m prisma migrate dev
+
+      Pull the schema from an existing database, updating the Prisma schema
+      [2m$[22m prisma db pull
+
+      Push the Prisma schema state to the database
+      [2m$[22m prisma db push
+
+      Validate your Prisma schema
+      [2m$[22m prisma validate
+
+      Format your Prisma schema
+      [2m$[22m prisma format
+
+      Display Prisma version info
+      [2m$[22m prisma version
+
+      Display Prisma debug info
+      [2m$[22m prisma debug
+
+[1G[0K\[1G[0K[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ [7mnpx prisma migrate reset[27m
+[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cnpx prisma migrate reset
+[A
+[?2004l[1G[0K[1m[31mError: [39m[22mCould not find Prisma Schema that is required for this command.
+You can either provide it with [32m`--schema`[39m argument,
+set it in your Prisma Config file (e.g., [32m`prisma.config.ts`[39m),
+set it as [32m`prisma.schema`[39m in your [32mpackage.json[39m,
+or put it into the default location ([32m`./prisma/schema.prisma`[39m, or [32m`./schema.prisma`[39m.
+Checked following paths:
+
+schema.prisma: file not found
+prisma/schema.prisma: file not found
+
+See also https://pris.ly/d/prisma-schema-location
+[1G[0K\[1G[0K[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP/scripts[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP/scripts[00m$ cd ..
+[?2004l[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP[00m$ cd ..npx prisma migrate reset
+[?2004l[1G[0K[2mLoaded Prisma config from prisma.config.ts.
+[22m
+[2mPrisma schema loaded from prisma/schema.prisma.[22m
+[2mDatasource "db": PostgreSQL database "loop_mvp", schema "public" at "localhost:5432"[22m
+
+[?25l[2K[1G[36m?[39m [1mAre you sure you want to reset your database? [31mAll data will be lost[39m.[22m [90m›[39m [90m(y/N)[39m[2K[G[2K[1G[32m✔[39m [1mAre you sure you want to reset your database? [31mAll data will be lost[39m.[22m [90m…[39m yes
+[?25h
+Applying migration `20260508183120_auth_init`
+Applying migration `20260509130000_better_auth_migration`
+Applying migration `20260509132031_better_auth_setup`
+Applying migration `20260509132253_better_auth_setup`
+Applying migration `20260510131359_add_column_email_verified_in_user`
+Applying migration `20260510132804_better_auth_migration`
+Applying migration `20260514115058_add_subscription`
+Applying migration `20260516062941_add_user_edition_table`
+Applying migration `20260810085536_add_node_progress`
+Applying migration `20260917120000_persist_stage_attempts`
+Applying migration `20260929033425_add_progress_sync_fields`
+Applying migration `20261012061659_add_games_and_editions`
+
+[32mDatabase reset successful[39m
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260508183120_[36m[1mauth_init[22m[39m/
+    └─ migration.sql
+  └─ 20260509130000_[36m[1mbetter_auth_migration[22m[39m/
+    └─ migration.sql
+  └─ 20260509132031_[36m[1mbetter_auth_setup[22m[39m/
+    └─ migration.sql
+  └─ 20260509132253_[36m[1mbetter_auth_setup[22m[39m/
+    └─ migration.sql
+  └─ 20260510131359_[36m[1madd_column_email_verified_in_user[22m[39m/
+    └─ migration.sql
+  └─ 20260510132804_[36m[1mbetter_auth_migration[22m[39m/
+    └─ migration.sql
+  └─ 20260514115058_[36m[1madd_subscription[22m[39m/
+    └─ migration.sql
+  └─ 20260516062941_[36m[1madd_user_edition_table[22m[39m/
+    └─ migration.sql
+  └─ 20260810085536_[36m[1madd_node_progress[22m[39m/
+    └─ migration.sql
+  └─ 20260917120000_[36m[1mpersist_stage_attempts[22m[39m/
+    └─ migration.sql
+  └─ 20260929033425_[36m[1madd_progress_sync_fields[22m[39m/
+    └─ migration.sql
+  └─ 20261012061659_[36m[1madd_games_and_editions[22m[39m/
+    └─ migration.sql
+[90m[90m┌─[39m[90m[90m────────────────────────────────────────────────────────┐[39m[90m
+[90m│[39m[90m  [0m[34mUpdate available[39m[90m 7.8.0 -> 8.0.0-rc.23[0m                  [90m│[39m[90m
+[90m│[39m[90m  [0m[0m                                                       [90m│[39m[90m
+[90m│[39m[90m  [0mThis is a major update - please follow the guide at[0m    [90m│[39m[90m
+[90m│[39m[90m  [0mhttps://pris.ly/d/major-version-upgrade[0m                [90m│[39m[90m
+[90m│[39m[90m  [0m[0m                                                       [90m│[39m[90m
+[90m│[39m[90m  [0mRun the following to update[0m                            [90m│[39m[90m
+[90m│[39m[90m  [0m  [1mnpm i --save-dev prisma@latest[22m[0m                       [90m│[39m[90m
+[90m│[39m[90m  [0m  [1mnpm i @prisma/client@latest[22m[0m                          [90m│[39m[90m
+└─────────────────────────────────────────────────────────┘[39m
+
+[1G[0K\[1G[0K[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP[00m$ npx prs[Kisma generate
+[?2004l[1G[0K[2mLoaded Prisma config from prisma.config.ts.
+[22m
+[2mPrisma schema loaded from prisma/schema.prisma.[22m
+
+✔ Generated [1mPrisma Client[22m (v7.8.0)[2m to ./node_modules/@prisma/client[22m in 196ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+
+[1G[0K\[1G[0K[?2004h]0;saitama@saitama-Latitude-5490: ~/projects/loop_MVP[01;32msaitama@saitama-Latitude-5490[00m:[01;34m~/projects/loop_MVP[00m$ npx prisma generatemigrate resetcd ..[Knpx prisma migrate reset[8Presetmigrate reset[13Pm run dev
+[?2004l
+> LoopMVP@0.1.0 dev
+> NODE_OPTIONS=--max-old-space-size=2048 next dev -H 0.0.0.0
+
+[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.2.4[39m[22m (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+- Environments: .env
+[32m[1m✓[22m[39m Ready in 544ms
+
+ GET /profile [32m200[39m in 1951ms[2m (next.js: 914ms, application-code: 1037ms)[22m
+ GET /map [32m200[39m in 1712ms[2m (next.js: 1487ms, application-code: 225ms)[22m
+ GET /admin [32m200[39m in 334ms[2m (next.js: 132ms, application-code: 202ms)[22m
+ POST /api/admin/import [32m201[39m in 946ms[2m (next.js: 794ms, application-code: 151ms)[22m
+ GET /admin [32m200[39m in 136ms[2m (next.js: 11ms, application-code: 125ms)[22m
+ GET /admin [32m200[39m in 26ms[2m (next.js: 16ms, application-code: 10ms)[22m
+ GET /admin [32m200[39m in 67ms[2m (next.js: 5ms, application-code: 63ms)[22m
+ GET /admin/editions [32m200[39m in 317ms[2m (next.js: 268ms, application-code: 49ms)[22m
+ GET /admin [32m200[39m in 54ms[2m (next.js: 3ms, application-code: 51ms)[22m
+ GET /admin/editions [32m200[39m in 61ms[2m (next.js: 8ms, application-code: 52ms)[22m
+[37m[1m○[22m[39m Compiling /api/admin/editions ...
+ POST /api/admin/editions [32m201[39m in 6.3s[2m (next.js: 6.3s, application-code: 65ms)[22m
+ GET /admin/editions/cmvaon3pv000cclhd5bawtuh7 [32m200[39m in 3.6s[2m (next.js: 3.5s, application-code: 167ms)[22m
+ POST /api/admin/editions/cmvaon3pv000cclhd5bawtuh7/games [32m200[39m in 2.4s[2m (next.js: 2.3s, application-code: 45ms)[22m
+ GET /admin/editions/cmvaon3pv000cclhd5bawtuh7 [32m200[39m in 96ms[2m (next.js: 47ms, application-code: 48ms)[22m
+ GET / [34m307[39m in 877ms[2m (next.js: 395ms, application-code: 481ms)[22m
+ GET /map [32m200[39m in 349ms[2m (next.js: 5ms, application-code: 345ms)[22m
+ GET /admin/editions/cmvaon3pv000cclhd5bawtuh7 [32m200[39m in 287ms[2m (next.js: 81ms, application-code: 206ms)[22m
+ GET /map [32m200[39m in 190ms[2m (next.js: 5ms, application-code: 185ms)[22m
+ GET /admin/games/cmvaolq3b000bclhd8o1wnk8c [32m200[39m in 3.3s[2m (next.js: 3.2s, application-code: 107ms)[22m
+ GET /admin/editions/cmvaon3pv000cclhd5bawtuh7 [32m200[39m in 158ms[2m (next.js: 75ms, application-code: 83ms)[22m
+ POST /api/admin/editions/cmvaon3pv000cclhd5bawtuh7/schedule [32m200[39m in 3.5s[2m (next.js: 3.5s, application-code: 46ms)[22m
+ GET /admin/editions/cmvaon3pv000cclhd5bawtuh7 [32m200[39m in 112ms[2m (next.js: 53ms, application-code: 59ms)[22m
+ GET /map [32m200[39m in 431ms[2m (next.js: 7ms, application-code: 425ms)[22m
+ GET /edition/cmvaon3pv000cclhd5bawtuh7/cmvaolq3b000bclhd8o1wnk8c [32m200[39m in 1545ms[2m (next.js: 1403ms, application-code: 142ms)[22m
+[31m[1m⨯[22m[39m Error [PrismaClientKnownRequestError]: 
+Invalid `tx.userNodeProgress.create()` invocation in
+/home/saitama/projects/loop_MVP/.next/dev/server/chunks/[root-of-the-server]__10q118d._.js:646:43
+
+  643   FOR UPDATE
+  644 `;
+  645       if (locked.length === 0) {
+→ 646           await tx.userNodeProgress.create(
+Foreign key constraint violated on the constraint: `user_node_progress_userId_fkey`
+    at <unknown> (src/app/api/progress/sync/route.ts:83:35)
+    at async (src/app/api/progress/sync/route.ts:83:9)
+    at async writeMerged (src/app/api/progress/sync/route.ts:75:12)
+    at async POST (src/app/api/progress/sync/route.ts:58:18)
+  [90m81 |[0m
+  [90m82 |[0m       [36mif[0m (locked.length === [35m0[0m) {
+[31m[1m>[0m [90m83 |[0m         [36mawait[0m tx.userNodeProgress.create({
+  [90m   |[0m                                   [31m[1m^[0m
+  [90m84 |[0m           data: { userId, editionId, nodeId, startedAt: [36mnew[0m [33mDate[0m(), ...snapshotToRowData(incoming) },
+  [90m85 |[0m         });
+  [90m86 |[0m         [36mreturn[0m incoming; {
+  code: [32m'P2003'[39m,
+  meta: {
+    modelName: [32m'UserNodeProgress'[39m,
+    driverAdapterError: Error [DriverAdapterError]: ForeignKeyConstraintViolation
+        at [3mignore-listed frames[23m {
+      [cause]: [36m[Object][39m
+    }
+  },
+  clientVersion: [32m'7.8.0'[39m
+}
+ POST /api/progress/sync [31m500[39m in 796ms[2m (next.js: 107ms, application-code: 689ms)[22m
+ GET /edition/cmvaon3pv000cclhd5bawtuh7/cmvaolq3b000bclhd8o1wnk8c [32m200[39m in 317ms[2m (next.js: 134ms, application-code: 182ms)[22m
+ GET /login [32m200[39m in 377ms[2m (next.js: 130ms, application-code: 246ms)[22m
+ GET /login [32m200[39m in 137ms[2m (next.js: 18ms, application-code: 119ms)[22m
+[Auth] Magic Link for shubhamgate383@gmail.com: http://192.168.31.185:3000/api/auth/magic-link/verify?token=QIUjRGBuOeAnpGgjgZrDNHttWIbdOOVv&callbackURL=%2Fmap
+ POST /api/auth/sign-in/magic-link [32m200[39m in 1973ms[2m (next.js: 1496ms, application-code: 477ms)[22m
+ GET /api/auth/magic-link/verify?token=QIUjRGBuOeAnpGgjgZrDNHttWIbdOOVv&callbackURL=%2Fmap [34m302[39m in 214ms[2m (next.js: 78ms, application-code: 136ms)[22m
+ GET /map [32m200[39m in 175ms[2m (next.js: 8ms, application-code: 167ms)[22m
+ GET /edition/cmvaon3pv000cclhd5bawtuh7/cmvaolq3b000bclhd8o1wnk8c [32m200[39m in 223ms[2m (next.js: 118ms, application-code: 105ms)[22m
+ POST /api/progress/sync [32m200[39m in 84ms[2m (next.js: 7ms, application-code: 77ms)[22m
+ GET /admin [32m200[39m in 71ms[2m (next.js: 9ms, application-code: 62ms)[22m
+ GET /api/progress/sync?editionId=cmvaon3pv000cclhd5bawtuh7&nodeId=cmvaolq3b000bclhd8o1wnk8c [32m200[39m in 49ms[2m (next.js: 10ms, application-code: 39ms)[22m
+ GET /api/progress/sync?editionId=cmvaon3pv000cclhd5bawtuh7&nodeId=cmvaolq3b000bclhd8o1wnk8c [32m200[39m in 30ms[2m (next.js: 4ms, application-code: 26ms)[22m
+ GET /admin/games/cmvaolq3b0001clhdj73lk2gy [32m200[39m in 109ms[2m (next.js: 56ms, application-code: 54ms)[22m
+ GET /admin [32m200[39m in 59ms[2m (next.js: 4ms, application-code: 54ms)[22m
+ GET /admin/editions [32m200[39m in 42ms[2m (next.js: 4ms, application-code: 37ms)[22m
+ GET /admin [32m200[39m in 46ms[2m (next.js: 2ms, application-code: 44ms)[22m
+ GET /admin/games/cmvaolq3b0001clhdj73lk2gy [32m200[39m in 97ms[2m (next.js: 53ms, application-code: 44ms)[22m
+ GET /api/progress/sync?editionId=cmvaon3pv000cclhd5bawtuh7&nodeId=cmvaolq3b000bclhd8o1wnk8c [32m200[39m in 32ms[2m (next.js: 7ms, application-code: 25ms)[22m
+ GET /admin [32m200[39m in 91ms[2m (next.js: 4ms, application-code: 88ms)[22m
+^C[?25

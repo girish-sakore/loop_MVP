@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, type ApiError } from "./api";
 import { ErrorList, s } from "./ui";
+import { PreviewLink } from "./preview-buttons";
+import { Pencil, Play } from "lucide-react";
 
 export type Card = { id: string; type: string; title: string; isPremium: boolean; subStageCount: number };
 export type LibGame = { id: string; type: string; title: string; subStageCount: number };
@@ -31,8 +33,7 @@ export function EditionBuilder(props: { editionId: string; mode: Mode; initialMe
     setBusy(false);
     if (!r) return; // cancelled
     if (!r.ok) return setErr(r.data);
-    if (after) after();
-    else router.refresh();
+    after ? after() : router.refresh();
   }
 
   const addGame = async (gameId: string, merge = false): Promise<R | undefined> => {
@@ -137,7 +138,8 @@ export function EditionBuilder(props: { editionId: string; mode: Mode; initialMe
                       <button style={s.danger} disabled={busy || dirty} onClick={() => remove(c.id)}>Remove</button>
                     </>
                   )}
-                  <Link href={`/admin/games/${c.id}`}>Edit</Link>{" "}
+                  <Link href={`/admin/games/${c.id}`} title="Edit" aria-label="Edit" style={s.icon}><Pencil size={16} /></Link>{" "}
+                  <PreviewLink gameId={c.id} title="Preview" style={s.icon}><Play size={16} /></PreviewLink>
                 </td>
               </tr>
             ))}

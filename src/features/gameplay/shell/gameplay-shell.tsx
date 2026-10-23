@@ -3,10 +3,11 @@ import Link from "next/link";
 
 type GameplayShellProps = {
   stageLabel: string;
-  progress: number; // 0–100
+  progress: number;          // 0–100
   attemptsRemaining: number;
   totalAttempts: number;
   children: ReactNode;
+  onClose?: () => void;
 };
 
 export function GameplayShell({
@@ -15,41 +16,75 @@ export function GameplayShell({
   attemptsRemaining,
   totalAttempts,
   children,
+  onClose,
 }: GameplayShellProps) {
   return (
-    <div className="mb mb-root gp-shell">
-      <header className="gp-head">
-        <Link href="/map" className="gp-close" aria-label="Close game">
-          <span className="material-symbols-outlined" aria-hidden="true">close</span>
-        </Link>
+    <div className="flex min-h-[100dvh] flex-col bg-[#f6f2ec]">
+      <header
+        className="flex h-[86px] w-full flex-shrink-0 items-center justify-between border-b-[3px] border-[#0b0b0f] bg-[#f6f2ec] px-4"
+      >
+        <div className="flex items-center gap-4 flex-1">
+          {
+            onClose ?
+              <button onClick={onClose} aria-label="Close"><span
+                className="material-symbols-outlined"
+                style={{ color: "var(--on-surface)" }}
+              >
+                close
+              </span>
+              </button>
+              :
+              <Link
+                href="/map"
+                className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7] transition active:scale-95"
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ color: "var(--on-surface)" }}
+                >
+                  close
+                </span>
+              </Link>
+          }
 
-        <div
-          className="gp-bar"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progress)}
-          aria-label="Game progress"
-        >
-          <i style={{ width: `${progress}%` }} />
+          <div
+            className="relative h-5 max-w-xs flex-1 overflow-hidden rounded-full border-[3px] border-[#0b0b0f]"
+            style={{ backgroundColor: "#f6f2ec" }}
+          >
+            <div
+              className="absolute top-0 left-0 h-full transition-all duration-700 ease-out"
+              style={{
+                width: `${progress}%`,
+                backgroundColor: "#d8d0c3",
+              }}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%)",
+                }}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="gp-lives" aria-label={`${attemptsRemaining} of ${totalAttempts} lives left`}>
+        <div className="flex items-center gap-1.5 ml-4">
           {Array.from({ length: totalAttempts }).map((_, i) => (
             <span
               key={i}
               className="material-symbols-outlined"
-              aria-hidden="true"
               style={{
-                fontSize: 24,
+                fontSize: 22,
                 color:
                   i < attemptsRemaining
-                    ? "var(--mb-yel)"
-                    : "color-mix(in srgb, var(--mb-onbg) 35%, transparent)",
-                fontVariationSettings: i < attemptsRemaining ? "'FILL' 1" : "'FILL' 0",
+                    ? "#f05d5e"
+                    : "var(--surface-variant)",
+                fontVariationSettings:
+                  i < attemptsRemaining ? "'FILL' 1" : "'FILL' 0",
               }}
             >
-              local_fire_department
+              favorite
             </span>
           ))}
         </div>
@@ -57,7 +92,9 @@ export function GameplayShell({
 
       <span className="sr-only">{stageLabel}</span>
 
-      <main className="gp-main">{children}</main>
+      <main className="flex-1 px-0 pb-5 overflow-y-auto">
+        {children}
+      </main>
     </div>
   );
 }

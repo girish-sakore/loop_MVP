@@ -3,6 +3,8 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireCreator } from "@/lib/require-creator";
 import { importFileSchema, formatImportErrors } from "@/features/games/game-schemas";
+import { findMissing } from "@/lib/r2";
+import { mapImages, isUploadedKey } from "@/lib/image-refs";
 
 const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
 const MAX_ERRORS_RETURNED = 50;
@@ -42,6 +44,19 @@ export async function POST(req: Request) {
         },
         { status: 422 },
       );
+    }
+
+    // Dry run: the form validates first, so nothing is uploaded for a bad file
+    if (form.get("dryRun") === "1") {
+      return NextResponse.json({ ok: true, dryRun: true, count: parsed.data.length });
+    }
+
+    // Every uploaded key must really exist in R2
+    const keys = new Set<string>();
+    mapImages(parsed.data, (v) => (isUploadedKey(v) && keys.add(v), v));
+    const missing = await findMissing([...keys]);
+    if (missing.length) {
+      return NextResponse.json({ error: "Some images were not uploaded.", missing }, { status: 422 });
     }
 
     // 4. Nested create runs as one transaction: batch + all games, or nothing
