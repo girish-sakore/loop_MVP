@@ -6,14 +6,12 @@ import { MobileContainer } from "@/components/layout/mobile-container";
 import { EditionHero } from "@/components/edition-intro/edition-hero";
 import CatButton from "@/components/matchbox/cat-button";
 import StrikeLink from "@/components/matchbox/strike-link";
-import ThemePicker from "@/components/matchbox/theme-picker";
 import { getAuthSession } from "@/lib/auth-session";
-import type { EditionNode } from "@/types/gameplay";
 import StreakCard from "@/components/matchbox/streak-card";
 import { getStreak } from "@/features/streak/get-streak";
 import RecentGames from "@/components/matchbox/recent-games";
 import { getRecentGames } from "@/features/recent-games/get-recent-games";
-import { GAME_ORDER as gameOrder, themeIndexFor } from "@/lib/matchbox/game-order";
+import { GAME_ORDER as gameOrder } from "@/lib/matchbox/game-order";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 import { getAllUserNodeProgress, type NodeProgress } from "@/lib/edition-progress";
 import { hasPremium } from "@/lib/premium";
@@ -151,55 +149,6 @@ export default async function MapPage() {
       </main>
       <BottomNav />
     </MobileContainer>
-  );
-}
-
-function TodayTile({ tile }: { tile: GameTile }) {
-  const isCompleted = tile.node.status === "completed";
-  const isLocked = isCompleted || tile.node.status === "locked";
-  const i = themeIndexFor(tile.key);
-
-  const content = (
-    <>
-      {tile.badge ? <span className="new">{tile.badge}</span> : null}
-      <div className="tp">
-        <span className="cnt">{tile.node.completedSubGames}/{tile.node.totalSubGames} games</span>
-        {isLocked ? (
-          <span className="st">
-            <span className="material-symbols-outlined">{isCompleted ? "check" : "lock"}</span>
-          </span>
-        ) : null}
-      </div>
-      <span className="material-symbols-outlined ico" aria-hidden="true">{tile.icon}</span>
-      <div>
-        <h2>{tile.title}</h2>
-        <p>{tile.mapTitle === tile.title ? tile.subtitle : tile.mapTitle}</p>
-      </div>
-    </>
-  );
-  const style = { ["--c" as string]: `var(--mb-t${i})`, ["--f" as string]: `var(--mb-tf${i})` };
-
-  if (isLocked) {
-    return (
-      <div aria-label={`${tile.title} ${isCompleted ? "completed" : "locked"}`} className="mb-tile off" style={style}>
-        {content}
-      </div>
-    );
-  }
-
-  return (
-    <Link href={`/edition/${tile.editionId}/${tile.node.nodeId}`} aria-label={tile.title} className="mb-tile" style={style}>
-      {content}
-    </Link>
-  );
-}
-
-function InviteTile() {
-  return (
-    <button type="button" className="mb-tile invite">
-      <span className="material-symbols-outlined">ios_share</span>
-      <span style={{ font: "700 16px var(--font-dm), system-ui, sans-serif" }}>Invite friends</span>
-    </button>
   );
 }
 

@@ -65,8 +65,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
 
       // Hotfix rule: progress is stored by substage index, so the count must not change once live.
       if (live && b.subStages) {
-        const before = flattenSubStages(game.type, game.subStages as Record<string, any>[]).length;
-        const after = flattenSubStages(game.type, parsed.data.subStages as Record<string, any>[]).length;
+        const before = flattenSubStages(game.type, game.subStages as Record<string, unknown>[]).length;
+        const after = flattenSubStages(game.type, parsed.data.subStages as Record<string, unknown>[]).length;
         if (before !== after) {
           throw new HttpError(409, { error: `Edition is live. Substage count must stay ${before} (got ${after}).` });
         }
