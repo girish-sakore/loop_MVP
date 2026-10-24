@@ -33,7 +33,8 @@ export function EditionBuilder(props: { editionId: string; mode: Mode; initialMe
     setBusy(false);
     if (!r) return; // cancelled
     if (!r.ok) return setErr(r.data);
-    after ? after() : router.refresh();
+    if (after) after();
+    else router.refresh();
   }
 
   const addGame = async (gameId: string, merge = false): Promise<R | undefined> => {
