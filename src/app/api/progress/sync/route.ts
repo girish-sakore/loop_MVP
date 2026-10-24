@@ -89,6 +89,25 @@ async function writeMerged(
       const row = await tx.userNodeProgress.findUniqueOrThrow({
         where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
       });
+
+      // Completion is terminal. A delayed stage-level sync from the finishing
+      // browser (or another device) must never reopen this node.
+      if (row.status === "completed") {
+        return rowToSnapshot(row) ?? {
+          ...incoming,
+          version: row.version,
+          updatedAt: Number(row.clientUpdatedAt),
+          currentStage: row.currentSubStage,
+          attemptsRemaining: row.attemptsRemaining ?? 0,
+          stagePassed: true,
+          score: row.score,
+          correctAnswers: row.correctAnswers,
+          totalAnswers: row.totalAnswers,
+          hintsRemaining: row.hintsRemaining,
+          interactionState: {},
+        };
+      }
+
       const existing = rowToSnapshot(row);
       const mergedSnapshot = existing ? mergeSnapshots(existing, incoming) : incoming;
 

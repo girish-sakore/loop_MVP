@@ -202,7 +202,9 @@ export function GameplayEngine({
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
-        router.push(preview ? (summaryHref ?? exitHref ?? "/admin") : (isReplay ? "/map" : "/summary"));
+        const destination = preview ? (summaryHref ?? exitHref ?? "/admin") : (isReplay ? "/map" : "/summary");
+        if (preview || isReplay) router.push(destination);
+        else router.replace(destination);
       });
     }
   }, [ready, completed, stage, completeProgress, router, preview, exitHref, isReplay]);
@@ -258,7 +260,9 @@ export function GameplayEngine({
     const nextAttempts = stages[nextIndex]?.attemptsAllowed ?? 0;
     nextStage(stages.length, nextAttempts);
     answerLocked.current = false;
-    syncStage();
+    // The completion endpoint is the only terminal write. Sending this last
+    // stage snapshot can otherwise race with it and reopen a completed node.
+    if (nextIndex < stages.length) syncStage();
   }
 
   async function handleContinue() {

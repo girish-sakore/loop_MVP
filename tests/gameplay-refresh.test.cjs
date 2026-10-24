@@ -13,6 +13,7 @@ function harness() {
   const cache = new Map();
   const requests = [];
   const storage = new Map();
+  const navigation = [];
   let interaction, feedback;
   global.localStorage = {
     getItem: key => storage.get(key) ?? null,
@@ -20,13 +21,17 @@ function harness() {
     removeItem: key => storage.delete(key),
   };
   global.window = { localStorage, addEventListener() {}, removeEventListener() {}, dispatchEvent() {} };
+  global.document = { visibilityState: 'visible', addEventListener() {}, removeEventListener() {} };
   global.fetch = async (url, options) => {
     requests.push({ url, body: JSON.parse(options.body) });
-    return { ok: true };
+    return { ok: true, json: async () => ({ progress: null }) };
   };
   const passthrough = ({ children }) => children;
   const mocks = {
-    'next/navigation': { useRouter: () => ({ push() {} }) },
+    'next/navigation': { useRouter: () => ({
+      push: href => navigation.push({ method: 'push', href }),
+      replace: href => navigation.push({ method: 'replace', href }),
+    }) },
     'framer-motion': { AnimatePresence: passthrough, motion: { div: passthrough } },
     '@/components/feedback/feedback-modal': { FeedbackModal: props => { feedback = props; return null; } },
     '@/features/gameplay/renderer/interaction-renderer': { InteractionRenderer: props => { interaction = props; return null; } },
@@ -45,6 +50,11 @@ function harness() {
         const base = 'src/' + id.slice(2);
         return load(fs.existsSync(path.resolve(__dirname, '..', base + '.ts')) ? base + '.ts' : base + '.tsx');
       }
+      if (id.startsWith('./') || id.startsWith('../')) {
+        const base = path.resolve(path.dirname(filename), id);
+        const target = fs.existsSync(base + '.ts') ? base + '.ts' : base + '.tsx';
+        return load(path.relative(path.resolve(__dirname, '..'), target));
+      }
       return require(id);
     };
     mod._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
@@ -57,7 +67,7 @@ function harness() {
   const stages = [{ id: 'colors', type: 'color-match', attemptsAllowed: 3, points: 100 }];
   let root;
   return {
-    store, requests, storage,
+    store, requests, storage, navigation,
     get interaction() { return interaction; },
     get feedback() { return feedback; },
     async mount(props = {}) {
@@ -109,5 +119,18 @@ test('passed stage cannot award points twice after refresh', async () => {
     await game.answer(true);
     assert.equal(game.store.getState().score, 100);
     assert.equal(game.store.getState().totalAnswers, 1);
+  } finally { await game.unmount(); }
+});
+
+test('final-stage completion uses the completion endpoint and replaces the gameplay history entry', async () => {
+  const game = harness();
+  await game.mount();
+  try {
+    await game.answer(true);
+    await act(async () => { await game.feedback.onContinue(); });
+
+    assert.equal(game.requests.filter(({ url }) => url === '/api/progress/sync').length, 2);
+    assert.equal(game.requests.filter(({ url }) => url === '/api/progress/complete').length, 1);
+    assert.deepEqual(game.navigation, [{ method: 'replace', href: '/summary' }]);
   } finally { await game.unmount(); }
 });
