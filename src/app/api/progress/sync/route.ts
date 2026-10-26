@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import {
   fromServerPayload,
   mergeSnapshots,
+  sanitizeHintsUsed,
   toServerPayload,
   type GameplaySnapshot,
 } from "@/features/gameplay/progress/resume";
@@ -103,7 +104,7 @@ async function writeMerged(
           score: row.score,
           correctAnswers: row.correctAnswers,
           totalAnswers: row.totalAnswers,
-          hintsRemaining: row.hintsRemaining,
+          hintsUsed: sanitizeHintsUsed(row.hintsUsed),
           interactionState: {},
         };
       }

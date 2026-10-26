@@ -7,7 +7,10 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import type { SwipeStage } from "@/types/gameplay";
+import type { SwipeStage, StageHints } from "@/types/gameplay";
+import { STAGE_GROUP } from "@/features/gameplay/hints/registry";
+import { HintButton } from "@/components/hints/hint-button";
+import { HintSheet } from "@/components/hints/hint-sheet";
 
 const SWIPE_THRESHOLD = 120;
 
@@ -25,6 +28,7 @@ type Props = {
   retryCount?: number;
   showIntro?: boolean;
   onIntroComplete?: () => void;
+  hints?: StageHints;
 };
 
 type Direction = "left" | "right";
@@ -36,8 +40,12 @@ export function SwipeInteractionPlaceholder({
   retryCount = 0,
   showIntro = true,
   onIntroComplete,
+  hints,
 }: Props) {
   const answered = useRef(false);
+  const [sheet, setSheet] = useState(false);
+  const group = hints?.group(STAGE_GROUP);
+  const hintGroup = group?.anonymous ? undefined : group;
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-250, 250], [-10, 10]);
   const leftOpacity = useTransform(x, [-140, -30], [1, 0]);
@@ -64,6 +72,12 @@ export function SwipeInteractionPlaceholder({
       stiffness: 320,
       damping: 24,
     });
+  }
+
+  function openHint() {
+    if (disabled || answered.current || !hintGroup?.exists) return;
+    if (hintGroup.usedCount === 0 && !hintGroup.reveal()) return;
+    setSheet(true);
   }
 
   function finish(direction: Direction) {
@@ -168,10 +182,14 @@ export function SwipeInteractionPlaceholder({
         </div>
       </div>
 
-      <div className="grid shrink-0 grid-cols-2 gap-3">
-        <ChoiceHint direction="left" label={stage.left.label} />
-        <ChoiceHint direction="right" label={stage.right.label} />
+      <div className="flex shrink-0 items-stretch gap-3">
+        <div className="grid flex-1 grid-cols-2 gap-3">
+          <ChoiceHint direction="left" label={stage.left.label} />
+          <ChoiceHint direction="right" label={stage.right.label} />
+        </div>
+        <HintButton group={hintGroup} onOpen={openHint} disabled={disabled} className={`relative w-[64px] shrink-0 rounded-xl ${INK} bg-[var(--mb-cream)] text-[14px] font-bold text-[var(--mb-ink)] ${HARD} disabled:opacity-50`} />
       </div>
+      <HintSheet open={sheet} group={hintGroup} onClose={() => setSheet(false)} />
     </div>
   );
 }

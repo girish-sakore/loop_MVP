@@ -44,7 +44,8 @@ export function buildSnapshot(edition: EditionRow, games: GameRow[]): Edition {
     const flat = flattenSubStages(g.type, parsed.data.subStages as SubStage[]);
 
     const subStages = flat.map((s, i) => {
-      const stage: Record<string, unknown> = { ...s, id: `${g.id}-${i + 1}`, type: g.type };
+      const authoredId = typeof s.id === "string" ? s.id : `${g.id}-${i + 1}`;
+      const stage: Record<string, unknown> = { ...s, id: authoredId, type: g.type };
       if (g.type === "border-hop") {
         const route = validateRoute(stage as unknown as BorderHopStage);
         stage.startCountry = route.start;

@@ -8,7 +8,6 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { DEFAULT_HINT_BUDGET } from "@/features/gameplay/progress/resume";
 import { recordCompletionForStreak } from "@/features/streak/record-completion.server";
 
 async function getUserId(): Promise<string | null> {
@@ -69,7 +68,6 @@ export async function POST(req: Request) {
         completedAt: now,
         currentSubStage: 0,
         attemptsRemaining: 0,
-        hintsRemaining: DEFAULT_HINT_BUDGET,
         clientUpdatedAt: BigInt(now.getTime()),
         version: 1,
       },
@@ -83,7 +81,6 @@ export async function POST(req: Request) {
         completedAt: prev?.completedAt ?? now,
         currentSubStage: 0,
         attemptsRemaining: 0,
-        hintsRemaining: DEFAULT_HINT_BUDGET,
         clientUpdatedAt: BigInt(now.getTime()),
         version: 1,
       },

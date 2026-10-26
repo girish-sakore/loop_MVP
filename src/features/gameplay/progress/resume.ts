@@ -1,9 +1,10 @@
 // features/gameplay/progress/resume.ts
 
 export const SNAPSHOT_VERSION = 1;
-export const DEFAULT_HINT_BUDGET = 3;
+export const MAX_HINTS_PER_STAGE = 50;
 
 export type InteractionState = Record<string, unknown>;
+export type HintsUsed = Record<string, string[]>;
 
 export type GameplaySnapshot = {
   version: number;
@@ -15,8 +16,8 @@ export type GameplaySnapshot = {
   correctAnswers: number;
   totalAnswers: number;
   stagePassed: boolean;
-  /** Hint budget for this node. Only ever goes down when merging. */
-  hintsRemaining: number;
+  /** stageId -> stable ids of hints that have been revealed. */
+  hintsUsed: HintsUsed;
   /**
    * stageId -> game-specific state (typed answers, revealed hints, route taken...).
    * DEVICE-LOCAL ONLY. Never sent to the server and never read back from it.
@@ -30,7 +31,7 @@ export type StoredProgress = Pick<
   GameplaySnapshot,
   "currentStage" | "attemptsRemaining" | "score" | "correctAnswers" | "totalAnswers" | "stagePassed"
 > &
-  Partial<Pick<GameplaySnapshot, "version" | "updatedAt" | "hintsRemaining">>;
+  Partial<Pick<GameplaySnapshot, "version" | "updatedAt" | "hintsUsed">>;
 
 export function progressStorageKey(userId: string, editionId: string, nodeId: string) {
   return `loop_progress_${JSON.stringify([userId, editionId, nodeId])}`;
@@ -50,11 +51,32 @@ export function sanitizeInteractionState(value: unknown): Record<string, Interac
   return out;
 }
 
+export function sanitizeHintsUsed(value: unknown): HintsUsed {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const out: HintsUsed = {};
+  for (const [stageId, ids] of Object.entries(value).slice(0, 200)) {
+    if (!Array.isArray(ids)) continue;
+    const clean = Array.from(
+      new Set(ids.filter((id): id is string => typeof id === "string" && id.length > 0 && id.length <= 160)),
+    ).slice(0, MAX_HINTS_PER_STAGE);
+    if (clean.length) out[stageId] = clean;
+  }
+  return out;
+}
+
+export function unionHintsUsed(a: HintsUsed, b: HintsUsed): HintsUsed {
+  const out: HintsUsed = { ...a };
+  for (const [stageId, ids] of Object.entries(b)) {
+    out[stageId] = Array.from(new Set([...(out[stageId] ?? []), ...ids]));
+  }
+  return sanitizeHintsUsed(out);
+}
+
+export const countHints = (hints: HintsUsed) =>
+  Object.values(hints).reduce((count, ids) => count + ids.length, 0);
+
 /** Validate untrusted data (localStorage or network) and fill in missing fields. */
-export function normalizeSnapshot(
-  raw: unknown,
-  defaults: { hintsRemaining?: number } = {},
-): GameplaySnapshot | null {
+export function normalizeSnapshot(raw: unknown): GameplaySnapshot | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   if (typeof r.stagePassed !== "boolean") return null;
@@ -71,7 +93,7 @@ export function normalizeSnapshot(
     correctAnswers: r.correctAnswers as number,
     totalAnswers: r.totalAnswers as number,
     stagePassed: r.stagePassed,
-    hintsRemaining: isCount(r.hintsRemaining) ? r.hintsRemaining : defaults.hintsRemaining ?? DEFAULT_HINT_BUDGET,
+    hintsUsed: sanitizeHintsUsed(r.hintsUsed),
     interactionState: sanitizeInteractionState(r.interactionState),
   };
 }
@@ -89,7 +111,7 @@ export function compareProgress(a: GameplaySnapshot, b: GameplaySnapshot): numbe
  * on the same result no matter who syncs first.
  *  - Progress: whichever snapshot is further along wins.
  *  - Same progress: newer updatedAt wins.
- *  - Hints: spent hints never come back, so take the minimum.
+ *  - Hints: revealed ids are unioned per stage.
  *  - interactionState: always taken from `a` — the server never has any.
  */
 export function mergeSnapshots(a: GameplaySnapshot, b: GameplaySnapshot): GameplaySnapshot {
@@ -99,7 +121,7 @@ export function mergeSnapshots(a: GameplaySnapshot, b: GameplaySnapshot): Gamepl
     ...winner,
     version: SNAPSHOT_VERSION,
     updatedAt: Math.max(a.updatedAt, b.updatedAt),
-    hintsRemaining: Math.min(a.hintsRemaining, b.hintsRemaining),
+    hintsUsed: unionHintsUsed(a.hintsUsed, b.hintsUsed),
     interactionState: a.interactionState,
   };
 }
@@ -117,7 +139,7 @@ export function pickSnapshot(s: SnapshotSource): GameplaySnapshot {
     correctAnswers: s.correctAnswers,
     totalAnswers: s.totalAnswers,
     stagePassed: s.stagePassed,
-    hintsRemaining: s.hintsRemaining,
+    hintsUsed: s.hintsUsed,
     interactionState: s.interactionState,
   };
 }
@@ -134,19 +156,16 @@ export function toServerPayload(s: GameplaySnapshot) {
     score: s.score,
     correctAnswers: s.correctAnswers,
     totalAnswers: s.totalAnswers,
-    hintsRemaining: s.hintsRemaining,
+    hintsUsed: s.hintsUsed,
   };
 }
 
 // The server never returns interactionState; it always comes back empty.
 // The engine fills it back in from this device's own localStorage.
-export function fromServerPayload(raw: unknown, defaults?: { hintsRemaining?: number }): GameplaySnapshot | null {
+export function fromServerPayload(raw: unknown): GameplaySnapshot | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
-  return normalizeSnapshot(
-    { ...r, currentStage: r.currentSubStage ?? r.currentStage, interactionState: {} },
-    defaults,
-  );
+  return normalizeSnapshot({ ...r, currentStage: r.currentSubStage ?? r.currentStage, interactionState: {} });
 }
 
 export function saveSnapshot(storage: Pick<Storage, "setItem">, key: string, snapshot: GameplaySnapshot) {
@@ -165,14 +184,14 @@ export function restoreSnapshot(
   allowances: number[],
 ): GameplaySnapshot {
   try {
-    const local = normalizeSnapshot(JSON.parse(storage.getItem(key) ?? "null"), {
-      hintsRemaining: server.hintsRemaining,
-    });
+    const local = normalizeSnapshot(JSON.parse(storage.getItem(key) ?? "null"));
     if (!local) return server;
     const allowance = allowances[local.currentStage];
-    if (allowance === undefined || local.attemptsRemaining > allowance) return server;
+    if (allowance === undefined || local.attemptsRemaining > allowance) {
+      return { ...server, hintsUsed: unionHintsUsed(server.hintsUsed, local.hintsUsed) };
+    }
     // local goes first so its interactionState is kept when local wins or ties.
-    return mergeSnapshots(local, server);
+    return { ...mergeSnapshots(local, server), hintsUsed: unionHintsUsed(server.hintsUsed, local.hintsUsed) };
   } catch {
     return server;
   }

@@ -8,7 +8,9 @@ import {
   DragOverlay,
 } from "@dnd-kit/core";
 
-import type { FillBlankStage } from "@/types/gameplay";
+import type { FillBlankStage, StageHints } from "@/types/gameplay";
+import { HintButton } from "@/components/hints/hint-button";
+import { HintSheet } from "@/components/hints/hint-sheet";
 import { WordChip } from "./word-chip";
 import { parsePrompt } from "./parse-prompt";
 import { BlankDropZone } from "./blank-drop-zone";
@@ -19,6 +21,7 @@ type Props = {
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
   disabled?: boolean;
   retryCount?: number;
+  hints?: StageHints;
 };
 
 type Option = FillBlankStage["options"][number];
@@ -32,6 +35,7 @@ export function FillBlankInteraction({
   onAnswer,
   disabled,
   retryCount = 0,
+  hints,
 }: Props) {
   const resetKey = `${retryCount}:${stage.id}:${stage.blanks
     .map((blank) => blank.id)
@@ -41,6 +45,7 @@ export function FillBlankInteraction({
   );
   const [activeOption, setActiveOption] =
     useState<Option | null>(null);
+  const [hintBlankId, setHintBlankId] = useState<string | null>(null);
   const placements =
     placementState.key === resetKey
       ? placementState.placements
@@ -52,6 +57,16 @@ export function FillBlankInteraction({
     [stage.prompt]
   );
   const allFilled = stage.blanks.every((blank) => Boolean(placements[blank.id]));
+  const targetBlank = stage.blanks.find((blank) => !placements[blank.id]) ?? stage.blanks[0];
+  const group = hints?.group(targetBlank.id);
+  const hintGroup = group?.anonymous ? undefined : group;
+  const sheetGroup = hintBlankId ? hints?.group(hintBlankId) : undefined;
+
+  function openHint() {
+    if (disabled || !hintGroup?.exists) return;
+    if (hintGroup.usedCount === 0 && !hintGroup.reveal()) return;
+    setHintBlankId(targetBlank.id);
+  }
 
   function handleCheckGuess() {
     if (disabled || !allFilled) return;
@@ -208,16 +223,19 @@ export function FillBlankInteraction({
         />
 
         {/* Guess Button */}
-        <div className="mx-auto w-full max-w-[366px] pt-1 pb-4">
+        <div className="mx-auto flex w-full max-w-[366px] gap-2 pt-1 pb-4">
           <button
             type="button"
             onClick={handleCheckGuess}
             disabled={disabled || !allFilled}
-            className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+            className="h-12 flex-1 rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
           >
             Guess
           </button>
+          <HintButton group={hintGroup} onOpen={openHint} disabled={disabled} />
         </div>
+
+        <HintSheet open={!!hintBlankId} group={sheetGroup} title={`Hint for blank ${stage.blanks.findIndex((blank) => blank.id === hintBlankId) + 1}`} onClose={() => setHintBlankId(null)} />
 
         <DragOverlay>
           {activeOption ? (

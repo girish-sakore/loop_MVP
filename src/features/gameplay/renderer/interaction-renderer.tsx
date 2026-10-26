@@ -21,7 +21,8 @@ const BorderHopInteraction = dynamic(() =>
   import("@/features/interactions/border-hop/border-hop-interaction").then((module) => module.BorderHopInteraction),
 );
 
-import type { Stage } from "@/types/gameplay";
+import type { Stage, StageHints } from "@/types/gameplay";
+import { STAGE_GROUP } from "@/features/gameplay/hints/registry";
 
 type InteractionRendererProps = {
   stage: Stage;
@@ -32,8 +33,7 @@ type InteractionRendererProps = {
   onAnswer: (payload: { correct: boolean; feedback: string }) => void;
   showIntro: boolean;
   onIntroComplete: () => void;
-  hintsRemaining?: number;
-  onUseHint?: () => void;
+  hints?: StageHints;
   interactionState?: InteractionState;
   onInteractionStateChange?: (state: InteractionState) => void;
 };
@@ -47,12 +47,12 @@ export function InteractionRenderer({
   onAnswer,
   showIntro,
   onIntroComplete,
-  hintsRemaining,
-  onUseHint,
+  hints,
   interactionState,
   onInteractionStateChange,
 }: InteractionRendererProps) {
   const stage = useMemo(() => mapImages(rawStage, assetUrl), [rawStage]);
+  const legacy = hints?.group(STAGE_GROUP);
 
   switch (stage.type) {
     case "border-hop":
@@ -65,8 +65,8 @@ export function InteractionRenderer({
           onAnswer={onAnswer}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
-          hintsRemaining={hintsRemaining}
-          onUseHint={onUseHint}
+          hintsRemaining={legacy?.remaining ?? 0}
+          onUseHint={() => { legacy?.reveal(); }}
           interactionState={interactionState}
           onInteractionStateChange={onInteractionStateChange}
         />
@@ -80,6 +80,7 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
+          hints={hints}
         />
       );
     case "swipe":
@@ -91,6 +92,7 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
+          hints={hints}
         />
       );
     case "four-way-swipe":
@@ -111,6 +113,7 @@ export function InteractionRenderer({
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
+          hints={hints}
         />
       );
     case "fill-blank-text":
@@ -123,8 +126,7 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
-          hintsRemaining={hintsRemaining}
-          onUseHint={onUseHint}
+          hints={hints}
           interactionState={interactionState}
           onInteractionStateChange={onInteractionStateChange}
         />
@@ -138,8 +140,8 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
-          hintsRemaining={hintsRemaining}
-          onUseHint={onUseHint}
+          hintsRemaining={legacy?.remaining ?? 0}
+          onUseHint={() => { legacy?.reveal(); }}
         />
       );
     case "clue-connect":
@@ -168,12 +170,16 @@ export function InteractionRenderer({
       );
     case "timeline-builder":
       return <TimelineBuilder
+        key={`${stage.id}:${retryCount}`}
         stage={stage}
         onAnswer={onAnswer}
         disabled={disabled}
         retryCount={retryCount}
         showIntro={showIntro}
         onIntroComplete={onIntroComplete}
+        hints={hints}
+        interactionState={interactionState}
+        onInteractionStateChange={onInteractionStateChange}
       />;
     case "word-root":
       return (
@@ -204,8 +210,7 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
-          hintsRemaining={hintsRemaining}
-          onUseHint={onUseHint}
+          hints={hints}
         />
       );
     default:

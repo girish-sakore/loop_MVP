@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import type { ImageSelectStage } from "@/types/gameplay";
+import type { ImageSelectStage, StageHints } from "@/types/gameplay";
+import { STAGE_GROUP } from "@/features/gameplay/hints/registry";
+import { HintButton } from "@/components/hints/hint-button";
+import { HintSheet } from "@/components/hints/hint-sheet";
 
 type Props = {
   stage: ImageSelectStage;
@@ -11,6 +14,7 @@ type Props = {
   retryCount?: number; // increments on each retry → resets selection
   showIntro?: boolean;
   onIntroComplete?: () => void;
+  hints?: StageHints;
 };
 
 export function ImageSelectInteraction({
@@ -20,7 +24,9 @@ export function ImageSelectInteraction({
   retryCount = 0,
   showIntro = true,
   onIntroComplete,
+  hints,
 }: Props) {
+  const [sheet, setSheet] = useState(false);
   const [selection, setSelection] = useState<{
     retryCount: number;
     optionId: string | null;
@@ -30,6 +36,14 @@ export function ImageSelectInteraction({
     selection.retryCount === retryCount ? selection.optionId : null;
   const isSubmitted =
     selection.retryCount === retryCount ? selection.submitted : false;
+  const group = hints?.group(STAGE_GROUP);
+  const hintGroup = group?.anonymous ? undefined : group;
+
+  function openHint() {
+    if (disabled || isSubmitted || !hintGroup?.exists) return;
+    if (hintGroup.usedCount === 0 && !hintGroup.reveal()) return;
+    setSheet(true);
+  }
 
   function startGame() {
     if (disabled) return;
@@ -170,16 +184,18 @@ export function ImageSelectInteraction({
         })}
       </div>
 
-      <div className="mx-auto w-full max-w-[366px] pt-3 pb-1 shrink-0">
+      <div className="mx-auto flex w-full max-w-[366px] shrink-0 gap-2 pt-3 pb-1">
         <button
           type="button"
           onClick={handleCheckGuess}
           disabled={disabled || !selected || isSubmitted}
-          className="h-12 w-full rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
+          className="h-12 flex-1 rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[15px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
         >
           Guess
         </button>
+        <HintButton group={hintGroup} onOpen={openHint} disabled={disabled || isSubmitted} />
       </div>
+      <HintSheet open={sheet} group={hintGroup} onClose={() => setSheet(false)} />
     </div>
   );
 }

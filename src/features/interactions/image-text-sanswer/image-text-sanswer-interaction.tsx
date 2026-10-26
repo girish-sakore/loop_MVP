@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import type { ImageTextSAnswerStage } from "@/types/gameplay";
-import { FillBlankTextHintPopup } from "@/features/interactions/fill-blank-text/fill-blank-text-hint-popup";
+import type { ImageTextSAnswerStage, StageHints } from "@/types/gameplay";
+import { STAGE_GROUP } from "@/features/gameplay/hints/registry";
+import { HintButton } from "@/components/hints/hint-button";
+import { HintSheet } from "@/components/hints/hint-sheet";
 
 type Props = {
   stage: ImageTextSAnswerStage;
@@ -12,8 +14,7 @@ type Props = {
   retryCount?: number;
   showIntro?: boolean;
   onIntroComplete?: () => void;
-  hintsRemaining?: number;
-  onUseHint?: () => void;
+  hints?: StageHints;
 };
 
 export function ImageTextSAnswerInteraction({
@@ -23,19 +24,19 @@ export function ImageTextSAnswerInteraction({
   retryCount = 0,
   showIntro = true,
   onIntroComplete,
-  hintsRemaining = 3,
-  onUseHint,
+  hints,
 }: Props) {
   const [guess, setGuess] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [activeHint, setActiveHint] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
+
+  const group = hints?.group(STAGE_GROUP);
+  const fallbackText = `Hint: The answer starts with "${stage.answer.charAt(0).toUpperCase()}".`;
 
   // Reset state when retryCount changes
   useEffect(() => {
     setGuess("");
     setIsSubmitted(false);
-    setActiveHint(null);
     setHintVisible(false);
   }, [retryCount]);
 
@@ -48,12 +49,9 @@ export function ImageTextSAnswerInteraction({
   }
 
   function handleHint() {
-    if (disabled || !onUseHint || hintsRemaining <= 0) return;
-
-    const hint = stage.hint || `Hint: The answer starts with "${stage.answer.charAt(0).toUpperCase()}".`;
-    setActiveHint(hint);
+    if (disabled || !group?.exists) return;
+    if (group.usedCount === 0 && !group.reveal()) return;
     setHintVisible(true);
-    onUseHint?.();
   }
 
   if (showIntro) {
@@ -134,26 +132,10 @@ export function ImageTextSAnswerInteraction({
         >
           Guess
         </button>
-        <button
-          type="button"
-          onClick={handleHint}
-          disabled={disabled || hintsRemaining <= 0}
-          className="relative h-12 w-[64px] rounded-full border-[3px] border-[#2B2A25] bg-[#FFFDF7] text-[15px] font-extrabold text-[#2B2A25] shadow-[0_4px_0_#2B2A25] transition active:scale-95 disabled:opacity-50"
-        >
-          Hint
-          {hintsRemaining > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#2B2A25] bg-[#E8933A] text-[10px] font-extrabold text-white">
-              {hintsRemaining}
-            </span>
-          )}
-        </button>
+        <HintButton group={group} onOpen={handleHint} disabled={disabled} />
       </div>
 
-      <FillBlankTextHintPopup
-        open={hintVisible}
-        hint={activeHint}
-        onClose={() => setHintVisible(false)}
-      />
+      <HintSheet open={hintVisible} group={group} fallbackText={fallbackText} onClose={() => setHintVisible(false)} />
     </div>
   );
 }

@@ -49,11 +49,7 @@ export function TimelineSlot({
           }
         `}
       >
-        <div className="inline-block rounded-md border-[3px] border-[#0b0b0f] bg-[#f5f0e9] px-2 py-1 text-sm font-extrabold">
-          {event.year}
-        </div>
-
-        <div className="mt-3">
+        <div>
 
           {placedEvent ? (
 

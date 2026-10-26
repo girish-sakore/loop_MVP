@@ -3,7 +3,15 @@
 // stores/gameplay-store.ts
 
 import { create } from "zustand";
-import { DEFAULT_HINT_BUDGET, type GameplaySnapshot, type InteractionState } from "@/features/gameplay/progress/resume";
+import {
+  countHints,
+  unionHintsUsed,
+  type GameplaySnapshot,
+  type HintsUsed,
+  type InteractionState,
+} from "@/features/gameplay/progress/resume";
+import { revealOutcome } from "@/features/gameplay/hints/rules";
+import type { HintPlan } from "@/features/gameplay/hints/types";
 
 type TransitionState = "idle" | "checking" | "advancing" | "completed";
 
@@ -16,7 +24,7 @@ type GameplayState = {
   totalAnswers: number;
   correctAnswers: number;
   stagePassed: boolean;
-  hintsRemaining: number;
+  hintsUsed: HintsUsed;
   updatedAt: number;
   interactionState: Record<string, InteractionState>;
   // Actions
@@ -27,9 +35,8 @@ type GameplayState = {
   nextStage: (totalStages: number, nextAttempts: number) => void;
   setInteractionState: (stageId: string, state: InteractionState) => void;
   clearInteractionState: (stageId: string) => void;
-  consumeHint: () => void;
-  /** A remote device spent hints: lower our count, never raise it. */
-  applyRemoteHints: (remaining: number) => void;
+  revealHint: (bucket: string, id: string, group: string, plan: HintPlan) => boolean;
+  applyRemoteHints: (remote: HintsUsed) => void;
   reset: () => void;
 };
 
@@ -42,7 +49,7 @@ const initialState = {
   totalAnswers: 0,
   correctAnswers: 0,
   stagePassed: false,
-  hintsRemaining: DEFAULT_HINT_BUDGET,
+  hintsUsed: {} as HintsUsed,
   updatedAt: 0,
   interactionState: {} as Record<string, InteractionState>,
 };
@@ -50,7 +57,7 @@ const initialState = {
 // Strictly increasing on this device, so "which edit was last" is never a tie.
 const stamp = (previous: number) => Math.max(Date.now(), previous + 1);
 
-export const useGameplayStore = create<GameplayState>((set) => ({
+export const useGameplayStore = create<GameplayState>((set, get) => ({
   ...initialState,
 
   restore: (s) =>
@@ -62,7 +69,7 @@ export const useGameplayStore = create<GameplayState>((set) => ({
       correctAnswers: s.correctAnswers,
       totalAnswers: s.totalAnswers,
       stagePassed: s.stagePassed,
-      hintsRemaining: s.hintsRemaining,
+      hintsUsed: s.hintsUsed,
       updatedAt: s.updatedAt,
       interactionState: s.interactionState,
     }),
@@ -109,10 +116,22 @@ export const useGameplayStore = create<GameplayState>((set) => ({
       return { interactionState: rest, updatedAt: stamp(state.updatedAt) };
     }),
 
-  consumeHint: () =>
-    set((state) => ({ hintsRemaining: Math.max(state.hintsRemaining - 1, 0), updatedAt: stamp(state.updatedAt) })),
+  revealHint: (bucket, id, group, plan) => {
+    const used = get().hintsUsed[bucket] ?? [];
+    const outcome = revealOutcome(plan, used, group, id);
+    if (outcome === "deny") return false;
+    if (outcome === "charge") set((state) => ({
+      hintsUsed: { ...state.hintsUsed, [bucket]: [...used, id] },
+      updatedAt: stamp(state.updatedAt),
+    }));
+    return true;
+  },
 
-  applyRemoteHints: (remaining) => set((state) => ({ hintsRemaining: Math.min(state.hintsRemaining, remaining) })),
+  applyRemoteHints: (remote) =>
+    set((state) => {
+      const next = unionHintsUsed(state.hintsUsed, remote);
+      return countHints(next) === countHints(state.hintsUsed) ? state : { hintsUsed: next };
+    }),
 
   reset: () => set(initialState),
 }));
