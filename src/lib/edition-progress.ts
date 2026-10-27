@@ -21,6 +21,7 @@ export type NodeProgress = {
   correctAnswers: number;
   totalAnswers: number;
   stars: number;
+  hintsUsed: unknown;
   startedAt: Date | null;
   completedAt: Date | null;
 };
@@ -58,7 +59,7 @@ export async function getUserNodeProgress(userId: string, editionId: string, nod
     where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
   });
   if (!progress) {
-    return { status: "not_started", currentSubStage: 0, attemptsRemaining: null, stagePassed: false, score: 0, correctAnswers: 0, totalAnswers: 0, stars: 0, startedAt: null, completedAt: null };
+    return { status: "not_started", currentSubStage: 0, attemptsRemaining: null, stagePassed: false, score: 0, correctAnswers: 0, totalAnswers: 0, stars: 0, hintsUsed: {}, startedAt: null, completedAt: null };
   }
   return {
     ...progress,

@@ -11,7 +11,6 @@ import { GameplayShell } from "@/features/gameplay/shell/gameplay-shell";
 import { useGameplayStore } from "@/stores/gameplay-store";
 import { useProgressSync } from "@/features/gameplay/progress/use-progress-sync";
 import {
-  DEFAULT_HINT_BUDGET,
   SNAPSHOT_VERSION,
   compareProgress,
   mergeSnapshots,
@@ -24,7 +23,9 @@ import {
   type InteractionState,
   type StoredProgress,
 } from "@/features/gameplay/progress/resume";
-import type { Stage } from "@/types/gameplay";
+import type { Stage, StageHints } from "@/types/gameplay";
+import { createHintsApi } from "@/features/gameplay/hints/api";
+import { buildHintPlan, usageKey } from "@/features/gameplay/hints/registry";
 import { closePreviewTab } from "@/features/gameplay/preview/close-preview";
 
 interface GameplayEngineProps {
@@ -40,6 +41,8 @@ interface GameplayEngineProps {
   exitHref?: string; //  fallback if the tab can't close
   summaryHref?: string;  // where a finished preview goes
 }
+
+const EMPTY: string[] = [];
 
 export function GameplayEngine({
   editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal", preview = false, exitHref, summaryHref = "" }: GameplayEngineProps) {
@@ -61,14 +64,14 @@ export function GameplayEngine({
     correctAnswers,
     totalAnswers,
     completed,
-    hintsRemaining,
+    hintsUsed,
     interactionState,
     restore,
     registerResult,
     nextStage,
     setInteractionState,
     clearInteractionState,
-    consumeHint,
+    revealHint,
     applyRemoteHints,
   } = useGameplayStore();
 
@@ -79,7 +82,6 @@ export function GameplayEngine({
   // Distinguishes a replay navigation from normal play if Next preserves this
   // client component while only the URL query string changes.
   const sessionKey = isReplay ? `${gameplayKey}:replay` : gameplayKey;
-  const legacyHintsKey = `loop_hints_${userId}_${editionId}_${nodeId}`;
   const introDismissed = introState?.key === sessionKey ? introState.dismissed : false;
   const ready = initializedKey === sessionKey;
 
@@ -114,8 +116,8 @@ export function GameplayEngine({
       applySnapshot(merged);
       try { saveSnapshot(localStorage, gameplayKey, merged); } catch { /* storage blocked */ }
       setEpoch((e) => e + 1);
-    } else if (remote.hintsRemaining < local.hintsRemaining) {
-      applyRemoteHints(remote.hintsRemaining);
+    } else {
+      applyRemoteHints(remote.hintsUsed);
     }
   }, [applySnapshot, applyRemoteHints, gameplayKey, isReplay]);
 
@@ -145,17 +147,7 @@ export function GameplayEngine({
     queueMicrotask(() => {
       if (cancelled) return;
 
-      let legacyHints: number | undefined;
-      if (!isReplay) {
-        try {
-          const raw = localStorage.getItem(legacyHintsKey);
-          const parsed = raw === null ? NaN : parseInt(raw, 10);
-          if (Number.isSafeInteger(parsed) && parsed >= 0) legacyHints = parsed;
-        } catch { /* storage blocked */ }
-      }
-      const hintFallback = legacyHints ?? DEFAULT_HINT_BUDGET;
-
-      const server: GameplaySnapshot = normalizeSnapshot(initialProgress, { hintsRemaining: hintFallback }) ?? {
+      const server: GameplaySnapshot = normalizeSnapshot(initialProgress) ?? {
         version: SNAPSHOT_VERSION,
         updatedAt: 0,
         currentStage: initialStage,
@@ -164,7 +156,7 @@ export function GameplayEngine({
         score: 0,
         correctAnswers: 0,
         totalAnswers: 0,
-        hintsRemaining: hintFallback,
+        hintsUsed: {},
         interactionState: {},
       };
 
@@ -179,11 +171,10 @@ export function GameplayEngine({
       setInitializedKey(sessionKey);
       if (!isReplay) {
         save(snapshot);
-        if (!preview) try { localStorage.removeItem(legacyHintsKey); } catch { /* storage blocked */ }
       }
     });
     return () => { cancelled = true; };
-  }, [stages, initialStage, initialProgress, sessionKey, gameplayKey, legacyHintsKey, applySnapshot, isReplay, save]);
+  }, [stages, initialStage, initialProgress, sessionKey, gameplayKey, applySnapshot, isReplay, save]);
 
   const completeProgress = useCallback(async () => {
     if (preview) return;
@@ -202,7 +193,9 @@ export function GameplayEngine({
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
-        router.push(preview ? (summaryHref ?? exitHref ?? "/admin") : (isReplay ? "/map" : "/summary"));
+        const destination = preview ? (summaryHref ?? exitHref ?? "/admin") : (isReplay ? "/map" : "/summary");
+        if (preview || isReplay) router.push(destination);
+        else router.replace(destination);
       });
     }
   }, [ready, completed, stage, completeProgress, router, preview, exitHref, isReplay]);
@@ -258,7 +251,9 @@ export function GameplayEngine({
     const nextAttempts = stages[nextIndex]?.attemptsAllowed ?? 0;
     nextStage(stages.length, nextAttempts);
     answerLocked.current = false;
-    syncStage();
+    // The completion endpoint is the only terminal write. Sending this last
+    // stage snapshot can otherwise race with it and reopen a completed node.
+    if (nextIndex < stages.length) syncStage();
   }
 
   async function handleContinue() {
@@ -269,10 +264,18 @@ export function GameplayEngine({
     }
   }
 
-  const handleUseHint = useCallback(() => {
-    consumeHint();
-    syncStage();
-  }, [consumeHint, syncStage]);
+  const plan = useMemo(() => (stage ? buildHintPlan(stage, stages) : null), [stage, stages]);
+  const bucket = stage ? usageKey(stage) : "";
+  const used = hintsUsed[bucket] ?? EMPTY;
+  const hints = useMemo<StageHints | undefined>(() => {
+    if (!stage || !plan) return undefined;
+    return createHintsApi(plan, used, (id, group) => {
+      const had = (useGameplayStore.getState().hintsUsed[bucket] ?? []).includes(id);
+      const ok = revealHint(bucket, id, group, plan);
+      if (ok && !had) syncStage();
+      return ok;
+    });
+  }, [stage, plan, bucket, used, revealHint, syncStage]);
 
   if ((completed || !stage) && hasNavigated.current) {
     return null;
@@ -307,8 +310,7 @@ export function GameplayEngine({
               onAnswer={handleAnswer}
               showIntro={!introDismissed}
               onIntroComplete={() => setIntroState({ key: sessionKey, dismissed: true })}
-              hintsRemaining={hintsRemaining}
-              onUseHint={handleUseHint}
+              hints={hints}
               interactionState={interactionState[stage.id]}
               onInteractionStateChange={(s) => handleInteractionStateChange(stage.id, s)}
             />

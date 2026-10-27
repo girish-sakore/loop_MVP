@@ -6,8 +6,9 @@ import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons
 import { motion } from "framer-motion";
 import { parsePrompt, type PromptPart } from "@/features/interactions/fill-blank/parse-prompt";
 import { useInteractionProgress } from "@/features/gameplay/progress/use-interaction-progress";
-import { FillBlankTextHintPopup } from "./fill-blank-text-hint-popup";
-import type { FillBlankTextStage } from "@/types/gameplay";
+import type { FillBlankTextStage, StageHints } from "@/types/gameplay";
+import { HintButton } from "@/components/hints/hint-button";
+import { HintSheet } from "@/components/hints/hint-sheet";
 
 type Option = FillBlankTextStage["blanks"][number];
 type CardStatus = "unanswered" | "correct" | "wrong" | "skipped";
@@ -21,8 +22,7 @@ type FillBlankState = {
 
 type Props = {
   retryCount?: number;
-  hintsRemaining?: number;
-  onUseHint?: () => void;
+  hints?: StageHints;
   // Pass either one stage (old call sites keep working) or an array (enables nav/skip).
   stage?: FillBlankTextStage;
   stages?: FillBlankTextStage[];
@@ -42,8 +42,6 @@ type Props = {
   interactionState?: Record<string, unknown>;
   onInteractionStateChange?: (state: Record<string, unknown>) => void;
 };
-const DEFAULT_HINTS = 3;
-
 export function FillBlankTextInteraction({
   stage: singleStage,
   stages,
@@ -53,8 +51,7 @@ export function FillBlankTextInteraction({
   disabled,
   showIntro = true,
   onIntroComplete,
-  hintsRemaining = DEFAULT_HINTS,
-  onUseHint,
+  hints,
   interactionState,
   onInteractionStateChange,
 }: Props) {
@@ -95,7 +92,6 @@ export function FillBlankTextInteraction({
   const introDone = !showIntro;
 
   // Transient UI: not saved.
-  const [activeHint, setActiveHint] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
 
   const stage = stageList[currentIndex];
@@ -121,6 +117,11 @@ export function FillBlankTextInteraction({
   const answers = answersByStage[stage.id] ?? Object.fromEntries(stage.blanks.map((b) => [b.id, ""]));
   const status = statusByStage[stage.id] ?? "unanswered";
   const allFilled = stage.blanks.every((blank) => answers[blank.id]?.trim());
+  const firstUnfilled = stage.blanks.find((blank) => !(answers[blank.id]?.trim()));
+  const firstWrong = stage.blanks.find((blank) => answers[blank.id]?.trim() && answers[blank.id]!.trim().toLowerCase() !== blank.answer.toLowerCase());
+  const target = firstUnfilled ?? firstWrong ?? stage.blanks[0];
+  const group = target ? hints?.group(`${stage.id}.${target.id}`) : undefined;
+  const hintGroup = group?.anonymous ? undefined : group;
 
   function handleInputChange(blankId: string, value: string) {
     if (disabled) return;
@@ -158,23 +159,9 @@ export function FillBlankTextInteraction({
   }
 
   function handleHint() {
-    if (disabled || hintsRemaining <= 0) return;
-
-    const firstUnfilled = stage.blanks.find((blank) => !(answers[blank.id]?.trim()));
-    const firstWrong = stage.blanks.find(
-      (blank) =>
-        answers[blank.id]?.trim() &&
-        answers[blank.id]!.trim().toLowerCase() !== blank.answer.toLowerCase(),
-    );
-    const target = firstUnfilled ?? firstWrong ?? stage.blanks[0];
-
-    if (target?.hint) {
-      setActiveHint(target.hint);
-    } else if (target) {
-      setActiveHint(`Hint: This answer starts with "${target.answer.charAt(0).toUpperCase()}".`);
-    }
+    if (disabled || !hintGroup?.exists) return;
+    if (hintGroup.usedCount === 0 && !hintGroup.reveal()) return;
     setHintVisible(true);
-    onUseHint?.();
   }
 
   function goTo(index: number) {
@@ -383,22 +370,10 @@ export function FillBlankTextInteraction({
         >
           Check
         </button>
-        <button
-          type="button"
-          onClick={handleHint}
-          disabled={disabled || hintsRemaining <= 0}
-          className="relative h-12 w-[64px] rounded-full border-[3px] border-[#2B2A25] bg-[#FFFDF7] text-[15px] font-extrabold text-[#2B2A25] shadow-[0_4px_0_#2B2A25] transition active:scale-95 disabled:opacity-50"
-        >
-          Hint
-          {hintsRemaining > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#2B2A25] bg-[#E8933A] text-[10px] font-extrabold text-white">
-              {hintsRemaining}
-            </span>
-          )}
-        </button>
+        <HintButton group={hintGroup} onOpen={handleHint} disabled={disabled} />
       </div>
 
-      <FillBlankTextHintPopup open={hintVisible} hint={activeHint} onClose={() => setHintVisible(false)} />
+      <HintSheet open={hintVisible} group={hintGroup} onClose={() => setHintVisible(false)} />
     </div>
   );
 }

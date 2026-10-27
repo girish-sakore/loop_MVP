@@ -15,12 +15,20 @@ const imageUrl = z
   );
 const feedback = z.object({ correct: text, incorrect: text });
 const direction = z.enum(["up", "down", "left", "right"]);
+const stageId = z.string().regex(/^[A-Za-z0-9_-]+$/, "Letters, numbers, - and _ only");
+const hintId = z.string().regex(/^[A-Za-z0-9_-]{1,40}$/, "Letters, numbers, - and _ only");
+const hintList = z.array(z.object({ id: hintId, text })).max(10).superRefine((value, ctx) => {
+  if (dupes(value.map((hint) => hint.id)).length) bad(ctx, "Hint ids must be unique");
+}).optional();
+const hintFields = { hints: hintList, hintsAllowed: z.number().int().min(0).max(10).optional() };
 
 // Fields every substage shares. Unknown keys (old ids, mapTitle...) are stripped by default.
 const base = {
+  id: stageId.optional(),
   question: text,
   attemptsAllowed: z.number().int().min(1).max(10).default(3),
   points: z.number().int().min(0).default(100),
+  ...hintFields,
 };
 
 const placeholderIds = (s: string) => [...s.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]);
@@ -28,6 +36,14 @@ const dupes = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i);
 
 function bad(ctx: z.RefinementCtx, message: string, path: (string | number)[] = []) {
   ctx.addIssue({ code: "custom", message, path });
+}
+
+function checkHints(items: Array<{ hints?: { id: string }[]; hintsAllowed?: number }>, ctx: z.RefinementCtx, path: (string | number)[]) {
+  items.forEach((item, index) => {
+    if (item.hints?.length && (item.hintsAllowed ?? 0) > item.hints.length) {
+      bad(ctx, "hintsAllowed exceeds the number of hints", [...path, index, "hintsAllowed"]);
+    }
+  });
 }
 
 /* ---------- substage schemas ---------- */
@@ -56,7 +72,7 @@ const swipe = z.object({
 const fillBlank = z.object({
   ...base,
   prompt: text,
-  blanks: z.array(z.object({ id: text, answer: text })).min(1),
+  blanks: z.array(z.object({ id: hintId, answer: text, ...hintFields })).min(1),
   options: z.array(z.object({ id: text, word: text })).min(1),
 }).superRefine((s, ctx) => {
   const blankIds = s.blanks.map((b) => b.id).sort().join();
@@ -66,19 +82,21 @@ const fillBlank = z.object({
   s.blanks.forEach((b, i) => {
     if (!words.includes(b.answer.toLowerCase())) bad(ctx, `Answer "${b.answer}" is missing from options`, ["blanks", i, "answer"]);
   });
+  checkHints(s.blanks, ctx, ["blanks"]);
 });
 
 const fillBlankText = z.object({
   ...base,
   prompt: text,
   introLabel: optText,
-  hintsAllowed: z.number().int().min(0).optional(),
-  blanks: z.array(z.object({ id: text, answer: text, hint: optText })).min(1),
+  blanks: z.array(z.object({ id: hintId, answer: text, hint: optText, ...hintFields })).min(1),
   feedback,
 }).superRefine((s, ctx) => {
   const blankIds = s.blanks.map((b) => b.id).sort().join();
   const inPrompt = [...new Set(placeholderIds(s.prompt))].sort().join();
   if (blankIds !== inPrompt) bad(ctx, "Blanks must match the {{placeholders}} in the prompt", ["prompt"]);
+  checkHints(s.blanks, ctx, ["blanks"]);
+  if (s.hintsAllowed !== undefined) bad(ctx, "Set hintsAllowed on each blank. A stage-level cap is ignored for this game.", ["hintsAllowed"]);
 });
 
 const timelineBuilder = z.object({
@@ -91,6 +109,10 @@ const timelineBuilder = z.object({
 }).superRefine((s, ctx) => {
   const orders = s.events.map((e) => String(e.order));
   if (dupes(orders).length) bad(ctx, "Event order values must be unique", ["events"]);
+  if (s.hints) bad(ctx, "Timeline hints are count-only. Set hintsAllowed and omit hints.", ["hints"]);
+  if ((s.hintsAllowed ?? 0) > s.events.length - 1) {
+    bad(ctx, "hintsAllowed can't exceed the number of cards to place", ["hintsAllowed"]);
+  }
 });
 
 const reorder = z.object({
@@ -111,13 +133,14 @@ const fourWaySwipe = z.object({
   }),
   correctDirection: direction,
   feedback,
+}).superRefine((s, ctx) => {
+  if (s.hints || s.hintsAllowed !== undefined) bad(ctx, "Hints are not supported for four-way-swipe");
 });
 
 const dragDrop = z.object({
   ...base,
   prompt: text,
   introLabel: optText,
-  hintsAllowed: z.number().int().min(0).optional(),
   learning: z.object({ title: text, message: text, takeaway: text }).optional(),
   map: z.object({
     title: text,
@@ -158,7 +181,8 @@ const clueConnect = z.object({
   cases: z
     .array(
       z.object({
-        id: text,
+        id: hintId,
+        ...hintFields,
         category: text,
         answer: text,
         icon: optText,
@@ -174,6 +198,7 @@ const clueConnect = z.object({
     if (c.clueSlots.length < c.clues.length) bad(ctx, "Needs at least one clueSlot per clue", ["cases", i, "clueSlots"]);
     if (!c.clues.some((x) => x.isCorrect)) bad(ctx, "At least one clue must be correct", ["cases", i, "clues"]);
   });
+  checkHints(s.cases, ctx, ["cases"]);
 });
 
 const colorMatch = z.object({
@@ -195,7 +220,6 @@ const borderHop = z.object({
   prompt: optText,
   introLabel: optText,
   maxGuesses: z.number().int().min(1).optional(),
-  hintsAllowed: z.number().int().min(0).optional(),
   feedback: feedback.optional(),
 }).superRefine((s, ctx) => {
   try {
@@ -225,7 +249,6 @@ const imageTextAnswer = z.object({
   answer: text,
   hint: optText,
   introLabel: optText,
-  hintsAllowed: z.number().int().min(0).optional(),
   feedback: feedback.optional(),
 });
 

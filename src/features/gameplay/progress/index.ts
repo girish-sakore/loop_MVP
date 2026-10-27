@@ -2,10 +2,13 @@
 
 export {
   SNAPSHOT_VERSION,
-  DEFAULT_HINT_BUDGET,
+  MAX_HINTS_PER_STAGE,
   progressStorageKey,
   normalizeSnapshot,
   sanitizeInteractionState,
+  sanitizeHintsUsed,
+  unionHintsUsed,
+  countHints,
   compareProgress,
   mergeSnapshots,
   pickSnapshot,
@@ -14,7 +17,7 @@ export {
   saveSnapshot,
   restoreSnapshot,
 } from "./resume";
-export type { GameplaySnapshot, InteractionState, StoredProgress } from "./resume";
+export type { GameplaySnapshot, HintsUsed, InteractionState, StoredProgress } from "./resume";
 
 export { useProgressSync } from "./use-progress-sync";
 export { useInteractionProgress } from "./use-interaction-progress";

@@ -47,7 +47,7 @@ export function EventCard({
       {...(overlay ? {} : listeners)}
       {...(overlay ? {} : attributes)}
       style={style}
-      className={`grid min-h-[80px] w-full min-w-0 grid-cols-[68px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_5px_0_rgba(11,11,15,0.16)] transition active:translate-y-1 ${
+      className={`grid h-[88px] w-full min-w-0 grid-cols-[68px_minmax(0,1fr)] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] text-left shadow-[0_5px_0_rgba(11,11,15,0.16)] transition active:translate-y-1 ${
         overlay ? "rotate-[-1deg] shadow-[0_10px_0_rgba(11,11,15,0.16)]" : ""
       }`}
     >
@@ -63,12 +63,12 @@ export function EventCard({
         </div>
       )}
       <div className="min-w-0 px-3 py-2">
-        <span className="mb-1 inline-block max-w-full rounded-[4px] border border-[#0b0b0f] bg-[#f5f0e9] px-2 py-1 text-[12px] font-extrabold leading-none">
-          {event.year}
-        </span>
-        <span className="block text-[14px] font-extrabold leading-tight">
+        <span className="line-clamp-1 block text-[14px] font-extrabold leading-tight">
           {event.title}
         </span>
+        <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-[#343238]">
+          {event.description}
+        </p>
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
 // features/gameplay/progress/progress-row.server.ts
 
-import type { UserNodeProgress } from "@prisma/client";
+import { Prisma, type UserNodeProgress } from "@prisma/client";
 import { normalizeSnapshot, type GameplaySnapshot } from "./resume";
 
 type Row = Pick<UserNodeProgress, "currentSubStage" | "attemptsRemaining" | "stagePassed" | "score" | "correctAnswers" | "totalAnswers"> & {
-  hintsRemaining: number;
+  hintsUsed: unknown;
   clientUpdatedAt: bigint;
   version: number;
 };
@@ -25,7 +25,7 @@ export function rowToSnapshot(row: Row | null): GameplaySnapshot | null {
     correctAnswers: row.correctAnswers,
     totalAnswers: row.totalAnswers,
     stagePassed: row.stagePassed,
-    hintsRemaining: row.hintsRemaining,
+    hintsUsed: row.hintsUsed,
     interactionState: {}, // never stored server-side
   });
 }
@@ -39,7 +39,7 @@ export function snapshotToRowData(snapshot: GameplaySnapshot) {
     score: snapshot.score,
     correctAnswers: snapshot.correctAnswers,
     totalAnswers: snapshot.totalAnswers,
-    hintsRemaining: snapshot.hintsRemaining,
+    hintsUsed: snapshot.hintsUsed as Prisma.InputJsonValue,
     clientUpdatedAt: BigInt(snapshot.updatedAt),
     version: snapshot.version,
     status: "in_progress" as const,

@@ -13,6 +13,9 @@ export type StageType =
   | "word-root"
   | "image-text-answer";
 
+export type { HintDef } from "@/features/gameplay/hints/types";
+import type { HintDef } from "@/features/gameplay/hints/types";
+
 export type StageBase = {
   id: string;
   // Map metadata
@@ -22,7 +25,12 @@ export type StageBase = {
   question: string;
   attemptsAllowed: number;
   points: number;
+  hints?: HintDef[];
+  /** Per-stage quota. Defaults to the number of authored hints. */
+  hintsAllowed?: number;
 };
+
+export type { StageHints } from "@/features/gameplay/hints/types";
 
 export type ImageSelectStage = StageBase & {
   type: "image-select";
@@ -85,7 +93,6 @@ export type DragDropStage = StageBase & {
 
   prompt: string;
   introLabel?: string;
-  hintsAllowed?: number;
   map: {
     title: string;
     pattern?: string;
@@ -116,6 +123,8 @@ export type ClueConnectSlot = {
 
 export type ClueConnectCase = {
   id: string;
+  hints?: HintDef[];
+  hintsAllowed?: number;
   category: string;
   answer: string;
   icon?: string;
@@ -165,6 +174,8 @@ export type FillBlankStage = StageBase & {
   blanks: Array<{
     id: string;
     answer: string;
+    hints?: HintDef[];
+    hintsAllowed?: number;
   }>;
 
   options: Array<{
@@ -176,11 +187,12 @@ export type FillBlankTextStage = StageBase & {
   type: "fill-blank-text";
   prompt: string; // Supports {{b1}} placeholders
   introLabel?: string;
-  hintsAllowed?: number;
   blanks: Array<{
     id: string;
     answer: string;
     hint?: string; // optional small-text hint shown in the popup
+    hints?: HintDef[];
+    hintsAllowed?: number;
   }>;
   feedback: {
     correct: string;
@@ -276,7 +288,6 @@ export type BorderHopStage = StageBase & {
   prompt?: string;
   introLabel?: string;
   maxGuesses?: number;
-  hintsAllowed?: number;
   feedback?: { correct: string; incorrect: string };
 };
 
@@ -327,7 +338,6 @@ export type ImageTextSAnswerStage = StageBase & {
   answer: string;
   hint?: string;
   introLabel?: string;
-  hintsAllowed?: number;
   feedback?: {
     correct: string;
     incorrect: string;
