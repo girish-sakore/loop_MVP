@@ -13,11 +13,10 @@ const deploymentURL = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : undefined;
 const productionURL = process.env.NEXT_PUBLIC_APP_URL;
-const authBaseURL =
-  process.env.BETTER_AUTH_URL ??
-  (process.env.VERCEL_ENV === "production"
+const authBaseURL = 
+    process.env.VERCEL_ENV === "production"
     ? productionURL ?? localURL
-    : deploymentURL ?? networkURL);
+    : deploymentURL ?? networkURL;
 
 // Use the pool-based prisma instance you already created
 export const auth = betterAuth({
