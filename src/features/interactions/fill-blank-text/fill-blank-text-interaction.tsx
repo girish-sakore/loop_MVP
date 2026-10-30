@@ -9,6 +9,8 @@ import { useInteractionProgress } from "@/features/gameplay/progress/use-interac
 import type { FillBlankTextStage, StageHints } from "@/types/gameplay";
 import { HintButton } from "@/components/hints/hint-button";
 import { HintSheet } from "@/components/hints/hint-sheet";
+import { matchAnswer } from "@/features/interactions/fill-blank/match-answer";
+import { useRef } from "react";
 
 type Option = FillBlankTextStage["blanks"][number];
 type CardStatus = "unanswered" | "correct" | "wrong" | "skipped";
@@ -60,6 +62,9 @@ export function FillBlankTextInteraction({
     [stages, singleStage],
   );
 
+  const [nudge, setNudge] = useState<"typo" | "partial" | null>(null);
+  const nudgeCount = useRef<Record<string, number>>({}); // per stage, transient
+  const MAX_NUDGES = 2;
   // A round that was fully submitted but not fully correct already cost an
   // attempt. Restoring it would leave every card "answered" with nothing left
   // to do, so start the deck fresh instead (same as Retry would).
@@ -125,6 +130,7 @@ export function FillBlankTextInteraction({
 
   function handleInputChange(blankId: string, value: string) {
     if (disabled) return;
+    setNudge(null);
     // Functional form: keystrokes can arrive faster than renders.
     update((prev) => ({
       answersByStage: {
@@ -135,12 +141,18 @@ export function FillBlankTextInteraction({
   }
 
   function handleCheckGuess() {
-    if (disabled || !allFilled) return;
+    const results = stage.blanks.map((b) => matchAnswer(answers[b.id] ?? "", b));
+    const correct = results.every((r) => r.result === "correct");
+    const close = !correct && results.every((r) => r.result !== "wrong");
+    const used = nudgeCount.current[stage.id] ?? 0;
 
-    const correct = stage.blanks.every((blank) => {
-      const userAnswer = (answers[blank.id] ?? "").trim();
-      return userAnswer.toLowerCase() === blank.answer.toLowerCase();
-    });
+    if (close && used < MAX_NUDGES) {
+      nudgeCount.current[stage.id] = used + 1;
+      const kinds = results.map((r) => (r.result === "close" ? r.kind : null));
+      setNudge(kinds.includes("partial") ? "partial" : "typo");
+      return; // no status change, no attempt used, engine untouched
+    }
+    setNudge(null);
 
     const nextStatusByStage: Record<string, CardStatus> = {
       ...statusByStage,
@@ -166,6 +178,7 @@ export function FillBlankTextInteraction({
 
   function goTo(index: number) {
     if (index < 0 || index >= total) return;
+    setNudge(null);
     setHintVisible(false);
     update({ currentIndex: index });
   }
@@ -278,7 +291,11 @@ export function FillBlankTextInteraction({
       <div className="min-h-0 flex-1 px-2">
         <div className="relative mx-auto flex h-full min-h-0 max-w-[380px]">
           <div className="absolute inset-0 translate-y-[10px] rounded-[28px] border-[3px] border-[#53BCD1] bg-[#FDF9F1]" />
-
+          {nudge && (
+            <p role="status" className="mx-auto mt-3 w-full max-w-[380px] rounded-xl border-[3px] border-[#2B2A25] bg-[#F2C45E] px-4 py-2 text-center text-[14px] font-extrabold text-[#2B2A25]">
+              {nudge === "typo" ? "Almost! Check your spelling." : "You're on the right track. There's more to the answer."}
+            </p>
+          )}
           <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[28px] border-[3px] border-[#2B2A25] bg-[#FFFDF7] p-4 shadow-[6px_6px_0_#2B2A25]">
             <div className="flex shrink-0 items-center justify-between">
               {status === "correct" && (
@@ -390,12 +407,15 @@ function renderPart(
     return <span key={index}>{part.value}</span>;
   }
 
+  const EXTRA = 12; // headroom for "the", spaces, typos
   const blank = blanksById.get(part.id);
   if (!blank) return null;
 
   const expectedLength = blank.answer?.length || 0;
   const currentValue = answers[part.id] ?? "";
   const words = (blank.answer ?? "").split(" ");
+  const cap = expectedLength + EXTRA;
+  const overflow = Math.max(0, currentValue.length - expectedLength);
 
   return (
     <span
@@ -405,17 +425,15 @@ function renderPart(
         const input = document.getElementById(`blank-input-${part.id}`);
         input?.focus();
       }}
-      aria-label={`Answer, ${expectedLength} letters`}
+      aria-label={`Answer, about ${expectedLength} letters`}
     >
       <input
         id={`blank-input-${part.id}`}
         type="text"
         value={currentValue}
-        onChange={(event) =>
-          onChange(part.id, event.target.value.slice(0, expectedLength))
-        }
+        onChange={(e) => onChange(part.id, e.target.value.slice(0, cap))}
+        maxLength={cap}
         disabled={disabled}
-        maxLength={expectedLength || undefined}
         className="sr-only"
       />
 
@@ -443,6 +461,18 @@ function renderPart(
           })}
         </span>
       ))}
+      {overflow > 0 && (
+        <span className="inline-flex shrink-0 items-end gap-1">
+          {Array.from(currentValue.slice(expectedLength)).map((ch, i) => (
+            <span
+              key={`x-${i}`}
+              className="inline-flex h-7 w-5 items-end justify-center border-b-[3px] border-dashed border-[#8a8878] font-display italic text-[#8a8878]"
+            >
+              {ch}
+            </span>
+          ))}
+        </span>
+      )}
     </span>
   );
 }
