@@ -4,13 +4,9 @@ import { redirect } from "next/navigation";
 import BottomNav from "@/components/layout/bottom-nav";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { EditionHero } from "@/components/edition-intro/edition-hero";
-import CatButton from "@/components/matchbox/cat-button";
 import StrikeLink from "@/components/matchbox/strike-link";
 import { getAuthSession } from "@/lib/auth-session";
-import StreakCard from "@/components/matchbox/streak-card";
 import { getStreak } from "@/features/streak/get-streak";
-import RecentGames from "@/components/matchbox/recent-games";
-import { getRecentGames } from "@/features/recent-games/get-recent-games";
 import { GAME_ORDER as gameOrder } from "@/lib/matchbox/game-order";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 import { getAllUserNodeProgress, type NodeProgress } from "@/lib/edition-progress";
@@ -68,9 +64,8 @@ export default async function MapPage() {
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
 
-  const [streak, recentGames, currentEdition] = await Promise.all([
+  const [streak, currentEdition] = await Promise.all([
     getStreak(session.user.id),
-    getRecentGames(session.user.id),
     getFeaturedEdition(),
   ]);
   const progress = currentEdition
@@ -90,28 +85,17 @@ export default async function MapPage() {
 
   return (
     <MobileContainer>
-      <main className="mb mb-root mb-page">
-        <div className="top">
-          <div className="brand">
-            <CatButton />
-            <div className="banner sm"><h1>LOOP</h1></div>
-          </div>
-          <span className="streak">
+      <main className="mb mb-root mb-page map-hub">
+        <header className="hub-header">
+          <div className="hub-logo">LOOP<span>.</span></div>
+          <span className="hub-streak-count" aria-label={`${streak.current} day streak`}>
             <svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true">
-              <path d="M7 0c1 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3C5 6 6 3 7 0z" style={{ fill: "var(--mb-yel)" }} />
+              <path d="M7 0c1 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3C5 6 6 3 7 0z" />
             </svg>
-            <span><span>{streak.current}</span></span>
+            {`${streak.current} day streak`}
           </span>
-        </div>
+        </header>
 
-        <div className="card paper" style={{ padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
-          <b style={{ fontSize: 15 }}>Try Premium+</b>
-          <Link href="/pricing" className="chip on link" style={{ ["--c" as string]: "var(--mb-t1)", ["--f" as string]: "var(--mb-tf1)" }}>Unlock</Link>
-        </div>
-
-        {/* <ThemePicker /> */}
-
-        <div className="sech">Today&apos;s game</div>
         {currentEdition ? (
           <>
             <EditionHero
@@ -122,18 +106,24 @@ export default async function MapPage() {
               done={allDone}
             />
             {allDone || !next ? (
-              <div className="go static" style={{ marginTop: 14 }}>{allDone ? "✓ STRUCK · ALL DONE TODAY" : "COMING SOON"}</div>
+              allDone ? (
+                <Link href="/summary" className="go white-bg">VIEW SUMMARY</Link>
+              ) : (
+                <div className="go static">COMING SOON</div>
+              )
             ) : (
               <StrikeLink href={`/edition/${next.editionId}/${next.node.nodeId}`}>
-                {anyProgress ? "KEEP STRIKING" : "STRIKE TODAY'S MATCH"}
+                {anyProgress ? "CONTINUE" : "START"}
               </StrikeLink>
             )}
+            <div className="premium-promo">
+              <b>Get every game and the full archive</b>
+              <Link href="/pricing" className="premium-promo-action">Go Premium</Link>
+            </div>
           </>
         ) : (
           <div className="card paper"><div className="note">No box today. Check back soon.</div></div>
         )}
-        <div className="sech">Your streak</div>
-        <StreakCard streak={streak} />
         {/* {gameTiles.length > 0 && (
           <>
             <div className="sech">Today&apos;s games</div>
@@ -145,7 +135,6 @@ export default async function MapPage() {
             </section>
           </>
         )} */}
-        <RecentGames games={recentGames} />
       </main>
       <BottomNav />
     </MobileContainer>

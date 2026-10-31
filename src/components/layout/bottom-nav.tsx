@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { NavLibrary, NavProfile, NavToday } from "@/components/matchbox/icons";
 
 const links = [
-  { href: "/map", Icon: NavToday, label: "TODAY" },
-  { href: "/library", Icon: NavLibrary, label: "LIBRARY" },
-  { href: "/profile", Icon: NavProfile, label: "PROFILE" },
+  { href: "/map", Icon: NavToday, label: "Today" },
+  { href: "/library", Icon: NavLibrary, label: "Library" },
+  { href: "/profile", Icon: NavProfile, label: "Profile" },
 ];
 
 export default function BottomNav() {

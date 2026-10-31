@@ -44,7 +44,6 @@ export default function RecentGames({ games }: { games: RecentGame[] }) {
                 aria-label={`Replay ${nr}, ${g.gameLabel}, ${g.topic}, ${formatDate(g.playedAt)}, ${g.score} of ${max} stars`}
                 style={{ ["--c" as string]: `var(--mb-t${i})`, ["--f" as string]: `var(--mb-tf${i})` }}
               >
-                <span className="hs" />
                 <span className="ht">
                   <span className="hn">{nr}</span>
                   <span className="hf">

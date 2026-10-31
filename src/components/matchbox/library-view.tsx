@@ -14,13 +14,23 @@ export interface LibraryEdition {
   order: number;
   games: number;
   href: string;
+  locked: boolean;
 }
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const pad3 = (n: number) => String(n).padStart(3, "0");
 const key = (y: number, m: number, d: number) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 const parse = (v: string) => { const [y, m, d] = v.split("-").map(Number); return { y, m: m - 1, d }; };
-const typeStyle = (i: number) => ({ ["--c" as string]: `var(--mb-t${i % 11})`, ["--f" as string]: `var(--mb-tf${i % 11})` });
+const topicColour: Record<string, number> = { History: 0, Art: 1, Literature: 4, Science: 6 };
+const typeStyle = (category: string, fallback: number) => {
+  const i = topicColour[category] ?? fallback % 11;
+  return { ["--c" as string]: `var(--mb-t${i})`, ["--f" as string]: `var(--mb-tf${i})` };
+};
+const shortDate = (value?: string) => {
+  if (!value) return "This week";
+  const { y, m, d } = parse(value);
+  return new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "2-digit", month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(y, m, d)));
+};
 
 export default function LibraryView({ editions }: { editions: LibraryEdition[] }) {
   const categories = useMemo(() => Array.from(new Set(editions.map((e) => e.category))), [editions]);
@@ -56,21 +66,24 @@ export default function LibraryView({ editions }: { editions: LibraryEdition[] }
   const selEditions = sel ? byDay.get(sel) : undefined;
   const detail = selEditions?.length
     ? `${selEditions.map((e) => `Nº ${pad3(e.order)} · ${e.category} · ${e.title}`).join("  |  ")}`
-    : "Tap a day to see its box.";
+    : "Tap a day to open its edition.";
 
   return (
     <>
-      <div className="pt"><h1>The Library</h1><p>Every box, week by week.</p></div>
+      <header className="library-heading">
+        <h1>The Library</h1>
+        <p>Every box, week by week.</p>
+      </header>
 
-      <div className="card paper" style={{ padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
-        <b style={{ fontSize: 15 }}>Access all past puzzles</b>
-        <Link href="/pricing" className="chip on" style={{ ...typeStyle(1), textDecoration: "none" }}>Unlock</Link>
+      <div className="library-promo">
+        <b>Access all past puzzles</b>
+        <Link href="/pricing">Go Premium</Link>
       </div>
 
-      <ThemePicker />
+      {/* <div className="library-theme-picker"><ThemePicker /></div> */}
 
-      <div className="sech" style={{ marginTop: 18 }}>Calendar</div>
-      <div className="card paper" style={{ padding: "12px 14px" }}>
+      <div className="library-section-title">Calendar</div>
+      <section className="library-calendar" aria-label="Edition calendar">
         <div className="calhead">
           <button className="cnav" aria-label="Previous month" disabled={ym <= monthKeys.min} onClick={() => setYm(ym - 1)}>‹</button>
           <h3>{MONTHS[m]} {y}</h3>
@@ -87,38 +100,34 @@ export default function LibraryView({ editions }: { editions: LibraryEdition[] }
               <button
                 key={d}
                 className={`day ${state} ${dimmed ? "dim" : ""} ${sel === k ? "sel" : ""}`}
-                style={eds ? typeStyle(catIndex(eds[0].category)) : undefined}
+                style={eds ? typeStyle(eds[0].category, catIndex(eds[0].category)) : undefined}
                 onClick={() => { if (eds) setSel(k); }}
               >{d}</button>
             );
           })}
         </div>
         <div className="detail" id="detail">{detail}</div>
-        <div className="legend">
-          <span><i style={{ background: "var(--mb-red)", border: "1.5px solid var(--mb-ink)" }} />edition</span>
-          <span><i style={{ border: "2.5px solid var(--mb-red)" }} />today</span>
-        </div>
-      </div>
+      </section>
 
-      <div className="sech">Topics</div>
-      <div className="chips" id="picker">
-        <button className={`chip ${cat === null ? "on" : ""}`} aria-pressed={cat === null} style={{ ["--c" as string]: "var(--mb-ink)", ["--f" as string]: "var(--mb-cream)" }} onClick={() => setCat(null)}>
-          <span className="cn">{editions.length}</span>All boxes
+      <div className="library-section-title">Topics</div>
+      <div className="library-chips" id="picker">
+        <button className={`chip ${cat === null ? "on" : ""}`} aria-pressed={cat === null} style={{ ["--c" as string]: "var(--mb-red)", ["--f" as string]: "var(--mb-cream)" }} onClick={() => setCat(null)}>
+          <span className="cn">{editions.length}</span>All
         </button>
         {categories.map((c) => (
-          <button key={c} className={`chip ${cat === c ? "on" : ""}`} aria-pressed={cat === c} style={typeStyle(catIndex(c))} onClick={() => setCat(c)}>
+          <button key={c} className={`chip ${cat === c ? "on" : ""}`} aria-pressed={cat === c} style={typeStyle(c, catIndex(c))} onClick={() => setCat(c)}>
             <span className="cn">{editions.filter((e) => e.category === c).length}</span>{c}
           </button>
         ))}
       </div>
 
-      <div className="sech">{cat ? `Your ${cat} games` : "Latest games"}</div>
-      <div className="glist" id="orders">
+      <div className="library-section-title">{cat ? `${cat} editions` : "Latest editions"}</div>
+      <div className="library-list" id="orders">
         {list.length ? list.map((e) => (
-          <Link key={e.id} href={e.href} className="gr">
-            <span className="gb" style={typeStyle(catIndex(e.category))}>{pad3(e.order)}</span>
-            <span className="gm"><b>{e.title}</b><small>{e.category} · {e.weekLabel ?? e.publishedAt ?? "This week"} · {e.games} games</small></span>
-            <span className="material-symbols-outlined" style={{ fontSize: 20, opacity: 0.5 }} aria-hidden="true">lock</span>
+          <Link key={e.id} href={e.locked ? "/pricing" : e.href} className={`gr${e.locked ? " locked" : ""}`} aria-label={e.locked ? `Unlock ${e.title} with Premium` : undefined}>
+            <span className="gb" style={typeStyle(e.category, catIndex(e.category))}>{pad3(e.order)}</span>
+            <span className="gm"><b>{e.title}</b><small>{e.category} · {shortDate(e.publishedAt)} · {e.games} {e.games === 1 ? "game" : "games"}</small></span>
+            {e.locked && <span className="material-symbols-outlined library-lock" aria-hidden="true">lock</span>}
           </Link>
         )) : <div className="mono" style={{ color: "var(--mb-cream)", fontSize: 12, padding: 10 }}>Nothing here yet.</div>}
       </div>

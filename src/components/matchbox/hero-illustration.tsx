@@ -1,31 +1,71 @@
-const rays = [-75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75];
+type HeroIllustrationProps = {
+  category?: string;
+};
 
-export default function HeroIllustration() {
-  const ink = { stroke: 'var(--mb-ink)' };
+function HistoryArt() {
   return (
-    <svg viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <rect width="240" height="160" style={{ fill: 'var(--mb-sky)' }} />
-      <g style={{ stroke: 'var(--mb-lyel)' }} strokeWidth={5} strokeLinecap="round" opacity={0.9}>
-        {rays.map((r) => (<line key={r} x1="120" y1="130" x2="120" y2="4" transform={`rotate(${r} 120 130)`} />))}
-      </g>
-      <circle cx="120" cy="130" r="40" strokeWidth={3} style={{ fill: 'var(--mb-lyel)', ...ink }} />
-      <path d="M14 160Q78 98 120 98Q162 98 226 160Z" fill="#fff" strokeWidth={3} style={ink} />
-      <g fill="#e6f0ff" strokeWidth={2.5} strokeLinejoin="round" style={ink}>
-        <rect x="58" y="128" width="15" height="15" rx="2" transform="rotate(-14 65 135)" />
-        <rect x="160" y="124" width="17" height="17" rx="2" transform="rotate(12 168 132)" />
-        <rect x="118" y="136" width="12" height="12" rx="2" transform="rotate(8 124 142)" />
-      </g>
-      <g transform="rotate(-10 120 62)">
-        <rect x="98" y="34" width="44" height="60" rx="10" fill="#fff" strokeWidth={3} style={ink} />
-        <rect x="95" y="20" width="50" height="18" rx="7" strokeWidth={3} style={{ fill: 'var(--mb-red)', ...ink }} />
-        <g fill="#1a1815"><circle cx="108" cy="29" r="2.2" /><circle cx="120" cy="29" r="2.2" /><circle cx="132" cy="29" r="2.2" /></g>
-        <path d="M108 52h24M108 66h24" strokeWidth={4} strokeLinecap="round" style={{ stroke: 'var(--mb-blue)' }} />
-      </g>
-      <g fill="#fff" strokeWidth={1.5} style={ink}>
-        <circle cx="150" cy="80" r="3" /><circle cx="158" cy="92" r="2.5" /><circle cx="146" cy="96" r="2" />
-      </g>
-      <path d="M34 40l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#fff" strokeWidth={1.5} style={ink} />
-      <path d="M204 30l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#fff" strokeWidth={1.5} style={ink} />
+    <>
+      <circle cx="86" cy="94" r="47" fill="var(--feature-accent)" stroke="var(--feature-ink)" strokeWidth="3" style={{ mixBlendMode: "multiply" }} />
+      <circle cx="154" cy="94" r="47" fill="var(--feature-contrast)" stroke="var(--feature-ink)" strokeWidth="3" style={{ mixBlendMode: "multiply" }} />
+      <circle cx="120" cy="54" r="47" fill="var(--feature-ray-1)" stroke="var(--feature-ink)" strokeWidth="3" style={{ mixBlendMode: "multiply" }} />
+    </>
+  );
+}
+
+function ArtArt() {
+  return (
+    <>
+      <rect x="48" y="27" width="144" height="112" rx="2" fill="var(--feature-paper)" stroke="var(--feature-ink)" strokeWidth="4" />
+      <circle cx="157" cy="56" r="13" fill="var(--feature-ray-1)" stroke="var(--feature-ink)" strokeWidth="2.5" />
+      <path d="m54 130 44-55 31 36 24-29 33 48Z" fill="var(--feature-ray-2)" stroke="var(--feature-ink)" strokeWidth="3" strokeLinejoin="round" />
+      <path d="m76 140-15 26m104-26 15 26" stroke="var(--feature-ink)" strokeWidth="5" strokeLinecap="round" />
+    </>
+  );
+}
+
+function LiteratureArt() {
+  return (
+    <>
+      <path d="M120 49c-28-19-60-17-87-7v104c27-10 59-12 87 8Z" fill="var(--feature-paper)" stroke="var(--feature-ink)" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M120 49c28-19 60-17 87-7v104c-27-10-59-12-87 8Z" fill="var(--feature-ray-1)" stroke="var(--feature-ink)" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M53 73h46m-46 20h46m-46 20h46m42-40h46m-46 20h46m-46 20h46" stroke="var(--feature-ink)" strokeWidth="3" strokeLinecap="round" />
+    </>
+  );
+}
+
+function ScienceArt() {
+  return (
+    <>
+      <path d="M98 27h44v52l39 70c8 15-2 25-17 25H76c-15 0-25-10-17-25l39-70Z" fill="var(--feature-paper)" stroke="var(--feature-ink)" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M69 139h102l10 18c5 9-2 17-14 17H73c-12 0-19-8-14-17Z" fill="var(--feature-accent)" stroke="var(--feature-ink)" strokeWidth="3" strokeLinejoin="round" />
+      <circle cx="105" cy="117" r="6" fill="var(--feature-ray-1)" stroke="var(--feature-ink)" strokeWidth="2" />
+      <circle cx="132" cy="103" r="4" fill="var(--feature-ray-1)" stroke="var(--feature-ink)" strokeWidth="2" />
+    </>
+  );
+}
+
+function GeographyArt() {
+  return (
+    <>
+      <circle cx="120" cy="99" r="64" fill="var(--feature-paper)" stroke="var(--feature-ink)" strokeWidth="4" />
+      <path d="M64 99h112M120 35c-20 17-29 41-29 64s9 47 29 64m0-128c20 17 29 41 29 64s-9 47-29 64M74 65c27 11 65 11 92 0m-92 68c27-11 65-11 92 0" fill="none" stroke="var(--feature-ink)" strokeWidth="3" />
+      <path d="m101 65 20 13-5 22 18 12-11 19-26-4-13-24Z" fill="var(--feature-accent)" stroke="var(--feature-ink)" strokeWidth="2.5" strokeLinejoin="round" />
+    </>
+  );
+}
+
+export default function HeroIllustration({ category = "" }: HeroIllustrationProps) {
+  const normalizedCategory = category.trim().toLowerCase();
+  const art = normalizedCategory.includes("history") ? <HistoryArt />
+    : normalizedCategory.includes("art") ? <ArtArt />
+      : normalizedCategory.includes("literature") || normalizedCategory.includes("book") ? <LiteratureArt />
+        : normalizedCategory.includes("science") ? <ScienceArt />
+          : <GeographyArt />;
+
+  return (
+    <svg viewBox="0 0 240 190" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {art}
+      <path d="M0 177h240" stroke="var(--feature-ink)" strokeWidth="4" />
     </svg>
   );
 }

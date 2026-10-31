@@ -36,16 +36,13 @@ export default function StreakCard({ streak }: { streak: StreakData }) {
 
   return (
     <>
-      <div className="card dark">
-        <div className="top2">
-          <div className="bigs">
-            <span>{current}</span>
-            <small>day streak</small>
-          </div>
-          <span className="mono lt2">BEST {best}</span>
+      <section className="today-streak-widget" aria-label="Streak progress">
+        <div className="today-streak-summary">
+          <div><strong>{current}</strong><span>day streak</span></div>
+          <small>Best {best}</small>
         </div>
 
-        <div className="week">
+        <div className="today-streak-week" aria-label="This week">
           {week.map((d) => {
             const letter = DAY_LETTERS[new Date(`${d.date}T00:00:00Z`).getUTCDay()];
             return (
@@ -58,7 +55,7 @@ export default function StreakCard({ streak }: { streak: StreakData }) {
         </div>
 
         <div
-          className="bar"
+          className="profile-milestone-progress"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={goal}
@@ -67,15 +64,15 @@ export default function StreakCard({ streak }: { streak: StreakData }) {
         >
           <i style={{ width: `${pct}%` }} />
         </div>
-        <div className="note">{note}</div>
-        <div className="mono lt2" style={{ marginTop: 4 }}>{goldNote}</div>
-      </div>
+        <p>{note}</p>
+        <small className="today-streak-goal">{goldNote}</small>
+      </section>
 
-      <div className="stats">
+      <section className="profile-stats today-stats" aria-label="Your game statistics">
         <div><b>{stats.accuracyPct}%</b><span>answers right</span></div>
         <div><b>{stats.boxesStruck}</b><span>boxes struck</span></div>
         <div><b>{stats.gameTypes}</b><span>game types</span></div>
-      </div>
+      </section>
     </>
   );
 }
