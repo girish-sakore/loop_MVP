@@ -11,6 +11,7 @@ import { GAME_ORDER as gameOrder } from "@/lib/matchbox/game-order";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 import { getAllUserNodeProgress, type NodeProgress } from "@/lib/edition-progress";
 import { hasPremium } from "@/lib/premium";
+import StreakCard from "@/components/matchbox/streak-card";
 import type { Edition } from "@/types/gameplay";
 
 type TileNode = {
@@ -47,17 +48,6 @@ const gameTileConfig: Record<string, TileConfig> = {
   "color-match": { key: "color-match", title: "Palette", subtitle: "Match the color", icon: "palette" },
 };
 
-// const gameOrder = [
-//   "swipe",
-//   "timeline-builder",
-//   "reorder",
-//   "four-way-swipe",
-//   "drag-drop",
-//   "image-select",
-//   "fill-blank",
-//   "color-match",
-//   "border-hop",
-// ];
 
 export default async function MapPage() {
 
@@ -116,6 +106,8 @@ export default async function MapPage() {
                 {anyProgress ? "CONTINUE" : "START"}
               </StrikeLink>
             )}
+            <StreakCard streak={streak} />
+
             <div className="premium-promo">
               <b>Get every game and the full archive</b>
               <Link href="/pricing" className="premium-promo-action">Go Premium</Link>
@@ -124,17 +116,6 @@ export default async function MapPage() {
         ) : (
           <div className="card paper"><div className="note">No box today. Check back soon.</div></div>
         )}
-        {/* {gameTiles.length > 0 && (
-          <>
-            <div className="sech">Today&apos;s games</div>
-            <section className="mb-tiles">
-              {gameTiles.map((tile) => (
-                <TodayTile key={tile.node.nodeId} tile={tile} />
-              ))}
-              {gameTiles.length % 2 === 1 ? <InviteTile /> : null}
-            </section>
-          </>
-        )} */}
       </main>
       <BottomNav />
     </MobileContainer>

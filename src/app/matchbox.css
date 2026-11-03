@@ -3014,3 +3014,29 @@ a.go.bg-white {
     font-family:var(--font-dm), system-ui, sans-serif;
     font-weight: 900;
 }
+
+
+
+
+/* streak card */
+
+.sk{margin:14px 0 0;padding:14px 16px;border-radius:16px;background:#fbf3e0;color:var(--mb-ink);
+  border:2px solid var(--mb-ink);box-shadow:0 3px 0 var(--mb-sh)}
+.sk-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.sk-title{margin:0;font-size:14px;font-weight:600}
+.sk-title strong{font-size:20px;color:var(--mb-red);margin-right:2px}
+.sk-aside{font-size:12px;opacity:.6}
+.sk-week{display:grid;grid-template-columns:repeat(7,1fr);margin:0;padding:0;list-style:none}
+.sk-day{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;opacity:1}
+.sk-dot{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}
+/* struck: yellow fill + ink outline, same language as the Go Premium button */
+.sk-day.struck{color:var(--mb-ink)}
+.sk-day.struck .sk-dot{background:var(--mb-yel);border-color:var(--mb-ink)}
+
+/* today: solid ink ring, bold letter */
+.sk-day.today{color:var(--mb-ink);font-weight:700}
+.sk-day.today .sk-dot{border-color:var(--mb-ink)}
+.sk-day.today.struck .sk-dot{background:var(--mb-yel)}
+
+
+
