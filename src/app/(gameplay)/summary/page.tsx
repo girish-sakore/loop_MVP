@@ -2,12 +2,9 @@ import { redirect } from "next/navigation";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import BottomNav from "@/components/layout/bottom-nav";
 import { SummaryHero } from "@/components/summary/summary-hero";
-import { SummaryStats } from "@/components/summary/summary-stats";
-import { SummaryActions } from "@/components/summary/summary-actions";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 import "../../marketing.css";
 import { BlogReveal } from "@/components/summary/blog-reveal";
-import { useGameplayStore } from "@/stores/gameplay-store";
 import Navbar from "@/components/layout/navbar";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -60,6 +57,3 @@ if (!userId) redirect("/login"); // use whatever your sign-in route is
   );
 }
 
-function getCurrentUserId() {
-  throw new Error("Function not implemented.");
-}

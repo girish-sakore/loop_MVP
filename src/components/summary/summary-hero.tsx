@@ -1,7 +1,5 @@
 "use client";
 
-import { useGameplayStore } from "@/stores/gameplay-store";
-
 interface SummaryHeroProps {
   editionTitle: string;
   totalStages: number;

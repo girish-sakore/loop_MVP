@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 import { requireCreatorPage } from "@/lib/admin-page";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { SummaryHero } from "@/components/summary/summary-hero";
-import { SummaryStats } from "@/components/summary/summary-stats";
 import { ClosePreviewButton } from "@/components/admin/preview-buttons";
 
 function EditionPlaceholder({ label }: { label: string }) {
@@ -26,7 +25,13 @@ export default async function PreviewSummaryPage({ params }: { params: Promise<{
         <b>Preview · summary screen</b>
       </div>
       <main className="flex flex-col gap-6 px-6 pt-4 pb-32">
-        <SummaryHero editionTitle={`${game.title} (preview)`} totalStages={game.substages.length} />
+        <SummaryHero
+          editionTitle={`${game.title} (preview)`}
+          totalStages={1}
+          score={0}
+          correctAnswers={0}
+          totalAnswers={0}
+        />
         <EditionPlaceholder label="Edition-linked content (next game, streak, share) appears here in the real summary" />
         <ClosePreviewButton fallback={`/admin/games/${gameId}`} />
       </main>
