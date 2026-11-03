@@ -3040,3 +3040,8 @@ a.go.bg-white {
 
 
 
+/* summery */
+
+
+.sk.sk--embed{margin:0;border:0;border-top:2px solid var(--mb-ink);border-radius:0;
+  box-shadow:none;background:transparent}
