@@ -5,11 +5,12 @@ import { useGameplayStore } from "@/stores/gameplay-store";
 interface SummaryHeroProps {
   editionTitle: string;
   totalStages: number;
+  score: number;
+  correctAnswers: number;
+  totalAnswers: number;
 }
 
-export function SummaryHero({ editionTitle, totalStages }: SummaryHeroProps) {
-  const { score, correctAnswers, totalAnswers } = useGameplayStore();
-
+export function SummaryHero({ editionTitle, totalStages, score, correctAnswers, totalAnswers }: SummaryHeroProps) {
   const accuracy =
     totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
 

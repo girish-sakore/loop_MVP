@@ -26,8 +26,7 @@ export default async function PreviewSummaryPage({ params }: { params: Promise<{
         <b>Preview · summary screen</b>
       </div>
       <main className="flex flex-col gap-6 px-6 pt-4 pb-32">
-        <SummaryHero editionTitle={`${game.title} (preview)`} />
-        <SummaryStats totalStages={1} />
+        <SummaryHero editionTitle={`${game.title} (preview)`} totalStages={game.substages.length} />
         <EditionPlaceholder label="Edition-linked content (next game, streak, share) appears here in the real summary" />
         <ClosePreviewButton fallback={`/admin/games/${gameId}`} />
       </main>

@@ -23,10 +23,10 @@ export default function Navbar() {
           LOOP<span>.</span>
         </Link>
 
-        <nav className="site-links" aria-label="Marketing">
+        {/* <nav className="site-links" aria-label="Marketing">
           <Link href="/#experience">Experience</Link>
           <Link href="/#benefits">Benefits</Link>
-        </nav>
+        </nav> */}
 
         {isSummary ? (
           <button type="button" className="site-sign-in" onClick={handleLogout}>
