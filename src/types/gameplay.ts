@@ -329,7 +329,7 @@ export type Edition = {
   publishedAt?: string;
   weekLabel?: string;
   author?: string;
-  coverImage?: string;
+   coverImage?: string | null;
 };
 
 export type ImageTextSAnswerStage = StageBase & {

@@ -52,7 +52,7 @@ export const PALETTES: Record<string, Palette> = {
     "onbg": "#1c1a17",
     "onbg2": "#b0471f",
     "t": [
-      "#e5532d",
+      "#C13A22",
       "#f4b73f",
       "#2f7fb0",
       "#2f8a57",

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { abril, dmSans } from "@/lib/fonts";
+import { anton, abril, dmSans, titanOne } from "@/lib/fonts";
 import { themeInitScript } from "@/lib/matchbox/palettes";
 import "./globals.css";
-import "./matchbox.css";
 
 export const metadata: Metadata = {
   title: "Loop",
@@ -15,7 +14,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${abril.variable}`}
+      className={`${dmSans.variable} ${abril.variable} ${titanOne.variable} ${anton.variable}`}
       suppressHydrationWarning
     >
       <head>
