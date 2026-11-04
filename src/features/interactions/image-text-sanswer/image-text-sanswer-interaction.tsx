@@ -6,6 +6,7 @@ import type { ImageTextSAnswerStage, StageHints } from "@/types/gameplay";
 import { STAGE_GROUP } from "@/features/gameplay/hints/registry";
 import { HintButton } from "@/components/hints/hint-button";
 import { HintSheet } from "@/components/hints/hint-sheet";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 
 type Props = {
   stage: ImageTextSAnswerStage;
@@ -86,19 +87,13 @@ export function ImageTextSAnswerInteraction({
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="relative max-h-[60vh] max-w-[320px] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] shadow-[0_8px_0_rgba(11,11,15,0.16)]"
+          className="w-full max-w-[320px]"
         >
           {stage.image ? (
-            <img
-              src={stage.image}
-              alt=""
-              className="h-full w-full object-cover"
-            />
+            <ImageLightbox src={stage.image} />
           ) : (
-            <div className="flex h-64 w-64 items-center justify-center">
-              <span className="material-symbols-outlined text-[64px] text-[#0b0b0f]">
-                image
-              </span>
+            <div className="flex aspect-[5/4] w-full items-center justify-center rounded-md border-[3px] border-[#0b0b0f] bg-[#f3ece2]">
+              <span className="material-symbols-outlined text-[64px] text-[#0b0b0f]">image</span>
             </div>
           )}
         </motion.div>
@@ -151,7 +146,7 @@ function ImageTextSAnswerIntro({
 }) {
   return (
     <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#4aa8ee] px-5 pb-12 pt-8 text-[#0b0b0f]">
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-4 [@media(orientation:landscape)_and_(max-height:500px)]:flex-row [@media(orientation:landscape)_and_(max-height:500px)]:gap-6">
         <motion.div
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
