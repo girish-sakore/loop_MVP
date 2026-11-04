@@ -4,19 +4,19 @@ import BottomNav from "@/components/layout/bottom-nav";
 import { SummaryHero } from "@/components/summary/summary-hero";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 import "../../marketing.css";
-import { BlogReveal } from "@/components/summary/blog-reveal";
 import Navbar from "@/components/layout/navbar";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { BlogReveal } from "@/components/summary/blog-reveal";
 
 export default async function SummaryPage() {
   const edition = await getFeaturedEdition();
   if (!edition) redirect("/map");
-  
-const session = await auth.api.getSession({ headers: await headers() });
-const userId = session?.user?.id;
-if (!userId) redirect("/login"); // use whatever your sign-in route is
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id;
+  if (!userId) redirect("/login"); // use whatever your sign-in route is
 
   const rows = await prisma.userNodeProgress.findMany({
     where: {
@@ -48,6 +48,7 @@ if (!userId) redirect("/login"); // use whatever your sign-in route is
         <SummaryHero
           editionTitle={edition.title}
           totalStages={totalStages}
+          category={edition.category}
           {...totals}
         />
         <BlogReveal />

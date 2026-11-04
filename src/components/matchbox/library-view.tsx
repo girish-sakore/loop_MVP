@@ -80,7 +80,7 @@ export default function LibraryView({ editions }: { editions: LibraryEdition[] }
         <Link href="/pricing">Go Premium</Link>
       </div>
 
-      <div className="library-theme-picker"><ThemePicker /></div>
+      {/* <div className="library-theme-picker"><ThemePicker /></div> */}
 
       <div className="library-section-title">Calendar</div>
       <section className="library-calendar" aria-label="Edition calendar">

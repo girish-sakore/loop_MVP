@@ -76,3 +76,5 @@ export function EditionHero({ edition, title, gamesDone, gamesTotal, done = fals
     </section>
   );
 }
+
+

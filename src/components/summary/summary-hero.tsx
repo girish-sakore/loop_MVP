@@ -1,4 +1,5 @@
 "use client";
+import { typeStyle } from "@/lib/matchbox/type-style";
 
 interface SummaryHeroProps {
   editionTitle: string;
@@ -6,9 +7,10 @@ interface SummaryHeroProps {
   score: number;
   correctAnswers: number;
   totalAnswers: number;
+  category: string;
 }
 
-export function SummaryHero({ editionTitle, totalStages, score, correctAnswers, totalAnswers }: SummaryHeroProps) {
+export function SummaryHero({ editionTitle, totalStages, score, correctAnswers, totalAnswers, category }: SummaryHeroProps) {
   const accuracy =
     totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
 
@@ -24,7 +26,7 @@ export function SummaryHero({ editionTitle, totalStages, score, correctAnswers, 
 
   return (
     <div className="stage">
-      <section className="card" aria-label="Session result">
+      <section className="card" aria-label="Session result" style={typeStyle(category)}>
         <div className="top">
           <span className="chip">Completed</span>
           <p className="game">

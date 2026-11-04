@@ -286,21 +286,21 @@
 
 /* summary page */
 :root {
-  --bg: #efe8da;
-  --card: #fffaf0;
-  --ink: #1c1a17;
-  --sh: rgba(28, 26, 23, .85);
-  --red: #c13a22;
-  --on-red: #fffaf0;
-  --yel: #f4b73f;
-  --sheet: #1c1a17;
-  --on-sheet: #fffaf0;
-  --t1: #f4b73f;
-  --tf1: #1c1a17;
-  --t2: #2f7fb0;
-  --tf2: #fffaf0;
-  --t3: #2f8a57;
-  --tf3: #fffaf0;
+  --bg: var(--mb-cream);
+  --card: var(--mb-cream);
+  --ink: var(--mb-ink);
+  --sh: var(--mb-sh);
+  --red: var(--mb-red);
+  --on-red: var(--mb-cream);
+  --sheet: var(--mb-ink);
+  --on-sheet: var(--mb-cream);
+  --yel: var(--mb-t1);
+  --t1: var(--mb-t10);
+  --tf1: var(--mb-tf10);
+  --t2: var(--mb-t0);
+  --tf2: var(--mb-tf0);
+  --t3: var(--mb-t3);
+  --tf3: var(--mb-tf3);
   --muted: color-mix(in srgb, var(--ink) 60%, transparent);
   --display: "Anton", "Bebas Neue", Impact, "Arial Narrow", sans-serif;
   --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -365,7 +365,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  background: var(--bg);
+  /* background: var(--bg); */
   border-bottom: 2px solid var(--ink)
 }
 

@@ -23,7 +23,7 @@ export const PALETTES: Record<string, Palette> = {
     "onbg": "#f6efe0",
     "onbg2": "#f6cd6c",
     "t": [
-      "#e04a35",
+      "#c83727",
       "#f0b73a",
       "#2f7fb0",
       "#2f8a57",
@@ -52,7 +52,7 @@ export const PALETTES: Record<string, Palette> = {
     "onbg": "#1c1a17",
     "onbg2": "#b0471f",
     "t": [
-      "#C13A22",
+      "#c83727",
       "#f4b73f",
       "#2f7fb0",
       "#2f8a57",
@@ -255,7 +255,7 @@ export const PALETTES: Record<string, Palette> = {
     "onbg": "#fff6d6",
     "onbg2": "#ffe791",
     "t": [
-      "#dc3c1e",
+      "#c83727",
       "#ffe791",
       "#8fb35b",
       "#6b8f3f",
@@ -284,7 +284,7 @@ export const PALETTES: Record<string, Palette> = {
     "onbg": "#16282e",
     "onbg2": "#d6381a",
     "t": [
-      "#f5441f",
+      "#c83727",
       "#b9d4da",
       "#6f9ca8",
       "#5aa59b",
@@ -313,7 +313,7 @@ export const PALETTES: Record<string, Palette> = {
     "onbg": "#fff5f5",
     "onbg2": "#8cc5c2",
     "t": [
-      "#dc3c1e",
+      "#c83727",
       "#8cc5c2",
       "#2e6a7d",
       "#5fa9a4",
