@@ -48,7 +48,7 @@ export default async function SummaryPage() {
         <SummaryHero
           editionTitle={edition.title}
           totalStages={totalStages}
-          category={edition.category}
+          category={edition.category ?? ""}
           {...totals}
         />
         <BlogReveal />
@@ -57,4 +57,3 @@ export default async function SummaryPage() {
     </MobileContainer>
   );
 }
-

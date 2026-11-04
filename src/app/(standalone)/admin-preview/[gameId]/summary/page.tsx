@@ -31,6 +31,7 @@ export default async function PreviewSummaryPage({ params }: { params: Promise<{
           score={0}
           correctAnswers={0}
           totalAnswers={0}
+          category="Preview"
         />
         <EditionPlaceholder label="Edition-linked content (next game, streak, share) appears here in the real summary" />
         <ClosePreviewButton fallback={`/admin/games/${gameId}`} />

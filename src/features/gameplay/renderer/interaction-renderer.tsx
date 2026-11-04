@@ -30,7 +30,12 @@ type InteractionRendererProps = {
   disabled?: boolean;
   retryCount?: number;
   attemptsRemaining?: number;
-  onAnswer: (payload: { correct: boolean; feedback: string }) => void;
+  onAnswer: (payload: {
+    correct: boolean;
+    feedback: string;
+    points?: number;
+    results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
+  }) => void;
   showIntro: boolean;
   onIntroComplete: () => void;
   hints?: StageHints;

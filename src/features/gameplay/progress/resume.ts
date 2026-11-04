@@ -1,10 +1,28 @@
 // features/gameplay/progress/resume.ts
 
-export const SNAPSHOT_VERSION = 1;
+export const SNAPSHOT_VERSION = 2;
 export const MAX_HINTS_PER_STAGE = 50;
+export const MAX_ANSWER_RESULTS = 500;
 
 export type InteractionState = Record<string, unknown>;
 export type HintsUsed = Record<string, string[]>;
+
+/** The latest submitted result for one authored question. */
+export type AnswerResult = {
+  isCorrect: boolean;
+  /** Client-side display value only; completion recomputes points from the edition snapshot. */
+  points: number;
+  /** Lets two devices deterministically keep the latest result for each question. */
+  updatedAt: number;
+};
+
+export type AnswerResults = Record<string, AnswerResult>;
+
+export type AnswerResultInput = {
+  questionId: string;
+  isCorrect: boolean;
+  points: number;
+};
 
 export type GameplaySnapshot = {
   version: number;
@@ -15,6 +33,8 @@ export type GameplaySnapshot = {
   score: number;
   correctAnswers: number;
   totalAnswers: number;
+  /** questionId -> its most recently submitted result */
+  answerResults: AnswerResults;
   stagePassed: boolean;
   /** stageId -> stable ids of hints that have been revealed. */
   hintsUsed: HintsUsed;
@@ -29,7 +49,7 @@ export type GameplaySnapshot = {
 /** What a page may hand the engine as a starting point. */
 export type StoredProgress = Pick<
   GameplaySnapshot,
-  "currentStage" | "attemptsRemaining" | "score" | "correctAnswers" | "totalAnswers" | "stagePassed"
+  "currentStage" | "attemptsRemaining" | "score" | "correctAnswers" | "totalAnswers" | "answerResults" | "stagePassed"
 > &
   Partial<Pick<GameplaySnapshot, "version" | "updatedAt" | "hintsUsed">>;
 
@@ -38,6 +58,50 @@ export function progressStorageKey(userId: string, editionId: string, nodeId: st
 }
 
 const isCount = (v: unknown): v is number => typeof v === "number" && Number.isSafeInteger(v) && v >= 0;
+
+const isQuestionId = (value: string) => value.length > 0 && value.length <= 160;
+
+export function sanitizeAnswerResults(value: unknown): AnswerResults {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const out: AnswerResults = {};
+  for (const [questionId, raw] of Object.entries(value).slice(0, MAX_ANSWER_RESULTS)) {
+    if (!isQuestionId(questionId) || !raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    const result = raw as Record<string, unknown>;
+    if (typeof result.isCorrect !== "boolean" || !isCount(result.points) || !isCount(result.updatedAt)) continue;
+    out[questionId] = {
+      isCorrect: result.isCorrect,
+      points: result.points,
+      updatedAt: result.updatedAt,
+    };
+  }
+  return out;
+}
+
+export function deriveAnswerStats(answerResults: AnswerResults) {
+  const results = Object.values(answerResults);
+  return {
+    totalAnswers: results.length,
+    correctAnswers: results.filter((result) => result.isCorrect).length,
+    score: results.reduce((score, result) => score + (result.isCorrect ? result.points : 0), 0),
+  };
+}
+
+/** Merge independent question updates without re-counting earlier attempts. */
+export function mergeAnswerResults(a: AnswerResults, b: AnswerResults): AnswerResults {
+  const out: AnswerResults = { ...a };
+  for (const [questionId, incoming] of Object.entries(b)) {
+    const existing = out[questionId];
+    if (
+      !existing ||
+      incoming.updatedAt > existing.updatedAt ||
+      (incoming.updatedAt === existing.updatedAt && (
+        Number(incoming.isCorrect) > Number(existing.isCorrect) ||
+        (incoming.isCorrect === existing.isCorrect && incoming.points > existing.points)
+      ))
+    ) out[questionId] = incoming;
+  }
+  return out;
+}
 
 // Keeps only { stageId: { ...plain object } }; anything else is dropped.
 export function sanitizeInteractionState(value: unknown): Record<string, InteractionState> {
@@ -84,14 +148,21 @@ export function normalizeSnapshot(raw: unknown): GameplaySnapshot | null {
   if ((r.correctAnswers as number) > (r.totalAnswers as number)) return null;
   // Written by a newer client than this one: don't guess at its shape.
   if (isCount(r.version) && r.version > SNAPSHOT_VERSION) return null;
+  const answerResults = sanitizeAnswerResults(r.answerResults);
+  const answerStats = deriveAnswerStats(answerResults);
+  const hasAnswerResults = "answerResults" in r;
   return {
     version: SNAPSHOT_VERSION,
     updatedAt: isCount(r.updatedAt) ? r.updatedAt : 0,
     currentStage: r.currentStage as number,
     attemptsRemaining: r.attemptsRemaining as number,
-    score: r.score as number,
-    correctAnswers: r.correctAnswers as number,
-    totalAnswers: r.totalAnswers as number,
+    // Version 1 snapshots did not contain a ledger. Keep their counters long
+    // enough to resume them; the first new submission replaces them with
+    // ledger-derived values.
+    score: hasAnswerResults ? answerStats.score : r.score as number,
+    correctAnswers: hasAnswerResults ? answerStats.correctAnswers : r.correctAnswers as number,
+    totalAnswers: hasAnswerResults ? answerStats.totalAnswers : r.totalAnswers as number,
+    answerResults,
     stagePassed: r.stagePassed,
     hintsUsed: sanitizeHintsUsed(r.hintsUsed),
     interactionState: sanitizeInteractionState(r.interactionState),
@@ -101,7 +172,6 @@ export function normalizeSnapshot(raw: unknown): GameplaySnapshot | null {
 /** >0 if a is further along than b, <0 if behind, 0 if identical progress. Clock-free. */
 export function compareProgress(a: GameplaySnapshot, b: GameplaySnapshot): number {
   if (a.currentStage !== b.currentStage) return a.currentStage - b.currentStage;
-  if (a.totalAnswers !== b.totalAnswers) return a.totalAnswers - b.totalAnswers;
   if (a.stagePassed !== b.stagePassed) return a.stagePassed ? 1 : -1;
   return b.attemptsRemaining - a.attemptsRemaining;
 }
@@ -117,10 +187,13 @@ export function compareProgress(a: GameplaySnapshot, b: GameplaySnapshot): numbe
 export function mergeSnapshots(a: GameplaySnapshot, b: GameplaySnapshot): GameplaySnapshot {
   const c = compareProgress(a, b);
   const winner = c > 0 ? a : c < 0 ? b : a.updatedAt >= b.updatedAt ? a : b;
+  const answerResults = mergeAnswerResults(a.answerResults, b.answerResults);
   return {
     ...winner,
     version: SNAPSHOT_VERSION,
     updatedAt: Math.max(a.updatedAt, b.updatedAt),
+    ...deriveAnswerStats(answerResults),
+    answerResults,
     hintsUsed: unionHintsUsed(a.hintsUsed, b.hintsUsed),
     interactionState: a.interactionState,
   };
@@ -138,6 +211,7 @@ export function pickSnapshot(s: SnapshotSource): GameplaySnapshot {
     score: s.score,
     correctAnswers: s.correctAnswers,
     totalAnswers: s.totalAnswers,
+    answerResults: s.answerResults,
     stagePassed: s.stagePassed,
     hintsUsed: s.hintsUsed,
     interactionState: s.interactionState,
@@ -156,6 +230,7 @@ export function toServerPayload(s: GameplaySnapshot) {
     score: s.score,
     correctAnswers: s.correctAnswers,
     totalAnswers: s.totalAnswers,
+    answerResults: s.answerResults,
     hintsUsed: s.hintsUsed,
   };
 }
