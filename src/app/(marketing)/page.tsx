@@ -5,6 +5,8 @@ import {
   Header, Hero, VideoSection, WhySection, GamesSection,
   ValuesSection, PlayBand, Footer,
 } from "@/components/landing/sections";
+import { getAuthSession } from "@/lib/auth-session";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Loop · The daily game for curious adults",
@@ -13,7 +15,9 @@ export const metadata: Metadata = {
 };
 
 // Static: no DB or auth reads, so it's prerendered at build time and served from the CDN.
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await getAuthSession();
+  if (session?.user) redirect("/map"); if (session?.user) redirect("/map");
   return (
     <main className={`landing ${bricolage.variable} ${inter.variable}`}>
       <Header />
