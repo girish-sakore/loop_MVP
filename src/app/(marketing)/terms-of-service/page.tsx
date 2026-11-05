@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { LegalPage } from "@/components/legal/legal-page";
+import { LegalPage, type LegalSection } from "@/components/legal/legal-page";
 
 export const metadata: Metadata = {
   title: "Terms of Service | The LOOP",
   description: "The LOOP terms of service.",
 };
 
-const sections = [
+const sections: LegalSection[] = [
   {
     title: "1. Acceptance of Terms",
     content:
@@ -15,47 +15,47 @@ const sections = [
   {
     title: "2. Use of Service & Fair Play",
     items: [
-      "Eligibility: You must be at least 13 years old or meet the minimum age of digital consent in your jurisdiction to use this service.",
-      "Fair Play: Players must play fairly. Any use of automated scripts, bots, exploit tools, or attempts to tamper with trivia scores or API requests is strictly prohibited and will result in score forfeiture or account termination.",
+      // TODO: confirm the minimum age and parental-consent rules with counsel (see notes).
+      "Eligibility: You must be at least 13 years old, or the minimum age of digital consent in your jurisdiction, to use this service.",
+      "Fair Play: Players must play fairly. Any use of automated scripts, bots, exploit tools, or attempts to tamper with game progress, scores or API requests is prohibited and may result in forfeited progress or account termination.",
     ],
   },
   {
     title: "3. User Accounts",
     content:
-      "When creating an account via Google Sign-In, you are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.",
+      "When creating an account via Google Sign-In or You sign in with your email address using a one-time link. the confidentiality of your account credentials and for all activities that occur under your account.",
   },
   {
-    title: "4. Intellectual Property",
+    title: "4. Premium Subscriptions",
     content:
-      "All content included in the app, such as trivia questions, graphics, branding, code, and UI elements, is the property of The LOOP or its licensors and is protected by intellectual property laws.",
+      "Premium access is sold as a subscription, with payments processed by Razorpay. Prices, billing periods and cancellation terms are shown before you pay.",
   },
   {
-    title: "5. Disclaimer of Warranties",
+    title: "5. Intellectual Property",
     content:
-      'The service is provided on an "AS IS" and "AS AVAILABLE" basis. We make no warranties, expressed or implied, regarding uptime, accuracy of trivia content, or uninterrupted access.',
+      "All content in the app, including games, questions, illustrations, branding, code, and UI elements, is the property of Loop or its licensors and is protected by intellectual property laws.",
   },
   {
-    title: "6. Limitation of Liability",
+    title: "6. Disclaimer of Warranties",
     content:
-      "To the fullest extent permitted by law, LOOP and its operators shall not be liable for any indirect, incidental, or consequential damages resulting from your use or inability to use the service.",
+      'The service is provided on an "AS IS" and "AS AVAILABLE" basis. We make no warranties, express or implied, regarding uptime, the accuracy of game content, or uninterrupted access.',
   },
   {
-    title: "7. Changes to Terms",
+    title: "7. Limitation of Liability",
+    content:
+      "To the fullest extent permitted by law, Loop and its operators shall not be liable for any indirect, incidental, or consequential damages resulting from your use or inability to use the service.",
+  },
+  {
+    title: "8. Changes to Terms",
     content:
       "We reserve the right to update or modify these Terms of Service at any time. Continued use of the app following any changes constitutes acceptance of the new terms.",
   },
   {
-    title: "8. Contact Information",
+    title: "9. Contact Information",
     content: (
       <>
         For questions regarding these Terms of Service, contact us at{" "}
-        <a
-          href="mailto:support@thelooplearn.com"
-          className="font-bold text-[#3a6757] underline"
-        >
-          support@thelooplearn.com
-        </a>
-        .
+        <a href="mailto:support@thelooplearn.com">support@thelooplearn.com</a>.
       </>
     ),
   },
@@ -65,8 +65,8 @@ export default function TermsOfServicePage() {
   return (
     <LegalPage
       title="Terms of Service"
-      lastUpdated="September 25, 2026"
-      intro="These terms govern your access to and use of The LOOP daily trivia application."
+      lastUpdated="November 5, 2026"
+      intro="These terms govern your access to and use of Loop, the daily game for curious adults."
       sections={sections}
     />
   );

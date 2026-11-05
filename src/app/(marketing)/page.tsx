@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import "./landing.css";
-import { bricolage, inter } from "./landing-fonts";
+import "@/styles/marketing.css";
+import { bricolage, inter } from "@/lib/marketing-fonts";
 import {
   Header, Hero, VideoSection, WhySection, GamesSection,
   ValuesSection, PlayBand, Footer,
