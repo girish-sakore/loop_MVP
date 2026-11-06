@@ -328,7 +328,7 @@ export const PALETTES: Record<string, Palette> = {
   }
 };
 
-export const DEFAULT_THEME = 'Harbor';
+export const DEFAULT_THEME = 'Paper';
 export const THEME_STORAGE_KEY = 'loop-theme';
 
 export const VAR_KEYS = ['teal','dteal','red','dred','yel','lyel','cream','dcream','ink','sky','blue','green','onbg','onbg2'] as const;
