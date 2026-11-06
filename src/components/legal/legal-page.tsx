@@ -1,64 +1,56 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import "@/styles/marketing.css";
+import { bricolage, inter } from "@/lib/marketing-fonts";
+import { Header, Footer } from "@/components/landing/sections";
 
-type LegalSection = {
+export type LegalSection = {
   title: string;
   content?: ReactNode;
   items?: string[];
 };
 
-type LegalPageProps = {
+type Props = {
   title: string;
   lastUpdated: string;
   intro: string;
   sections: LegalSection[];
 };
 
-export function LegalPage({
-  title,
-  lastUpdated,
-  intro,
-  sections,
-}: LegalPageProps) {
+// "Account Information: text" renders as a bold label followed by the text.
+function Item({ text }: { text: string }) {
+  const i = text.indexOf(":");
+  if (i === -1) return <li>{text}</li>;
   return (
-    <div className="bg-[#fffdf7] px-6 py-16 text-[#0b0b0f] md:px-8 md:py-24">
-      <article className="mx-auto max-w-3xl">
-        <Link
-          href="/"
-          className="mb-12 inline-flex text-sm font-extrabold uppercase tracking-widest text-[#3a6757] hover:underline"
-        >
-          Back to Loop
-        </Link>
+    <li>
+      <b>{text.slice(0, i + 1)}</b>
+      {text.slice(i + 1)}
+    </li>
+  );
+}
 
-        <header className="mb-12 border-b-[3px] border-[#0b0b0f] pb-8">
-          <p className="mb-4 text-sm font-extrabold uppercase tracking-widest text-[#3a6757]">
-            The LOOP
-          </p>
-          <h1 className="font-display text-5xl leading-none md:text-7xl">
-            {title}
-          </h1>
-          <p className="mt-5 text-sm font-bold text-[#343238]">
-            Last Updated: {lastUpdated}
-          </p>
-        </header>
+export function LegalPage({ title, lastUpdated, intro, sections }: Props) {
+  return (
+    <main className={`landing ${bricolage.variable} ${inter.variable}`}>
+      <Header />
+      <article className="l-legal">
+        <p className="l-kicker">Legal</p>
+        <h1 className="l-display l-h1">{title}</h1>
+        <p className="l-legal-meta">Last updated {lastUpdated}</p>
+        <p className="l-lead">{intro}</p>
 
-        <p className="mb-12 text-lg leading-8 text-[#343238]">{intro}</p>
-
-        <div className="space-y-10">
-          {sections.map((section) => (
-            <section key={section.title}>
-              <h2 className="mb-4 text-2xl font-extrabold tracking-tight md:text-3xl">
-                {section.title}
-              </h2>
-              {section.content && (
-                <p className="text-base leading-8 text-[#343238]">
-                  {section.content}
-                </p>
-              )}
-              {section.items && (
-                <ul className="list-disc space-y-3 pl-6 text-base leading-8 text-[#343238]">
-                  {section.items.map((item) => (
-                    <li key={item}>{item}</li>
+        <div className="l-legal-body">
+          {sections.map((s) => (
+            <section key={s.title} className="l-legal-sec">
+              <h2 className="l-display">{s.title}</h2>
+              {typeof s.content === "string" ? (
+                <p>{s.content}</p>
+              ) : s.content ? (
+                <div>{s.content}</div>
+              ) : null}
+              {s.items && (
+                <ul>
+                  {s.items.map((t) => (
+                    <Item key={t} text={t} />
                   ))}
                 </ul>
               )}
@@ -66,6 +58,7 @@ export function LegalPage({
           ))}
         </div>
       </article>
-    </div>
+      <Footer />
+    </main>
   );
 }

@@ -47,3 +47,17 @@
 .l-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:32px 20px;font-size:14px;color:var(--muted);max-width:1160px;margin:0 auto}
 .l-foot nav{display:flex;gap:20px}
 @media (prefers-reduced-motion:reduce){.landing *{transition:none!important}}
+
+/* ---------- Legal pages ---------- */
+.l-legal{max-width:760px;margin:0 auto;padding:40px 20px 24px}
+.l-legal .l-h1{font-size:clamp(40px,7vw,64px);margin-top:12px}
+.l-legal .l-lead{margin-top:18px}
+.l-legal-meta{margin-top:10px;font-size:14px;color:var(--muted)}
+.l-legal-body{margin-top:36px;background:var(--card);border:3px solid var(--ink);border-radius:6px;box-shadow:5px 5px 0 var(--ink);padding:8px 0}
+.l-legal-sec{padding:24px 26px;border-top:2px dashed var(--dash)}
+.l-legal-sec:first-child{border-top:0}
+.l-legal-sec h2{font-size:24px;margin-bottom:10px}
+.l-legal-sec p,.l-legal-sec li{font-size:16px;line-height:1.6;color:var(--ink)}
+.l-legal-sec p+p,.l-legal-sec p+ul,.l-legal-sec ul+p,.l-legal-sec div+ul{margin-top:12px}
+.l-legal-sec ul{margin:12px 0 0;padding-left:20px;display:grid;gap:8px}
+.l-legal-sec a{font-weight:700;text-decoration:underline;text-underline-offset:3px;color:var(--accent)}
