@@ -5,7 +5,7 @@ import "../marketing.css";
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="marketing-shell">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="marketing-content">{children}</main>
     </div>
   );
