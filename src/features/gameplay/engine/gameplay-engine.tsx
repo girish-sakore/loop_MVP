@@ -60,9 +60,7 @@ export function GameplayEngine({
   const {
     currentStage,
     attemptsRemaining,
-    score,
-    correctAnswers,
-    totalAnswers,
+    answerResults,
     completed,
     hintsUsed,
     interactionState,
@@ -108,18 +106,26 @@ export function GameplayEngine({
     if (isReplay) return;
     if (hasNavigated.current) return;
     const local = pickSnapshot(useGameplayStore.getState());
-    if (compareProgress(remote, local) > 0) {
+    const progressComparison = compareProgress(remote, local);
+    const merged = mergeSnapshots(local, remote);
+    if (progressComparison > 0) {
       // Another device is further along: adopt it and remount the game.
       // The stage differs from what we had, so drop any local game-in-progress
       // state — it belonged to the old stage.
-      const merged = { ...mergeSnapshots(local, remote), interactionState: {} };
-      applySnapshot(merged);
-      try { saveSnapshot(localStorage, gameplayKey, merged); } catch { /* storage blocked */ }
+      const remoteAhead = { ...merged, interactionState: {} };
+      applySnapshot(remoteAhead);
+      try { saveSnapshot(localStorage, gameplayKey, remoteAhead); } catch { /* storage blocked */ }
       setEpoch((e) => e + 1);
     } else {
+      // A retry can replace an answer without changing the stage index or
+      // answer count. Merge that per-question update even when neither device
+      // is structurally further ahead.
+      if (JSON.stringify(merged.answerResults) !== JSON.stringify(local.answerResults)) {
+        restore({ ...merged, interactionState: local.interactionState });
+      }
       applyRemoteHints(remote.hintsUsed);
     }
-  }, [applySnapshot, applyRemoteHints, gameplayKey, isReplay]);
+  }, [applySnapshot, applyRemoteHints, gameplayKey, isReplay, restore]);
 
   const { save, flush } = useProgressSync({
     editionId,
@@ -156,6 +162,7 @@ export function GameplayEngine({
         score: 0,
         correctAnswers: 0,
         totalAnswers: 0,
+        answerResults: {},
         hintsUsed: {},
         interactionState: {},
       };
@@ -183,10 +190,12 @@ export function GameplayEngine({
     await fetch("/api/progress/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
+      // The completion route derives persisted totals and score from this
+      // per-question ledger; summary counters are intentionally not trusted.
+      body: JSON.stringify({ editionId, nodeId, answerResults }),
     }).catch(() => { });
     try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
-  }, [editionId, nodeId, preview, score, correctAnswers, totalAnswers, gameplayKey, flush, isReplay]);
+  }, [editionId, nodeId, preview, answerResults, gameplayKey, flush, isReplay]);
 
   useEffect(() => {
     if (!ready) return;
@@ -217,21 +226,21 @@ export function GameplayEngine({
     correct,
     feedback: message,
     points,
-    totalAnswers: answerCount = 1,
-    correctAnswers: correctAnswerCount = correct ? 1 : 0,
+    results,
   }: {
     correct: boolean;
     feedback: string;
     points?: number;
-    totalAnswers?: number;
-    correctAnswers?: number;
+    results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
   }) {
     if (answerLocked.current) return;
     registerResult({
       correct,
-      points: points ?? stage?.points ?? 0,
-      totalAnswers: answerCount,
-      correctAnswers: correctAnswerCount,
+      results: results ?? [{
+        questionId: stage?.id ?? "",
+        isCorrect: correct,
+        points: points ?? stage?.points ?? 0,
+      }],
     });
     const snapshot = useGameplayStore.getState();
     answerLocked.current = snapshot.stagePassed || snapshot.attemptsRemaining === 0;

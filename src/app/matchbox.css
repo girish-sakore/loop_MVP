@@ -2418,7 +2418,7 @@ a.go.white-bg {
     border: 3px solid #1e1b2e;
     border-radius: 7px;
     padding: 0 16px;
-    background: #c83727;
+    background: var(--mb-t0);
     box-shadow: 4px 5px 0 #1e1b2e;
     color: #fff7e6;
     font-size: 20px;
@@ -2578,30 +2578,7 @@ a.go.white-bg {
     color: inherit
 }
 
-:root {
-    --mb-t0: #577893;
-    --mb-tf0: #f4eee2;
-    --mb-t1: #98b6c5;
-    --mb-tf1: #16263a;
-    --mb-t2: #7a9bb5;
-    --mb-tf2: #f4eee2;
-    --mb-t3: #5f9a8a;
-    --mb-tf3: #f4eee2;
-    --mb-t4: #243a53;
-    --mb-tf4: #f4eee2;
-    --mb-t5: #3f5c75;
-    --mb-tf5: #f4eee2;
-    --mb-t6: #7a72a8;
-    --mb-tf6: #f4eee2;
-    --mb-t7: #c3d6df;
-    --mb-tf7: #16263a;
-    --mb-t8: #86b3a0;
-    --mb-tf8: #16263a;
-    --mb-t9: #16263a;
-    --mb-tf9: #f4eee2;
-    --mb-t10: #a89678;
-    --mb-tf10: #f4eee2;
-}
+
 
 /* ---- Today hub: game tiles ---- */
 .mb .mb-tiles {
@@ -3028,7 +3005,7 @@ a.go.bg-white {
 .sk-aside{font-size:12px;opacity:.6}
 .sk-week{display:grid;grid-template-columns:repeat(7,1fr);margin:0;padding:0;list-style:none}
 .sk-day{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;opacity:1}
-.sk-dot{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}
+.sk-dot{width:18px;height:18px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}
 /* struck: yellow fill + ink outline, same language as the Go Premium button */
 .sk-day.struck{color:var(--mb-ink)}
 .sk-day.struck .sk-dot{background:var(--mb-yel);border-color:var(--mb-ink)}
@@ -3040,3 +3017,8 @@ a.go.bg-white {
 
 
 
+/* summery */
+
+
+.sk.sk--embed{margin:0;border:0;border-top:2px solid var(--mb-ink);border-radius:0;
+  box-shadow:none;background:transparent}

@@ -20,7 +20,13 @@ function harness() {
     setItem: (key, value) => storage.set(key, value),
     removeItem: key => storage.delete(key),
   };
-  global.window = { localStorage, addEventListener() {}, removeEventListener() {}, dispatchEvent() {} };
+  global.window = {
+    localStorage,
+    location: { assign: href => navigation.push({ method: 'assign', href }) },
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent() {},
+  };
   global.document = { visibilityState: 'visible', addEventListener() {}, removeEventListener() {} };
   global.fetch = async (url, options) => {
     requests.push({ url, body: JSON.parse(options.body) });
@@ -132,5 +138,17 @@ test('final-stage completion uses the completion endpoint and replaces the gamep
     assert.equal(game.requests.filter(({ url }) => url === '/api/progress/sync').length, 2);
     assert.equal(game.requests.filter(({ url }) => url === '/api/progress/complete').length, 1);
     assert.deepEqual(game.navigation, [{ method: 'replace', href: '/summary' }]);
+  } finally { await game.unmount(); }
+});
+
+test('preview completion uses a document navigation to the preview summary', async () => {
+  const game = harness();
+  await game.mount({ preview: true, summaryHref: '/admin-preview/game/summary' });
+  try {
+    await game.answer(true);
+    await act(async () => { await game.feedback.onContinue(); });
+
+    assert.equal(game.requests.filter(({ url }) => url === '/api/progress/complete').length, 0);
+    assert.deepEqual(game.navigation, [{ method: 'assign', href: '/admin-preview/game/summary' }]);
   } finally { await game.unmount(); }
 });

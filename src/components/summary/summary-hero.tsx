@@ -1,66 +1,87 @@
+"use client";
+import { typeStyle } from "@/lib/matchbox/type-style";
+
 interface SummaryHeroProps {
   editionTitle: string;
+  totalStages: number;
+  score: number;
+  correctAnswers: number;
+  totalAnswers: number;
+  category: string;
 }
 
-export function SummaryHero({ editionTitle }: SummaryHeroProps) {
+export function SummaryHero({ editionTitle, totalStages, score, correctAnswers, totalAnswers, category }: SummaryHeroProps) {
+  const accuracy =
+    totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
+
+  // Optional: make the headline reflect performance instead of always "Nicely done."
+  const headline =
+    accuracy >= 90 ? "Outstanding!" : accuracy >= 70 ? "Nicely done." : "Good effort.";
+  const subline =
+    accuracy >= 90
+      ? "You really know your stuff."
+      : accuracy >= 70
+        ? "You know your stuff."
+        : "Every run makes you sharper.";
+
   return (
-    <section
-      className="relative rounded-3xl overflow-hidden shadow-lg flex flex-col justify-end"
-      style={{ minHeight: "220px" }}
-    >
-      {/* Gradient background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(135deg, #1a3a2e 0%, #2d5a45 40%, #3a6757 70%, #4a8068 100%)",
-        }}
-      />
-      {/* Decorative sparkles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {["auto_awesome", "flare", "celebration"].map((icon, i) => (
-          <span
-            key={i}
-            className="material-symbols-outlined absolute"
-            style={{
-              fontSize: [36, 22, 28][i],
-              color: "rgba(255,255,255,0.15)",
-              fontVariationSettings: "'FILL' 1",
-              top: ["15%", "20%", "10%"][i],
-              left: ["8%", undefined, undefined][i],
-              right: [undefined, "10%", "28%"][i],
-            }}
+    <div className="stage">
+      <section className="card" aria-label="Session result" style={typeStyle(category)}>
+        <div className="top">
+          <span className="chip">Completed</span>
+          <p className="game">
+            <span className="font-bold">{editionTitle}</span>
+          </p>
+          <h1 className="head">{headline}</h1>
+          <p className="sub">{subline}</p>
+        </div>
+
+        <dl className="stats">
+          <div>
+            <dd>{score}</dd>
+            <dt>score</dt>
+          </div>
+          <div>
+            <dd>{accuracy}%</dd>
+            <dt>accuracy</dt>
+          </div>
+          <div>
+            <dd>
+              {correctAnswers}/{totalStages}
+            </dd>
+            <dt>correct</dt>
+          </div>
+        </dl>
+
+        <div className="share">
+          <button
+            type="button"
+            className="share-btn"
+            id="shareBtn"
+            aria-expanded="false"
+            aria-controls="shareTray"
           >
-            {icon}
-          </span>
-        ))}
-      </div>
-      {/* Bottom gradient */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)",
-        }}
-      />
-      {/* Content */}
-      <div className="relative px-6 pb-6 pt-16 flex flex-col gap-2">
-        <span
-          className="text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full self-start"
-          style={{
-            backgroundColor: "var(--secondary-container)",
-            color: "var(--on-secondary-container)",
-          }}
-        >
-          Session Complete
-        </span>
-        <h2 className="text-[28px] font-extrabold text-white leading-tight">
-          Incredible Session!
-        </h2>
-        <p className="text-white/80 text-[15px]">
-          You completed <span className="font-bold">{editionTitle}</span>
-        </p>
-      </div>
-    </section>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+            </svg>
+            Share your score
+          </button>
+          <div className="share-tray" id="shareTray" hidden>
+            <a className="wa" id="shWa" target="_blank" rel="noopener" href="#">
+              WhatsApp
+            </a>
+            <a className="xx" id="shX" target="_blank" rel="noopener" href="#">
+              X
+            </a>
+            <button type="button" id="shCopy">
+              Copy
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
