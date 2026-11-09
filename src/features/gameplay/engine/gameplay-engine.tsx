@@ -27,6 +27,7 @@ import type { Stage, StageHints } from "@/types/gameplay";
 import { createHintsApi } from "@/features/gameplay/hints/api";
 import { buildHintPlan, usageKey } from "@/features/gameplay/hints/registry";
 import { closePreviewTab } from "@/features/gameplay/preview/close-preview";
+import { deckStages, nextIndexAfterStage } from "@/features/gameplay/engine/deck";
 
 interface GameplayEngineProps {
   editionId: string;
@@ -54,7 +55,7 @@ export function GameplayEngine({
   const [retryCount, setRetryCount] = useState(0);
   // Bumped when another device is ahead, so the game remounts with the new state.
   const [epoch, setEpoch] = useState(0);
-  const [feedback, setFeedback] = useState<{ open: boolean; correct: boolean; message: string }>(
+  const [feedback, setFeedback] = useState<{ open: boolean; correct: boolean; message: string; singlePass?: boolean }>(
     { open: false, correct: false, message: "" });
   const [introState, setIntroState] = useState<{ key: string; dismissed: boolean } | null>(null);
   const {
@@ -88,19 +89,31 @@ export function GameplayEngine({
     hasNavigated.current = false;
     const locked = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
     answerLocked.current = locked;
-    setFeedback({
-      open: locked,
-      correct: snapshot.stagePassed,
-      message: snapshot.stagePassed
-        ? "You already completed this stage. Continue to the next one."
-        : locked ? "No attempts remaining for this stage." : "",
-    });
+
+    const deck = deckStages(stages, snapshot.currentStage);
+    if (deck.length > 0 && snapshot.stagePassed) {
+      const right = deck.filter((s) => snapshot.answerResults[s.id]?.isCorrect).length;
+      setFeedback({
+        open: true,
+        correct: !!snapshot.answerResults[deck[deck.length - 1].id]?.isCorrect,
+        message: `You got ${right} of ${deck.length} right.`,
+        singlePass: true,
+      });
+    } else {
+      setFeedback({
+        open: locked,
+        correct: snapshot.stagePassed,
+        message: snapshot.stagePassed
+          ? "You already completed this stage. Continue to the next one."
+          : locked ? "No attempts remaining for this stage." : "",
+      });
+    }
     const started = snapshot.totalAnswers > 0 || snapshot.currentStage > 0;
     setIntroState((prev) => ({
       key: sessionKey,
       dismissed: (prev?.key === sessionKey && prev.dismissed) || started,
     }));
-  }, [restore, sessionKey]);
+  }, [restore, sessionKey, stages]);
 
   const handleRemote = useCallback((remote: GameplaySnapshot) => {
     if (isReplay) return;
@@ -227,15 +240,17 @@ export function GameplayEngine({
     feedback: message,
     points,
     results,
+    singlePass,
   }: {
     correct: boolean;
     feedback: string;
     points?: number;
     results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
+    singlePass?: boolean;
   }) {
     if (answerLocked.current) return;
     registerResult({
-      correct,
+      correct: singlePass ? true : correct,
       results: results ?? [{
         questionId: stage?.id ?? "",
         isCorrect: correct,
@@ -244,7 +259,7 @@ export function GameplayEngine({
     });
     const snapshot = useGameplayStore.getState();
     answerLocked.current = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
-    setFeedback({ open: true, correct, message });
+    setFeedback({ open: true, correct, message, singlePass });
     syncStage();
   }
 
@@ -261,21 +276,18 @@ export function GameplayEngine({
     if (!stage) return;
     advanceStage();
   }
-
   async function advanceStage() {
-    const nextIndex = currentStage + 1;
+    const nextIndex = nextIndexAfterStage(stages, currentStage);
     const nextAttempts = stages[nextIndex]?.attemptsAllowed ?? 0;
-    nextStage(stages.length, nextAttempts);
+    nextStage(stages.length, nextAttempts, nextIndex);
     answerLocked.current = false;
-    // The completion endpoint is the only terminal write. Sending this last
-    // stage snapshot can otherwise race with it and reopen a completed node.
     if (nextIndex < stages.length) syncStage();
   }
 
   async function handleContinue() {
     setFeedback((s) => ({ ...s, open: false }));
     if (!stage) return;
-    if (feedback.correct || attemptsRemaining <= 0) {
+    if (feedback.singlePass || feedback.correct || attemptsRemaining <= 0) {
       await advanceStage();
     }
   }
@@ -337,6 +349,7 @@ export function GameplayEngine({
       <FeedbackModal
         open={feedback.open}
         correct={feedback.correct}
+        singlePass={feedback.singlePass}
         message={feedback.message}
         attemptsRemaining={attemptsRemaining}
         onContinue={handleContinue}
