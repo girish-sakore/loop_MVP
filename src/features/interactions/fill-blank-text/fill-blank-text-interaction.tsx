@@ -31,8 +31,7 @@ type Props = {
     correct: boolean;
     feedback: string;
     points?: number;
-    totalAnswers?: number;
-    correctAnswers?: number;
+    results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
   }) => void;
   onComplete?: (results: Record<string, CardStatus>) => void;
   disabled?: boolean;
@@ -185,18 +184,18 @@ export function FillBlankTextInteraction({
 
   function submitRound(results: Record<string, CardStatus>) {
     const correctAnswers = stageList.filter((item) => results[item.id] === "correct").length;
-    const points = stageList.reduce(
-      (totalPoints, item) => totalPoints + (results[item.id] === "correct" ? item.points : 0),
-      0,
-    );
     const roundCorrect = correctAnswers === total;
     onComplete?.(results);
     onAnswer?.({
       correct: roundCorrect,
       feedback: roundCorrect ? stage.feedback?.correct ?? "Correct!" : stage.feedback?.incorrect ?? "Not quite. Try again!",
-      points,
-      totalAnswers: total,
-      correctAnswers,
+      // This is one engine submission, but several authored questions. Each
+      // card replaces only its own previous result when the round is retried.
+      results: stageList.map((item) => ({
+        questionId: item.id,
+        isCorrect: results[item.id] === "correct",
+        points: item.points,
+      })),
     });
   }
 

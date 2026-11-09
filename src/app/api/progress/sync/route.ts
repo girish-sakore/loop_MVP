@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import {
   fromServerPayload,
   mergeSnapshots,
+  sanitizeAnswerResults,
   sanitizeHintsUsed,
   toServerPayload,
   type GameplaySnapshot,
@@ -55,6 +56,9 @@ export async function POST(req: Request) {
 
   // A device with a wrong clock must not win every tie forever.
   incoming.updatedAt = Math.min(incoming.updatedAt, Date.now() + MAX_CLOCK_SKEW_MS);
+  for (const result of Object.values(incoming.answerResults)) {
+    result.updatedAt = Math.min(result.updatedAt, Date.now() + MAX_CLOCK_SKEW_MS);
+  }
 
   const merged = await writeMerged(userId, editionId, nodeId, incoming);
   return NextResponse.json({ progress: toServerPayload(merged) });
@@ -93,7 +97,7 @@ async function writeMerged(
 
       // Completion is terminal. A delayed stage-level sync from the finishing
       // browser (or another device) must never reopen this node.
-      if (row.status === "completed") {
+      if (row.status.toLowerCase() === "completed") {
         return rowToSnapshot(row) ?? {
           ...incoming,
           version: row.version,
@@ -104,6 +108,7 @@ async function writeMerged(
           score: row.score,
           correctAnswers: row.correctAnswers,
           totalAnswers: row.totalAnswers,
+          answerResults: sanitizeAnswerResults(row.answerResults),
           hintsUsed: sanitizeHintsUsed(row.hintsUsed),
           interactionState: {},
         };

@@ -5,7 +5,10 @@
 import { create } from "zustand";
 import {
   countHints,
+  deriveAnswerStats,
   unionHintsUsed,
+  type AnswerResultInput,
+  type AnswerResults,
   type GameplaySnapshot,
   type HintsUsed,
   type InteractionState,
@@ -23,6 +26,7 @@ type GameplayState = {
   transitionState: TransitionState;
   totalAnswers: number;
   correctAnswers: number;
+  answerResults: AnswerResults;
   stagePassed: boolean;
   hintsUsed: HintsUsed;
   updatedAt: number;
@@ -31,7 +35,7 @@ type GameplayState = {
   restore: (snapshot: GameplaySnapshot) => void;
   setAttempts: (attempts: number) => void;
   setStage: (stage: number) => void;
-  registerResult: (args: { correct: boolean; points: number; totalAnswers?: number; correctAnswers?: number }) => void;
+  registerResult: (args: { correct: boolean; results: AnswerResultInput[] }) => void;
   nextStage: (totalStages: number, nextAttempts: number) => void;
   setInteractionState: (stageId: string, state: InteractionState) => void;
   clearInteractionState: (stageId: string) => void;
@@ -48,6 +52,7 @@ const initialState = {
   transitionState: "idle" as TransitionState,
   totalAnswers: 0,
   correctAnswers: 0,
+  answerResults: {} as AnswerResults,
   stagePassed: false,
   hintsUsed: {} as HintsUsed,
   updatedAt: 0,
@@ -68,6 +73,7 @@ export const useGameplayStore = create<GameplayState>((set, get) => ({
       score: s.score,
       correctAnswers: s.correctAnswers,
       totalAnswers: s.totalAnswers,
+      answerResults: s.answerResults,
       stagePassed: s.stagePassed,
       hintsUsed: s.hintsUsed,
       updatedAt: s.updatedAt,
@@ -77,16 +83,27 @@ export const useGameplayStore = create<GameplayState>((set, get) => ({
   setAttempts: (attempts) => set((s) => ({ attemptsRemaining: attempts, updatedAt: stamp(s.updatedAt) })),
   setStage: (stage) => set((s) => ({ currentStage: stage, updatedAt: stamp(s.updatedAt) })),
 
-  registerResult: ({ correct, points, totalAnswers = 1, correctAnswers = correct ? 1 : 0 }) =>
-    set((state) => ({
-      transitionState: "checking",
-      stagePassed: correct,
-      score: correct ? state.score + points : state.score,
-      attemptsRemaining: correct ? state.attemptsRemaining : Math.max(state.attemptsRemaining - 1, 0),
-      totalAnswers: state.totalAnswers + totalAnswers,
-      correctAnswers: state.correctAnswers + correctAnswers,
-      updatedAt: stamp(state.updatedAt),
-    })),
+  registerResult: ({ correct, results }) =>
+    set((state) => {
+      const updatedAt = stamp(state.updatedAt);
+      const answerResults = { ...state.answerResults };
+      for (const result of results) {
+        if (!result.questionId || !Number.isSafeInteger(result.points) || result.points < 0) continue;
+        answerResults[result.questionId] = {
+          isCorrect: result.isCorrect,
+          points: result.points,
+          updatedAt,
+        };
+      }
+      return {
+        transitionState: "checking",
+        stagePassed: correct,
+        attemptsRemaining: correct ? state.attemptsRemaining : Math.max(state.attemptsRemaining - 1, 0),
+        ...deriveAnswerStats(answerResults),
+        answerResults,
+        updatedAt,
+      };
+    }),
 
   nextStage: (totalStages, nextAttempts) =>
     set((state) => {

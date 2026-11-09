@@ -133,6 +133,9 @@ model UserNodeProgress {
   score           Int       @default(0)
   correctAnswers  Int       @default(0)
   totalAnswers    Int       @default(0)
+  // Latest result per authored question. Counters above are derived from this
+  // ledger when progress is saved or completed.
+  answerResults   Json      @default("{}")
   stars           Int       @default(0)             // 0-3, computed server-side on completion
   hintsRemaining  Int       @default(3)
   hintsUsed       Json      @default("{}")

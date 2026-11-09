@@ -2,57 +2,57 @@ import { redirect } from "next/navigation";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import BottomNav from "@/components/layout/bottom-nav";
 import { SummaryHero } from "@/components/summary/summary-hero";
-import { SummaryStats } from "@/components/summary/summary-stats";
-import { SummaryActions } from "@/components/summary/summary-actions";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
+import "../../marketing.css";
+import Navbar from "@/components/layout/navbar";
+import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { BlogReveal } from "@/components/summary/blog-reveal";
 
 export default async function SummaryPage() {
   const edition = await getFeaturedEdition();
   if (!edition) redirect("/map");
 
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id;
+  if (!userId) redirect("/login"); // use whatever your sign-in route is
+
+  const rows = await prisma.userNodeProgress.findMany({
+    where: {
+      userId,
+      editionId: edition.id,
+      nodeId: { in: edition.nodes.map((n) => n.id) },
+    },
+    select: { score: true, correctAnswers: true, totalAnswers: true },
+  });
+
+  const totals = rows.reduce(
+    (acc, r) => ({
+      score: acc.score + r.score,
+      correctAnswers: acc.correctAnswers + r.correctAnswers,
+      totalAnswers: acc.totalAnswers + r.totalAnswers,
+    }),
+    { score: 0, correctAnswers: 0, totalAnswers: 0 },
+  );
+
+  const totalStages = edition.nodes.reduce(
+    (sum, n) => sum + (n.subStages?.length ?? 1),
+    0,
+  );
+
   return (
     <MobileContainer>
-      {/* Header */}
-      <header
-        className="flex justify-between items-center w-full px-6 h-16 sticky top-0 z-50"
-        style={{ backgroundColor: "var(--surface)" }}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2"
-            style={{
-              backgroundColor: "var(--surface-container-highest)",
-              borderColor: "var(--surface-variant)",
-            }}
-          >
-            <span
-              className="material-symbols-outlined"
-              style={{ color: "var(--primary)" }}
-            >
-              person
-            </span>
-          </div>
-          <span
-            className="text-[28px] font-extrabold tracking-tight"
-            style={{ color: "var(--secondary)" }}
-          >
-            Loop
-          </span>
-        </div>
-        <button
-          className="material-symbols-outlined hover:opacity-70 transition-opacity"
-          style={{ color: "var(--on-surface-variant)", fontSize: 24 }}
-        >
-          settings
-        </button>
-      </header>
-
-      <main className="flex flex-col gap-6 px-6 pt-4 pb-32">
-        <SummaryHero editionTitle={edition.title} />
-        <SummaryStats totalStages={edition.nodes.length} />
-        <SummaryActions />
+      <Navbar />
+      <main>
+        <SummaryHero
+          editionTitle={edition.title}
+          totalStages={totalStages}
+          category={edition.category ?? ""}
+          {...totals}
+        />
+        <BlogReveal />
       </main>
-
       <BottomNav />
     </MobileContainer>
   );
