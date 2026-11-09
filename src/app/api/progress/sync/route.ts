@@ -55,10 +55,9 @@ export async function POST(req: Request) {
   if (!incoming) return NextResponse.json({ error: "invalid progress payload" }, { status: 400 });
 
   // A device with a wrong clock must not win every tie forever.
-  incoming.updatedAt = Math.min(incoming.updatedAt, Date.now() + MAX_CLOCK_SKEW_MS);
-  for (const result of Object.values(incoming.answerResults)) {
-    result.updatedAt = Math.min(result.updatedAt, Date.now() + MAX_CLOCK_SKEW_MS);
-  }
+  const cap = Date.now() + MAX_CLOCK_SKEW_MS;
+  incoming.updatedAt = Math.min(incoming.updatedAt, cap);
+  for (const r of Object.values(incoming.answerResults)) r.updatedAt = Math.min(r.updatedAt, cap);
 
   const merged = await writeMerged(userId, editionId, nodeId, incoming);
   return NextResponse.json({ progress: toServerPayload(merged) });
