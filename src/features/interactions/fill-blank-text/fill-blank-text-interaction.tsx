@@ -44,6 +44,19 @@ type Props = {
 
 const maxAttempts = (s: FillBlankTextStage) => s.attemptsAllowed ?? 3;
 
+function normalizeAnswer(raw: string, answer: string): string {
+  const letters = Array.from(raw.replace(/\s+/g, ""));
+  const chars = Array.from(answer);
+  let out = "";
+  let used = 0;
+  for (let i = 0; i < chars.length; i++) {
+    if (used >= letters.length) break;
+    if (chars[i] === " ") out += " ";
+    else out += letters[used++];
+  }
+  return out;
+}
+
 export function FillBlankTextInteraction({
   stage: singleStage,
   stages,
@@ -83,6 +96,7 @@ export function FillBlankTextInteraction({
   // Transient UI: not saved.
   const [hintVisible, setHintVisible] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
 
   const stage = stageList[currentIndex];
   const total = stageList.length;
@@ -103,8 +117,6 @@ export function FillBlankTextInteraction({
   // Locked = nothing more the player can do on this card.
   const isLocked = (s: FillBlankTextStage, st: Record<string, CardStatus>, used: Record<string, number>) =>
     statusOf(s, st) === "correct" || (statusOf(s, st) === "wrong" && triesLeft(s, used) === 0);
-  const allResolved = (st: Record<string, CardStatus>, used: Record<string, number>) =>
-    stageList.every((s) => isLocked(s, st, used));
   const allTouched = (st: Record<string, CardStatus>) =>
     stageList.every((s) => statusOf(s, st) !== "unanswered");
 
@@ -121,6 +133,7 @@ export function FillBlankTextInteraction({
   const locked = isLocked(stage, statusByStage, attemptsUsedByStage);
   const left = triesLeft(stage, attemptsUsedByStage);
   const inputsDisabled = disabled || locked;
+  console.log("card", { id: stage.id, status, left, locked, disabled, inputsDisabled });
   const allFilled = stage.blanks.every((blank) => answers[blank.id]?.trim());
   const firstUnfilled = stage.blanks.find((blank) => !(answers[blank.id]?.trim()));
   const firstWrong = stage.blanks.find((blank) => answers[blank.id]?.trim() && answers[blank.id]!.trim().toLowerCase() !== blank.answer.toLowerCase());
@@ -130,6 +143,7 @@ export function FillBlankTextInteraction({
   const canFinish = allTouched(statusByStage);
 
   function handleInputChange(blankId: string, value: string) {
+    console.log("change", { blankId, value, inputsDisabled, locked, disabled });
     if (inputsDisabled) return;
     update((prev) => ({
       answersByStage: {
@@ -139,14 +153,9 @@ export function FillBlankTextInteraction({
     }));
   }
 
-  // After any Check/Skip: auto-submit if nothing is left to do, otherwise offer
-  // the manual submit once every card has been seen.
-  function afterChange(st: Record<string, CardStatus>, used: Record<string, number>) {
-    if (allResolved(st, used)) {
-      setConfirmOpen(false);
-      submitRound(st);
-      return true;
-    }
+  // After any Check/Skip: once every card has been seen, always ask the player
+  // to confirm before submitting. Never auto-submit.
+  function afterChange(st: Record<string, CardStatus>) {
     if (allTouched(st)) {
       setConfirmOpen(true);
       return true;
@@ -177,7 +186,7 @@ export function FillBlankTextInteraction({
       : stage.feedback?.incorrect ?? "Not quite. Try again!";
     onStageAnswered?.({ stageId: stage.id, correct, feedback });
 
-    afterChange(nextStatus, nextUsed);
+    afterChange(nextStatus);
   }
 
   function handleHint() {
@@ -200,7 +209,7 @@ export function FillBlankTextInteraction({
       [stage.id]: status === "unanswered" ? "skipped" : status,
     };
     update({ statusByStage: nextStatus });
-    if (afterChange(nextStatus, attemptsUsedByStage)) return;
+    if (afterChange(nextStatus)) return;
 
     // Move to the next card that still needs attention, wrapping around.
     for (let step = 1; step <= total; step++) {
@@ -342,7 +351,7 @@ export function FillBlankTextInteraction({
 
             <div className="font-display mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 text-[16px] leading-relaxed text-[#2B2A25]">
               {parts.map((part, index) =>
-                renderPart(part, index, answers, blanksById, handleInputChange, inputsDisabled),
+                renderPart(part, index, answers, blanksById, handleInputChange, inputsDisabled, focusedId, setFocusedId),
               )}
             </div>
           </div>
@@ -424,10 +433,13 @@ export function FillBlankTextInteraction({
       {confirmOpen && (
         <div className="absolute inset-0 z-30 flex items-end justify-center bg-black/40 p-4">
           <div className="w-full max-w-[380px] rounded-[24px] border-[3px] border-[#2B2A25] bg-[#FFFDF7] p-5 text-center shadow-[6px_6px_0_#2B2A25]">
-            <h2 className="font-display text-[22px] leading-tight">Submit your answers?</h2>
+            <h2 className="font-display text-[22px] leading-tight">
+              {unresolvedCount === 0 ? "All done!" : "Submit your answers?"}
+            </h2>
             <p className="mt-2 text-[14px] font-semibold text-[#5c5849]">
-              {unresolvedCount} of {total} cards {unresolvedCount === 1 ? "isn’t" : "aren’t"} correct yet.
-              Skipped and unsolved cards score 0.
+              {unresolvedCount === 0
+                ? "Every card is correct. Ready to submit?"
+                : `${unresolvedCount} of ${total} ${unresolvedCount === 1 ? "card isn’t" : "cards aren’t"} correct yet. Skipped and unsolved cards score 0.`}
             </p>
             <div className="mt-4 flex gap-2">
               <button
@@ -460,6 +472,8 @@ function renderPart(
   blanksById: Map<string, Option>,
   onChange: (blankId: string, value: string) => void,
   disabled?: boolean,
+  focusedId?: string | null,
+  onFocusChange?: (id: string | null) => void,
 ) {
   if (part.type === "text") {
     return <span key={index}>{part.value}</span>;
@@ -468,55 +482,82 @@ function renderPart(
   const blank = blanksById.get(part.id);
   if (!blank) return null;
 
-  const expectedLength = blank.answer?.length || 0;
+  const answer = blank.answer ?? "";
+  const words = answer.split(" ");
+  const totalLetters = Array.from(answer.replace(/\s+/g, "")).length;
   const currentValue = answers[part.id] ?? "";
-  const words = (blank.answer ?? "").split(" ");
+  const typed = Array.from(currentValue.replace(/\s+/g, ""));
+  const isFocused = focusedId === part.id && !disabled;
+  const isFull = typed.length >= totalLetters;
+  const cursorAt = isFocused && isFull ? 0 : typed.length < totalLetters ? typed.length : -1;
 
   return (
     <span
       key={part.id}
       className="mx-1 inline-flex max-w-full flex-wrap items-end justify-center gap-x-3 gap-y-2 align-baseline"
       onClick={() => {
-        const input = document.getElementById(`blank-input-${part.id}`);
-        input?.focus();
+        document.getElementById(`blank-input-${part.id}`)?.focus();
       }}
-      aria-label={`Answer, ${expectedLength} letters`}
+      aria-label={`Answer, ${totalLetters} letters`}
     >
       <input
         id={`blank-input-${part.id}`}
         type="text"
         value={currentValue}
-        onChange={(event) =>
-          onChange(part.id, event.target.value.slice(0, expectedLength))
-        }
+        onChange={(event) => {
+          const raw = event.target.value;
+          const rawLetters = Array.from(raw.replace(/\s+/g, ""));
+
+          // Field is already full and the player typed another character:
+          // start over with that character instead of silently dropping it.
+          if (isFull && rawLetters.length > typed.length) {
+            const inserted =
+              (event.nativeEvent as InputEvent).data ?? rawLetters[rawLetters.length - 1];
+            onChange(part.id, normalizeAnswer(inserted, answer));
+            return;
+          }
+
+          onChange(part.id, normalizeAnswer(raw, answer));
+        }} onFocus={(event) => {
+          event.currentTarget.select();
+          onFocusChange?.(part.id);
+        }}
+        onBlur={() => onFocusChange?.(null)}
         disabled={disabled}
-        maxLength={expectedLength || undefined}
+        autoCapitalize="none"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
         className="sr-only"
       />
 
-      {words.map((word, wordIndex) => (
-        <span
-          key={`word-${wordIndex}`}
-          className="inline-flex shrink-0 items-end gap-1"
-        >
-          {Array.from(word).map((_, letterIndex) => {
-            const characterIndex =
-              words.slice(0, wordIndex).reduce(
-                (total, previousWord) => total + previousWord.length + 1,
-                0,
-              ) + letterIndex;
+      {words.map((word, wordIndex) => {
+        const wordStart = words
+          .slice(0, wordIndex)
+          .reduce((sum, w) => sum + Array.from(w).length, 0);
 
-            return (
-              <span
-                key={`letter-${characterIndex}`}
-                className="inline-flex h-7 w-5 items-end justify-center border-b-[3px] border-solid border-[#2B2A25] font-display italic text-[#2B2A25]"
-              >
-                {currentValue[characterIndex] ?? ""}
-              </span>
-            );
-          })}
-        </span>
-      ))}
+        return (
+          <span key={`word-${wordIndex}`} className="inline-flex shrink-0 items-end gap-1">
+            {Array.from(word).map((_, letterIndex) => {
+              const slot = wordStart + letterIndex;
+              const isCursor = isFocused && slot === cursorAt;
+
+              return (
+                <span
+                  key={`letter-${slot}`}
+                  className={`relative inline-flex h-7 w-5 items-end justify-center border-b-[3px] border-solid font-display italic text-[#2B2A25] ${isCursor ? "border-[#E8933A]" : "border-[#2B2A25]"
+                    }`}
+                >
+                  {typed[slot] ?? ""}
+                  {isCursor && (
+                    <span className="absolute bottom-1 left-1/2 h-5 w-[2px] -translate-x-1/2 animate-pulse bg-[#E8933A]" />
+                  )}
+                </span>
+              );
+            })}
+          </span>
+        );
+      })}
     </span>
   );
 }

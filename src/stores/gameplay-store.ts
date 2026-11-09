@@ -30,8 +30,8 @@ type GameplayState = {
   stagePassed: boolean;
   hintsUsed: HintsUsed;
   updatedAt: number;
-  interactionState: Record<string, InteractionState>;
-  // Actions
+  interactionState: Record<string, Record<string, unknown>>;  // Actions
+  setInteractionState: (stageId: string, state: Record<string, unknown>) => void;
   restore: (snapshot: GameplaySnapshot) => void;
   setAttempts: (attempts: number) => void;
   setStage: (stage: number) => void;
@@ -40,6 +40,7 @@ type GameplayState = {
   revealHint: (bucket: string, id: string, group: string, plan: HintPlan) => boolean;
   applyRemoteHints: (remote: HintsUsed) => void;
   reset: () => void;
+
 };
 
 const initialState = {
