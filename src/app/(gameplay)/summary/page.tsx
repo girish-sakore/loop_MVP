@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { BlogReveal } from "@/components/summary/blog-reveal";
+import { stageQuestions } from "@/features/gameplay/scoring";
 
 export default async function SummaryPage() {
   const edition = await getFeaturedEdition();
@@ -37,7 +38,11 @@ export default async function SummaryPage() {
   );
 
   const totalStages = edition.nodes.reduce(
-    (sum, n) => sum + (n.subStages?.length ?? 1),
+    (sum, n) =>
+      sum +
+      (n.subStages?.length
+        ? n.subStages.reduce((s, stage) => s + stageQuestions(stage).length, 0)
+        : 1),
     0,
   );
 
