@@ -18,12 +18,12 @@ type FillBlankState = {
   currentIndex: number;
   answersByStage: Record<string, Record<string, string>>;
   statusByStage: Record<string, CardStatus>;
+  attemptsUsedByStage: Record<string, number>;
 };
 
 type Props = {
   retryCount?: number;
   hints?: StageHints;
-  // Pass either one stage (old call sites keep working) or an array (enables nav/skip).
   stage?: FillBlankTextStage;
   stages?: FillBlankTextStage[];
   onStageAnswered?: (payload: { stageId: string; correct: boolean; feedback: string }) => void;
@@ -31,16 +31,32 @@ type Props = {
     correct: boolean;
     feedback: string;
     points?: number;
+    singlePass?: boolean;
     results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
   }) => void;
   onComplete?: (results: Record<string, CardStatus>) => void;
   disabled?: boolean;
   showIntro?: boolean;
   onIntroComplete?: () => void;
-  // Saved progress from the engine + callback to report changes back.
   interactionState?: Record<string, unknown>;
   onInteractionStateChange?: (state: Record<string, unknown>) => void;
 };
+
+const maxAttempts = (s: FillBlankTextStage) => s.attemptsAllowed ?? 3;
+
+function normalizeAnswer(raw: string, answer: string): string {
+  const letters = Array.from(raw.replace(/\s+/g, ""));
+  const chars = Array.from(answer);
+  let out = "";
+  let used = 0;
+  for (let i = 0; i < chars.length; i++) {
+    if (used >= letters.length) break;
+    if (chars[i] === " ") out += " ";
+    else out += letters[used++];
+  }
+  return out;
+}
+
 export function FillBlankTextInteraction({
   stage: singleStage,
   stages,
@@ -59,39 +75,28 @@ export function FillBlankTextInteraction({
     [stages, singleStage],
   );
 
-  // A round that was fully submitted but not fully correct already cost an
-  // attempt. Restoring it would leave every card "answered" with nothing left
-  // to do, so start the deck fresh instead (same as Retry would).
-  const saved = interactionState as Partial<FillBlankState> | undefined;
-  const savedStatus = saved?.statusByStage;
-  const roundSubmitted =
-    !!savedStatus &&
-    stageList.length > 0 &&
-    stageList.every((s) => savedStatus[s.id] && savedStatus[s.id] !== "unanswered");
-  const roundAllCorrect =
-    roundSubmitted && stageList.every((s) => savedStatus![s.id] === "correct");
-  const restored = roundSubmitted && !roundAllCorrect ? undefined : saved;
-
   const [gameState, update] = useInteractionProgress<FillBlankState>({
-    defaultState: { currentIndex: 0, answersByStage: {}, statusByStage: {} },
-    interactionState: restored,
+    defaultState: { currentIndex: 0, answersByStage: {}, statusByStage: {}, attemptsUsedByStage: {} },
+    interactionState: interactionState as Partial<FillBlankState> | undefined,
     onInteractionStateChange: onInteractionStateChange as
       | ((s: FillBlankState) => void)
       | undefined,
   });
   const { answersByStage, statusByStage } = gameState;
+  // Older saved states have no attempts map.
+  const attemptsUsedByStage = useMemo(() => gameState.attemptsUsedByStage ?? {}, [gameState.attemptsUsedByStage]);
 
-  // Sanitize: a saved index may be out of range if the stages changed.
   const currentIndex = Math.min(
     Math.max(Number.isInteger(gameState.currentIndex) ? gameState.currentIndex : 0, 0),
     Math.max(stageList.length - 1, 0),
   );
 
-  // Intro is owned by the engine (showIntro prop), so it is not persisted here.
   const introDone = !showIntro;
 
   // Transient UI: not saved.
   const [hintVisible, setHintVisible] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
 
   const stage = stageList[currentIndex];
   const total = stageList.length;
@@ -105,6 +110,16 @@ export function FillBlankTextInteraction({
     [stage?.blanks],
   );
 
+  // ---- Deck-level helpers (pure, take the maps so they can see fresh values) ----
+  const statusOf = (s: FillBlankTextStage, st: Record<string, CardStatus>) => st[s.id] ?? "unanswered";
+  const triesLeft = (s: FillBlankTextStage, used: Record<string, number>) =>
+    Math.max(maxAttempts(s) - (used[s.id] ?? 0), 0);
+  // Locked = nothing more the player can do on this card.
+  const isLocked = (s: FillBlankTextStage, st: Record<string, CardStatus>, used: Record<string, number>) =>
+    statusOf(s, st) === "correct" || (statusOf(s, st) === "wrong" && triesLeft(s, used) === 0);
+  const allTouched = (st: Record<string, CardStatus>) =>
+    stageList.every((s) => statusOf(s, st) !== "unanswered");
+
   if (!stage) {
     return (
       <div className="flex min-h-[calc(100dvh-86px)] items-center justify-center bg-[#FDF9F1] text-[#2B2A25]">
@@ -114,17 +129,22 @@ export function FillBlankTextInteraction({
   }
 
   const answers = answersByStage[stage.id] ?? Object.fromEntries(stage.blanks.map((b) => [b.id, ""]));
-  const status = statusByStage[stage.id] ?? "unanswered";
+  const status = statusOf(stage, statusByStage);
+  const locked = isLocked(stage, statusByStage, attemptsUsedByStage);
+  const left = triesLeft(stage, attemptsUsedByStage);
+  const inputsDisabled = disabled || locked;
+  console.log("card", { id: stage.id, status, left, locked, disabled, inputsDisabled });
   const allFilled = stage.blanks.every((blank) => answers[blank.id]?.trim());
   const firstUnfilled = stage.blanks.find((blank) => !(answers[blank.id]?.trim()));
   const firstWrong = stage.blanks.find((blank) => answers[blank.id]?.trim() && answers[blank.id]!.trim().toLowerCase() !== blank.answer.toLowerCase());
   const target = firstUnfilled ?? firstWrong ?? stage.blanks[0];
   const group = target ? hints?.group(`${stage.id}.${target.id}`) : undefined;
   const hintGroup = group?.anonymous ? undefined : group;
+  const canFinish = allTouched(statusByStage);
 
   function handleInputChange(blankId: string, value: string) {
-    if (disabled) return;
-    // Functional form: keystrokes can arrive faster than renders.
+    console.log("change", { blankId, value, inputsDisabled, locked, disabled });
+    if (inputsDisabled) return;
     update((prev) => ({
       answersByStage: {
         ...prev.answersByStage,
@@ -133,28 +153,40 @@ export function FillBlankTextInteraction({
     }));
   }
 
+  // After any Check/Skip: once every card has been seen, always ask the player
+  // to confirm before submitting. Never auto-submit.
+  function afterChange(st: Record<string, CardStatus>) {
+    if (allTouched(st)) {
+      setConfirmOpen(true);
+      return true;
+    }
+    return false;
+  }
+
   function handleCheckGuess() {
-    if (disabled || !allFilled) return;
+    if (disabled || locked || !allFilled) return;
 
     const correct = stage.blanks.every((blank) => {
       const userAnswer = (answers[blank.id] ?? "").trim();
       return userAnswer.toLowerCase() === blank.answer.toLowerCase();
     });
 
-    const nextStatusByStage: Record<string, CardStatus> = {
+    const nextStatus: Record<string, CardStatus> = {
       ...statusByStage,
       [stage.id]: correct ? "correct" : "wrong",
     };
-    update({ statusByStage: nextStatusByStage });
+    const nextUsed = {
+      ...attemptsUsedByStage,
+      [stage.id]: (attemptsUsedByStage[stage.id] ?? 0) + (correct ? 0 : 1),
+    };
+    update({ statusByStage: nextStatus, attemptsUsedByStage: nextUsed });
 
     const feedback = correct
       ? stage.feedback?.correct ?? "Correct!"
       : stage.feedback?.incorrect ?? "Not quite. Try again!";
-
     onStageAnswered?.({ stageId: stage.id, correct, feedback });
-    if (Object.values(nextStatusByStage).filter((value) => value !== "unanswered").length === total) {
-      submitRound(nextStatusByStage);
-    }
+
+    afterChange(nextStatus);
   }
 
   function handleHint() {
@@ -170,34 +202,43 @@ export function FillBlankTextInteraction({
   }
 
   function handleSkip() {
-    const nextStatusByStage: Record<string, CardStatus> = {
+    if (disabled) return;
+    // Only an untouched card becomes "skipped"; correct / wrong keep their status.
+    const nextStatus: Record<string, CardStatus> = {
       ...statusByStage,
-      [stage.id]: statusByStage[stage.id] === "correct" ? "correct" : "skipped",
+      [stage.id]: status === "unanswered" ? "skipped" : status,
     };
-    update({ statusByStage: nextStatusByStage });
-    if (Object.values(nextStatusByStage).filter((value) => value !== "unanswered").length === total) {
-      submitRound(nextStatusByStage);
-      return;
+    update({ statusByStage: nextStatus });
+    if (afterChange(nextStatus)) return;
+
+    // Move to the next card that still needs attention, wrapping around.
+    for (let step = 1; step <= total; step++) {
+      const i = (currentIndex + step) % total;
+      if (!isLocked(stageList[i], nextStatus, attemptsUsedByStage)) {
+        goTo(i);
+        return;
+      }
     }
-    goTo(currentIndex + 1);
   }
 
   function submitRound(results: Record<string, CardStatus>) {
-    const correctAnswers = stageList.filter((item) => results[item.id] === "correct").length;
-    const roundCorrect = correctAnswers === total;
+    const right = stageList.filter((item) => results[item.id] === "correct").length;
+    const lastCard = stageList[stageList.length - 1];
     onComplete?.(results);
     onAnswer?.({
-      correct: roundCorrect,
-      feedback: roundCorrect ? stage.feedback?.correct ?? "Correct!" : stage.feedback?.incorrect ?? "Not quite. Try again!",
-      // This is one engine submission, but several authored questions. Each
-      // card replaces only its own previous result when the round is retried.
+      // Display only: the engine ignores this for flow when singlePass is set.
+      correct: results[lastCard.id] === "correct",
+      singlePass: true,
+      feedback: `You got ${right} of ${total} right.`,
       results: stageList.map((item) => ({
         questionId: item.id,
         isCorrect: results[item.id] === "correct",
-        points: item.points,
+        points: results[item.id] === "correct" ? item.points : 0,
       })),
     });
   }
+
+  const unresolvedCount = stageList.filter((s) => statusOf(s, statusByStage) !== "correct").length;
 
   if (!introDone) {
     return (
@@ -256,9 +297,8 @@ export function FillBlankTextInteraction({
   }
 
   return (
-    <div className="flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden bg-[#FDF9F1] px-4 pb-4 pt-6 text-[#2B2A25]">
-      {/* Heading — matches swipe game style */}
-      <div className="flex shrink-0 flex-col items-center gap-4 text-center px-4 pt-2 mb-2">
+    <div className="relative flex h-[calc(100dvh-86px)] w-full flex-col overflow-hidden bg-[#FDF9F1] px-4 pb-4 pt-6 text-[#2B2A25]">
+      <div className="mb-2 flex shrink-0 flex-col items-center gap-4 px-4 pt-2 text-center">
         <span className="inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#53BCD1] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#2B2A25]">
           {stage.introLabel ?? "Fill in the Blank"}
         </span>
@@ -267,33 +307,51 @@ export function FillBlankTextInteraction({
         </h1>
       </div>
       {showPager && (
-        <div className="mx-auto mb-3 flex w-full max-w-[380px] justify-end">
+        <div className="mx-auto mb-3 flex w-full max-w-[380px] items-center justify-between">
+          {canFinish ? (
+            <button
+              type="button"
+              onClick={() => setConfirmOpen(true)}
+              disabled={disabled}
+              className="rounded-full border-[3px] border-[#2B2A25] bg-[#3FAE6A] px-3 py-0.5 text-[12px] font-extrabold text-[#0b0b0b] shadow-[2px_2px_0_#2B2A25]"
+            >
+              Finish
+            </button>
+          ) : (
+            <span />
+          )}
           <span className="text-[14px] font-extrabold text-[#2B2A25]">
             {currentIndex + 1} / {total}
           </span>
         </div>
       )}
-      {/* Prompt card */}
       <div className="min-h-0 flex-1 px-2">
         <div className="relative mx-auto flex h-full min-h-0 max-w-[380px]">
           <div className="absolute inset-0 translate-y-[10px] rounded-[28px] border-[3px] border-[#53BCD1] bg-[#FDF9F1]" />
 
           <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[28px] border-[3px] border-[#2B2A25] bg-[#FFFDF7] p-4 shadow-[6px_6px_0_#2B2A25]">
             <div className="flex shrink-0 items-center justify-between">
-              {status === "correct" && (
-                <span className="text-[12px] font-extrabold text-[#3FAE6A]">✓ Answered</span>
-              )}
-              {status === "wrong" && (
-                <span className="text-[12px] font-extrabold text-[#E36F6F]">✕ Wrong</span>
-              )}
-              {status === "skipped" && (
-                <span className="text-[12px] font-extrabold text-[#8a8878]">Skipped</span>
+              <div>
+                {status === "correct" && (
+                  <span className="text-[12px] font-extrabold text-[#3FAE6A]">✓ Answered</span>
+                )}
+                {status === "wrong" && (
+                  <span className="text-[12px] font-extrabold text-[#E36F6F]">✕ Wrong</span>
+                )}
+                {status === "skipped" && (
+                  <span className="text-[12px] font-extrabold text-[#8a8878]">Skipped</span>
+                )}
+              </div>
+              {status !== "correct" && (
+                <span className="text-[12px] font-extrabold text-[#8a8878]">
+                  {left === 0 ? "No tries left" : `${left} ${left === 1 ? "try" : "tries"} left`}
+                </span>
               )}
             </div>
 
             <div className="font-display mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 text-[16px] leading-relaxed text-[#2B2A25]">
               {parts.map((part, index) =>
-                renderPart(part, index, answers, blanksById, handleInputChange, disabled),
+                renderPart(part, index, answers, blanksById, handleInputChange, inputsDisabled, focusedId, setFocusedId),
               )}
             </div>
           </div>
@@ -302,7 +360,7 @@ export function FillBlankTextInteraction({
       {showPager && (
         <div className="mx-auto mt-6 flex w-full max-w-[380px] items-center justify-center gap-2" role="tablist" aria-label="Fill-in-the-blank cards">
           {stageList.map((item, index) => {
-            const itemStatus = statusByStage[item.id] ?? "unanswered";
+            const itemStatus = statusOf(item, statusByStage);
             const isActive = index === currentIndex;
 
             return (
@@ -328,7 +386,6 @@ export function FillBlankTextInteraction({
           })}
         </div>
       )}
-      {/* Previous / Skip / Next — only when there's actually a deck to move through */}
       {showPager && (
         <div className="mx-auto mt-3 flex w-full max-w-[380px] shrink-0 items-center justify-center gap-3">
           <button
@@ -359,20 +416,51 @@ export function FillBlankTextInteraction({
           </button>
         </div>
       )}
-      {/* Check + Hint */}
       <div className="z-20 mx-auto mt-5 flex w-full max-w-[380px] shrink-0 gap-2 border-t-[3px] border-[#2B2A25] bg-[#FDF9F1] pt-4 pb-2">
         <button
           type="button"
           onClick={handleCheckGuess}
-          disabled={disabled || !allFilled}
+          disabled={disabled || locked || !allFilled}
           className="h-12 flex-1 rounded-full border-[3px] border-[#2B2A25] bg-[#FBAE4B] text-[15px] font-extrabold text-[#2B2A25] shadow-[0_4px_0_#2B2A25] transition active:translate-y-0.5 active:shadow-[0_2px_0_#2B2A25] disabled:border-[#cfc8bd] disabled:bg-transparent disabled:text-[#b7afa4] disabled:shadow-none"
         >
           Check
         </button>
-        <HintButton group={hintGroup} onOpen={handleHint} disabled={disabled} />
+        <HintButton group={hintGroup} onOpen={handleHint} disabled={disabled || locked} />
       </div>
 
       <HintSheet open={hintVisible} group={hintGroup} onClose={() => setHintVisible(false)} />
+
+      {confirmOpen && (
+        <div className="absolute inset-0 z-30 flex items-end justify-center bg-black/40 p-4">
+          <div className="w-full max-w-[380px] rounded-[24px] border-[3px] border-[#2B2A25] bg-[#FFFDF7] p-5 text-center shadow-[6px_6px_0_#2B2A25]">
+            <h2 className="font-display text-[22px] leading-tight">
+              {unresolvedCount === 0 ? "All done!" : "Submit your answers?"}
+            </h2>
+            <p className="mt-2 text-[14px] font-semibold text-[#5c5849]">
+              {unresolvedCount === 0
+                ? "Every card is correct. Ready to submit?"
+                : `${unresolvedCount} of ${total} ${unresolvedCount === 1 ? "card isn’t" : "cards aren’t"} correct yet. Skipped and unsolved cards score 0.`}
+            </p>
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="h-12 flex-1 rounded-full border-[3px] border-[#2B2A25] bg-[#FFFDF7] text-[15px] font-extrabold shadow-[0_4px_0_#2B2A25]"
+              >
+                Go back
+              </button>
+              <button
+                type="button"
+                onClick={() => { setConfirmOpen(false); submitRound(statusByStage); }}
+                disabled={disabled}
+                className="h-12 flex-1 rounded-full border-[3px] border-[#2B2A25] bg-[#FBAE4B] text-[15px] font-extrabold shadow-[0_4px_0_#2B2A25] disabled:opacity-40"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -384,6 +472,8 @@ function renderPart(
   blanksById: Map<string, Option>,
   onChange: (blankId: string, value: string) => void,
   disabled?: boolean,
+  focusedId?: string | null,
+  onFocusChange?: (id: string | null) => void,
 ) {
   if (part.type === "text") {
     return <span key={index}>{part.value}</span>;
@@ -392,56 +482,82 @@ function renderPart(
   const blank = blanksById.get(part.id);
   if (!blank) return null;
 
-  const expectedLength = blank.answer?.length || 0;
+  const answer = blank.answer ?? "";
+  const words = answer.split(" ");
+  const totalLetters = Array.from(answer.replace(/\s+/g, "")).length;
   const currentValue = answers[part.id] ?? "";
-  const words = (blank.answer ?? "").split(" ");
+  const typed = Array.from(currentValue.replace(/\s+/g, ""));
+  const isFocused = focusedId === part.id && !disabled;
+  const isFull = typed.length >= totalLetters;
+  const cursorAt = isFocused && isFull ? 0 : typed.length < totalLetters ? typed.length : -1;
 
   return (
     <span
       key={part.id}
       className="mx-1 inline-flex max-w-full flex-wrap items-end justify-center gap-x-3 gap-y-2 align-baseline"
       onClick={() => {
-        const input = document.getElementById(`blank-input-${part.id}`);
-        input?.focus();
+        document.getElementById(`blank-input-${part.id}`)?.focus();
       }}
-      aria-label={`Answer, ${expectedLength} letters`}
+      aria-label={`Answer, ${totalLetters} letters`}
     >
       <input
         id={`blank-input-${part.id}`}
         type="text"
         value={currentValue}
-        onChange={(event) =>
-          onChange(part.id, event.target.value.slice(0, expectedLength))
-        }
+        onChange={(event) => {
+          const raw = event.target.value;
+          const rawLetters = Array.from(raw.replace(/\s+/g, ""));
+
+          // Field is already full and the player typed another character:
+          // start over with that character instead of silently dropping it.
+          if (isFull && rawLetters.length > typed.length) {
+            const inserted =
+              (event.nativeEvent as InputEvent).data ?? rawLetters[rawLetters.length - 1];
+            onChange(part.id, normalizeAnswer(inserted, answer));
+            return;
+          }
+
+          onChange(part.id, normalizeAnswer(raw, answer));
+        }} onFocus={(event) => {
+          event.currentTarget.select();
+          onFocusChange?.(part.id);
+        }}
+        onBlur={() => onFocusChange?.(null)}
         disabled={disabled}
-        maxLength={expectedLength || undefined}
+        autoCapitalize="none"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
         className="sr-only"
       />
 
-      {words.map((word, wordIndex) => (
-        <span
-          key={`word-${wordIndex}`}
-          className="inline-flex shrink-0 items-end gap-1"
-        >
-          {Array.from(word).map((_, letterIndex) => {
-            // Calculate the character position including spaces from previous words.
-            const characterIndex =
-              words.slice(0, wordIndex).reduce(
-                (total, previousWord) => total + previousWord.length + 1,
-                0,
-              ) + letterIndex;
+      {words.map((word, wordIndex) => {
+        const wordStart = words
+          .slice(0, wordIndex)
+          .reduce((sum, w) => sum + Array.from(w).length, 0);
 
-            return (
-              <span
-                key={`letter-${characterIndex}`}
-                className="inline-flex h-7 w-5 items-end justify-center border-b-[3px] border-solid border-[#2B2A25] font-display italic text-[#2B2A25]"
-              >
-                {currentValue[characterIndex] ?? ""}
-              </span>
-            );
-          })}
-        </span>
-      ))}
+        return (
+          <span key={`word-${wordIndex}`} className="inline-flex shrink-0 items-end gap-1">
+            {Array.from(word).map((_, letterIndex) => {
+              const slot = wordStart + letterIndex;
+              const isCursor = isFocused && slot === cursorAt;
+
+              return (
+                <span
+                  key={`letter-${slot}`}
+                  className={`relative inline-flex h-7 w-5 items-end justify-center border-b-[3px] border-solid font-display italic text-[#2B2A25] ${isCursor ? "border-[#E8933A]" : "border-[#2B2A25]"
+                    }`}
+                >
+                  {typed[slot] ?? ""}
+                  {isCursor && (
+                    <span className="absolute bottom-1 left-1/2 h-5 w-[2px] -translate-x-1/2 animate-pulse bg-[#E8933A]" />
+                  )}
+                </span>
+              );
+            })}
+          </span>
+        );
+      })}
     </span>
   );
 }
