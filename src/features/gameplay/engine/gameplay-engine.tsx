@@ -19,6 +19,7 @@ import {
   progressStorageKey,
   restoreSnapshot,
   saveSnapshot,
+  type AnswerResults,
   type GameplaySnapshot,
   type InteractionState,
   type StoredProgress,
@@ -44,6 +45,38 @@ interface GameplayEngineProps {
 
 const EMPTY: string[] = [];
 
+/**
+ * ColorMatch used to submit one stage-level answer. A saved board that was
+ * already passed during that version has no clue ledger for completion to
+ * persist. Repair only that unambiguous, fully-passed final stage.
+ */
+function repairPassedColorMatchLedger(
+  stage: Stage | undefined,
+  stagePassed: boolean,
+  answerResults: AnswerResults,
+): AnswerResults {
+  if (!stagePassed || stage?.type !== "color-match" || !Array.isArray(stage.clues)) return answerResults;
+
+  const questionIds = stage.clues.map((clue) => `${stage.id}:${clue.id}`);
+  if (questionIds.every((questionId) => answerResults[questionId])) return answerResults;
+
+  const repaired = { ...answerResults };
+  // Remove the old all-or-nothing answer if this node was started before the
+  // clue-level ledger was introduced.
+  delete repaired[stage.id];
+
+  const updatedAt = Date.now();
+  const points = stage.clues.length > 0 ? stage.points / stage.clues.length : 0;
+  for (const clue of stage.clues) {
+    repaired[`${stage.id}:${clue.id}`] = {
+      isCorrect: true,
+      points: clue.points ?? points,
+      updatedAt,
+    };
+  }
+  return repaired;
+}
+
 export function GameplayEngine({
   editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal", preview = false, exitHref, summaryHref = "" }: GameplayEngineProps) {
   const router = useRouter();
@@ -61,6 +94,7 @@ export function GameplayEngine({
     currentStage,
     attemptsRemaining,
     answerResults,
+    stagePassed,
     completed,
     hintsUsed,
     interactionState,
@@ -187,15 +221,16 @@ export function GameplayEngine({
     if (preview) return;
     if (isReplay) return;
     flush();
+    const completionResults = repairPassedColorMatchLedger(stage, stagePassed, answerResults);
     await fetch("/api/progress/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       // The completion route derives persisted totals and score from this
       // per-question ledger; summary counters are intentionally not trusted.
-      body: JSON.stringify({ editionId, nodeId, answerResults }),
+      body: JSON.stringify({ editionId, nodeId, answerResults: completionResults }),
     }).catch(() => { });
     try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
-  }, [editionId, nodeId, preview, answerResults, gameplayKey, flush, isReplay]);
+  }, [editionId, nodeId, preview, stage, stagePassed, answerResults, gameplayKey, flush, isReplay]);
 
   useEffect(() => {
     if (!ready) return;

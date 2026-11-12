@@ -208,7 +208,14 @@ const colorMatch = z.object({
   eyebrow: optText,
   title: optText,
   clues: z
-    .array(z.object({ id: text, hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"), clue1: text, hint: text, name: text }))
+    .array(z.object({
+      id: text,
+      hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"),
+      clue1: text,
+      hint: text,
+      name: text,
+      points: z.number().nonnegative().optional(),
+    }))
     .min(2),
   feedback,
 });

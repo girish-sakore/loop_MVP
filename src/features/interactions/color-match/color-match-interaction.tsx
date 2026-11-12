@@ -13,9 +13,12 @@ import { WinBanner } from "./win-banner";
 
 type Props = {
   stage: ColorMatchStage;
-  onAnswer: (payload: { correct: boolean; feedback: string }) => void;
+  onAnswer: (payload: {
+    correct: boolean;
+    feedback: string;
+    results: Array<{ questionId: string; isCorrect: boolean; points: number }>;
+  }) => void;
   disabled?: boolean;
-  retryCount?: number;
   showIntro?: boolean;
   onIntroComplete?: () => void;
 };
@@ -24,11 +27,10 @@ export function ColorMatchInteraction({
   stage,
   onAnswer,
   disabled,
-  retryCount = 0,
   showIntro = true,
   onIntroComplete,
 }: Props) {
-  const game = useColorMatchGame({ stage, onAnswer, disabled, retryCount });
+  const game = useColorMatchGame({ stage, onAnswer, disabled });
 
   if (showIntro) {
     return (
@@ -56,16 +58,24 @@ export function ColorMatchInteraction({
         matchedIds={game.matchedIds}
         openId={game.openId}
         dragOverId={game.dragOverId}
-        shakingId={game.shakingId}
+        placements={game.placements}
+        reveal={game.reveal}
+        dragging={game.dragging}
         disabled={disabled}
         onOpen={game.setOpenId}
+        onStartDrag={game.startDrag}
       />
 
       <SwatchTray
         stage={stage}
         matchedIds={game.matchedIds}
+        placements={game.placements}
         dragging={game.dragging}
         onStartDrag={game.startDrag}
+        onCheck={game.checkPlacements}
+        canCheck={game.canCheck}
+        checking={game.checking}
+        disabled={disabled}
       />
 
       <DraggedSwatch dragging={game.dragging} label={game.label} />

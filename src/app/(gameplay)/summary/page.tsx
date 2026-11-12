@@ -36,10 +36,18 @@ export default async function SummaryPage() {
     { score: 0, correctAnswers: 0, totalAnswers: 0 },
   );
 
-  const totalStages = edition.nodes.reduce(
-    (sum, n) => sum + (n.subStages?.length ?? 1),
-    0,
-  );
+  const totalStages = edition.nodes.reduce((sum, n) => {
+    const subStages = n.subStages ?? [];
+    if (subStages.length === 0) return sum + 1;
+
+    return (
+      sum +
+      subStages.reduce(
+        (s, sub) => s + (sub.type === "color-match" ? sub.clues.length : 1),
+        0,
+      )
+    );
+  }, 0);
 
   return (
     <MobileContainer>

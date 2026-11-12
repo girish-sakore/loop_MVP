@@ -151,6 +151,8 @@ export type ColorMatchClue = {
   clue1: string;
   hint: string;
   name: string;
+  /** Optional per-clue score; otherwise the stage score is shared equally. */
+  points?: number;
 };
 
 export type ColorMatchStage = StageBase & {

@@ -88,7 +88,7 @@ export const useGameplayStore = create<GameplayState>((set, get) => ({
       const updatedAt = stamp(state.updatedAt);
       const answerResults = { ...state.answerResults };
       for (const result of results) {
-        if (!result.questionId || !Number.isSafeInteger(result.points) || result.points < 0) continue;
+        if (!result.questionId || !Number.isFinite(result.points) || result.points < 0) continue;
         answerResults[result.questionId] = {
           isCorrect: result.isCorrect,
           points: result.points,

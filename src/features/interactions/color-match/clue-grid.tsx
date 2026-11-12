@@ -3,25 +3,36 @@
 import type { ColorMatchStage } from "@/types/gameplay";
 
 import { ClueCard } from "./clue-card";
+import type { CheckReveal, ColorPlacements, DragState } from "./use-color-match-game";
 
 type Props = {
   stage: ColorMatchStage;
   matchedIds: string[];
+  placements: ColorPlacements;
   openId: string | null;
   dragOverId: string | null;
-  shakingId: string | null;
+  reveal: CheckReveal;
+  dragging: DragState | null;
   disabled?: boolean;
   onOpen: (id: string) => void;
+  onStartDrag: (
+    event: React.PointerEvent<HTMLElement>,
+    id: string,
+    sourceCardId: string | null,
+  ) => void;
 };
 
 export function ClueGrid({
   stage,
   matchedIds,
+  placements,
   openId,
   dragOverId,
-  shakingId,
+  reveal,
+  dragging,
   disabled,
   onOpen,
+  onStartDrag,
 }: Props) {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-[128px] pt-1">
@@ -36,15 +47,29 @@ export function ClueGrid({
             );
           }
 
+          const placedSwatchId = placements[clue.id];
+          const placedSwatch = stage.clues.find((item) => item.id === placedSwatchId) ?? null;
+
           return (
             <ClueCard
               key={clue.id}
               clue={clue}
-              isMatched={matchedIds.includes(clue.id)}
+              isLocked={matchedIds.includes(clue.id)}
+              placedSwatch={placedSwatch}
               isDragOver={dragOverId === clue.id}
-              isShaking={shakingId === clue.id}
+              reveal={
+                reveal?.correctIds.includes(clue.id)
+                  ? "correct"
+                  : reveal?.wrongIds.includes(clue.id)
+                    ? "wrong"
+                    : null
+              }
+              isDraggingSwatch={
+                dragging?.sourceCardId === clue.id && dragging.id === placedSwatchId
+              }
               disabled={disabled}
               onOpen={onOpen}
+              onStartDrag={onStartDrag}
             />
           );
         })}

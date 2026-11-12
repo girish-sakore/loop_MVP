@@ -164,11 +164,9 @@ export function InteractionRenderer({
     case "color-match":
       return (
         <ColorMatchInteraction
-          key={`${stage.id}:${retryCount}`}
           stage={stage}
           onAnswer={onAnswer}
           disabled={disabled}
-          retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
         />
