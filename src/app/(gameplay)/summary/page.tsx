@@ -4,11 +4,12 @@ import BottomNav from "@/components/layout/bottom-nav";
 import { SummaryHero } from "@/components/summary/summary-hero";
 import { getFeaturedEdition } from "@/features/editions/edition-content";
 import "../../marketing.css";
-import Navbar from "@/components/layout/navbar";
+import Navbar from "@/components/layout/navbar-server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { BlogReveal } from "@/components/summary/blog-reveal";
+import { Header } from "@/components/landing/sections";
 
 export default async function SummaryPage() {
   const edition = await getFeaturedEdition();
@@ -44,6 +45,7 @@ export default async function SummaryPage() {
   return (
     <MobileContainer>
       <Navbar />
+      {/* <Header /> */}
       <main>
         <SummaryHero
           editionTitle={edition.title}

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import "@/styles/marketing.css";
 import { bricolage, inter } from "@/lib/marketing-fonts";
 import { Header, Footer } from "@/components/landing/sections";
 import { getAuthSession } from "@/lib/auth-session";
 import { PricingBenefits } from "@/components/pricing/pricing-benefits";
 import { PricingCheckout } from "@/components/pricing/pricing-checkout";
 import { PricingManage } from "@/components/pricing/pricing-manage";
+import Navbar from "@/components/layout/navbar-server";
 import {
   PricingExtras,
   SignInToSubscribe,
@@ -21,12 +21,12 @@ export default async function PricingPage() {
   const session = await getAuthSession();
   const user = session?.user as
     | {
-        email?: string;
-        name?: string | null;
-        isPremium?: boolean;
-        plan?: string;
-        subscriptionEnd?: string | null;
-      }
+      email?: string;
+      name?: string | null;
+      isPremium?: boolean;
+      plan?: string;
+      subscriptionEnd?: string | null;
+    }
     | undefined;
 
   const isPremium = user?.isPremium ?? false;
@@ -35,8 +35,6 @@ export default async function PricingPage() {
 
   return (
     <main className={`landing ${bricolage.variable} ${inter.variable}`}>
-      <Header />
-
       <div className="p-wrap">
         <section className="p-head">
           <p className="l-kicker">Premium</p>

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
-import "@/styles/marketing.css";
 import { bricolage, inter } from "@/lib/marketing-fonts";
-import { Header, Footer } from "@/components/landing/sections";
+import { Footer } from "@/components/landing/sections";
 
 export type LegalSection = {
   title: string;
@@ -31,7 +30,6 @@ function Item({ text }: { text: string }) {
 export function LegalPage({ title, lastUpdated, intro, sections }: Props) {
   return (
     <main className={`landing ${bricolage.variable} ${inter.variable}`}>
-      <Header />
       <article className="l-legal">
         <p className="l-kicker">Legal</p>
         <h1 className="l-display l-h1">{title}</h1>

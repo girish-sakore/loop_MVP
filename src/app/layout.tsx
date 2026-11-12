@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { anton, abril, dmSans, titanOne } from "@/lib/fonts";
 import { themeInitScript } from "@/lib/matchbox/palettes";
+import "../styles/marketing.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

@@ -3,14 +3,24 @@ import {
   PLAY_HREF, HERO, VIDEO, GAMES_HEAD, GAMES, GAMES_NOTE,
   WHY, VALUES, PLAY_BAND, FOOTER,
 } from "@/features/landing/landing-content";
+import Link from "next/link";
 
 export function Header() {
   return (
-      <header className="l-header">
-      <div className="l-logo">LOOP<i>.</i></div>
+
+    <header className="site-header">
+      <div className="site-header-inner">
+        <Link href="/" className="site-brand" aria-label="Loop home">
+          LOOP<span>.</span>
+        </Link>
+      </div>
       <a className="l-btn l-btn--primary l-btn--sm" href={PLAY_HREF}>Play today&apos;s theme</a>
-      {/* <Link href="/login" className="site-sign-in">Sign in</Link> */}
     </header>
+
+
+    //   <header className="l-header">
+    //   <div className="l-logo">LOOP<i>.</i></div>
+    // </header>
   );
 }
 
