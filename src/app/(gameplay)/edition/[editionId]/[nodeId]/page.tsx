@@ -6,7 +6,7 @@ import { getUserNodeProgress } from "@/lib/edition-progress";
 import type { Stage, StageType } from "@/types/gameplay";
 import { getEditionById, getFeaturedEdition } from "@/features/editions/edition-content";
 import { hasPremium } from "@/lib/premium";
-import { sanitizeHintsUsed } from "@/features/gameplay/progress/resume";
+import { sanitizeAnswerResults, sanitizeHintsUsed } from "@/features/gameplay/progress/resume";
 
 type PageProps = {
   params: Promise<{ editionId: string; nodeId: string }>;
@@ -67,6 +67,7 @@ export default async function NodeGameplayPage({ params, searchParams }: PagePro
               score: nodeProgress.score,
               correctAnswers: nodeProgress.correctAnswers,
               totalAnswers: nodeProgress.totalAnswers,
+              answerResults: sanitizeAnswerResults(nodeProgress.answerResults),
               hintsUsed: sanitizeHintsUsed(nodeProgress.hintsUsed),
             }
             : undefined

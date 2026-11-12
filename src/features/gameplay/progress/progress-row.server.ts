@@ -3,7 +3,7 @@
 import { Prisma, type UserNodeProgress } from "@prisma/client";
 import { normalizeSnapshot, type GameplaySnapshot } from "./resume";
 
-type Row = Pick<UserNodeProgress, "currentSubStage" | "attemptsRemaining" | "stagePassed" | "score" | "correctAnswers" | "totalAnswers"> & {
+type Row = Pick<UserNodeProgress, "currentSubStage" | "attemptsRemaining" | "stagePassed" | "score" | "correctAnswers" | "totalAnswers" | "answerResults"> & {
   hintsUsed: unknown;
   clientUpdatedAt: bigint;
   version: number;
@@ -24,6 +24,7 @@ export function rowToSnapshot(row: Row | null): GameplaySnapshot | null {
     score: row.score,
     correctAnswers: row.correctAnswers,
     totalAnswers: row.totalAnswers,
+    answerResults: row.answerResults,
     stagePassed: row.stagePassed,
     hintsUsed: row.hintsUsed,
     interactionState: {}, // never stored server-side
@@ -39,6 +40,7 @@ export function snapshotToRowData(snapshot: GameplaySnapshot) {
     score: snapshot.score,
     correctAnswers: snapshot.correctAnswers,
     totalAnswers: snapshot.totalAnswers,
+    answerResults: snapshot.answerResults as Prisma.InputJsonValue,
     hintsUsed: snapshot.hintsUsed as Prisma.InputJsonValue,
     clientUpdatedAt: BigInt(snapshot.updatedAt),
     version: snapshot.version,

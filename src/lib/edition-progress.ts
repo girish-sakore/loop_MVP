@@ -2,6 +2,11 @@ import { prisma } from "@/lib/db";
 
 export type ProgressStatus = "not_started" | "in_progress" | "completed";
 
+const normalizeProgressStatus = (status: string): ProgressStatus => {
+  const normalized = status.toLowerCase();
+  return normalized === "completed" || normalized === "in_progress" ? normalized : "not_started";
+};
+
 export type EditionProgress = {
   status: ProgressStatus;
   currentNodeIndex: number;
@@ -20,6 +25,7 @@ export type NodeProgress = {
   score: number;
   correctAnswers: number;
   totalAnswers: number;
+  answerResults: unknown;
   stars: number;
   hintsUsed: unknown;
   startedAt: Date | null;
@@ -35,7 +41,7 @@ export async function getUserEditionProgress(userId: string, editionId: string):
   }
   return {
     ...progress,
-    status: progress.status as ProgressStatus,
+    status: normalizeProgressStatus(progress.status),
   };
 }
 
@@ -47,7 +53,7 @@ export async function getAllUserNodeProgress(userId: string, editionId: string):
       r.nodeId,
       {
         ...r,
-        status: r.status as ProgressStatus,
+        status: normalizeProgressStatus(r.status),
         attemptsRemaining: r.attemptsRemaining ?? null,
       },
     ]),
@@ -59,10 +65,10 @@ export async function getUserNodeProgress(userId: string, editionId: string, nod
     where: { userId_editionId_nodeId: { userId, editionId, nodeId } },
   });
   if (!progress) {
-    return { status: "not_started", currentSubStage: 0, attemptsRemaining: null, stagePassed: false, score: 0, correctAnswers: 0, totalAnswers: 0, stars: 0, hintsUsed: {}, startedAt: null, completedAt: null };
+    return { status: "not_started", currentSubStage: 0, attemptsRemaining: null, stagePassed: false, score: 0, correctAnswers: 0, totalAnswers: 0, answerResults: {}, stars: 0, hintsUsed: {}, startedAt: null, completedAt: null };
   }
   return {
     ...progress,
-    status: progress.status as ProgressStatus,
+    status: normalizeProgressStatus(progress.status),
   };
 }

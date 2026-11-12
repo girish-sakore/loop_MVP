@@ -1,38 +1,71 @@
-import { MobileContainer } from "@/components/layout/mobile-container";
-import { PricingHeader } from "@/components/pricing/pricing-header";
+import type { Metadata } from "next";
+import "@/styles/marketing.css";
+import { bricolage, inter } from "@/lib/marketing-fonts";
+import { Header, Footer } from "@/components/landing/sections";
+import { getAuthSession } from "@/lib/auth-session";
 import { PricingBenefits } from "@/components/pricing/pricing-benefits";
 import { PricingCheckout } from "@/components/pricing/pricing-checkout";
 import { PricingManage } from "@/components/pricing/pricing-manage";
-import { getAuthSession } from "@/lib/auth-session";
+import {
+  PricingExtras,
+  SignInToSubscribe,
+} from "@/components/pricing/pricing-extras";
+
+export const metadata: Metadata = {
+  title: "Pricing | Loop",
+  description:
+    "Play every game and every past edition with Loop Premium. Free to start, cancel anytime.",
+};
 
 export default async function PricingPage() {
   const session = await getAuthSession();
-  const user = session?.user;
-  const isPremium = (user as { isPremium?: boolean })?.isPremium ?? false;
-  const plan = (user as { plan?: string })?.plan ?? "yearly";
-  const subscriptionEnd =
-    (user as { subscriptionEnd?: string })?.subscriptionEnd ?? null;
+  const user = session?.user as
+    | {
+        email?: string;
+        name?: string | null;
+        isPremium?: boolean;
+        plan?: string;
+        subscriptionEnd?: string | null;
+      }
+    | undefined;
+
+  const isPremium = user?.isPremium ?? false;
+  const plan = user?.plan ?? "yearly";
+  const subscriptionEnd = user?.subscriptionEnd ?? null;
 
   return (
-    <MobileContainer>
-      <PricingHeader />
-      <main className="flex flex-col gap-10 px-6 pt-6 pb-16">
+    <main className={`landing ${bricolage.variable} ${inter.variable}`}>
+      <Header />
+
+      <div className="p-wrap">
+        <section className="p-head">
+          <p className="l-kicker">Premium</p>
+          <h1 className="l-display l-h1">Pick how often you play.</h1>
+          <p className="l-lead">
+            Start free. Upgrade when Loop becomes a habit.
+          </p>
+        </section>
+
         <PricingBenefits />
 
         {isPremium ? (
           <PricingManage
             plan={plan}
-            subscriptionEnd={
-              subscriptionEnd ? new Date(subscriptionEnd) : null
-            }
+            subscriptionEnd={subscriptionEnd ? new Date(subscriptionEnd) : null}
+          />
+        ) : user?.email ? (
+          <PricingCheckout
+            userEmail={user.email}
+            userName={user.name ?? undefined}
           />
         ) : (
-          <PricingCheckout
-            userEmail={user?.email}
-            userName={user?.name ?? undefined}
-          />
+          <SignInToSubscribe />
         )}
-      </main>
-    </MobileContainer>
+
+        <PricingExtras />
+      </div>
+
+      <Footer />
+    </main>
   );
 }

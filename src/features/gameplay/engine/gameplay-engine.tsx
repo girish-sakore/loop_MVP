@@ -27,6 +27,7 @@ import type { Stage, StageHints } from "@/types/gameplay";
 import { createHintsApi } from "@/features/gameplay/hints/api";
 import { buildHintPlan, usageKey } from "@/features/gameplay/hints/registry";
 import { closePreviewTab } from "@/features/gameplay/preview/close-preview";
+import { deckStages, nextIndexAfterStage } from "@/features/gameplay/engine/deck";
 
 interface GameplayEngineProps {
   editionId: string;
@@ -54,15 +55,13 @@ export function GameplayEngine({
   const [retryCount, setRetryCount] = useState(0);
   // Bumped when another device is ahead, so the game remounts with the new state.
   const [epoch, setEpoch] = useState(0);
-  const [feedback, setFeedback] = useState<{ open: boolean; correct: boolean; message: string }>(
+  const [feedback, setFeedback] = useState<{ open: boolean; correct: boolean; message: string; singlePass?: boolean }>(
     { open: false, correct: false, message: "" });
   const [introState, setIntroState] = useState<{ key: string; dismissed: boolean } | null>(null);
   const {
     currentStage,
     attemptsRemaining,
-    score,
-    correctAnswers,
-    totalAnswers,
+    answerResults,
     completed,
     hintsUsed,
     interactionState,
@@ -90,36 +89,56 @@ export function GameplayEngine({
     hasNavigated.current = false;
     const locked = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
     answerLocked.current = locked;
-    setFeedback({
-      open: locked,
-      correct: snapshot.stagePassed,
-      message: snapshot.stagePassed
-        ? "You already completed this stage. Continue to the next one."
-        : locked ? "No attempts remaining for this stage." : "",
-    });
+
+    const deck = deckStages(stages, snapshot.currentStage);
+    if (deck.length > 0 && snapshot.stagePassed) {
+      const right = deck.filter((s) => snapshot.answerResults[s.id]?.isCorrect).length;
+      setFeedback({
+        open: true,
+        correct: !!snapshot.answerResults[deck[deck.length - 1].id]?.isCorrect,
+        message: `You got ${right} of ${deck.length} right.`,
+        singlePass: true,
+      });
+    } else {
+      setFeedback({
+        open: locked,
+        correct: snapshot.stagePassed,
+        message: snapshot.stagePassed
+          ? "You already completed this stage. Continue to the next one."
+          : locked ? "No attempts remaining for this stage." : "",
+      });
+    }
     const started = snapshot.totalAnswers > 0 || snapshot.currentStage > 0;
     setIntroState((prev) => ({
       key: sessionKey,
       dismissed: (prev?.key === sessionKey && prev.dismissed) || started,
     }));
-  }, [restore, sessionKey]);
+  }, [restore, sessionKey, stages]);
 
   const handleRemote = useCallback((remote: GameplaySnapshot) => {
     if (isReplay) return;
     if (hasNavigated.current) return;
     const local = pickSnapshot(useGameplayStore.getState());
-    if (compareProgress(remote, local) > 0) {
+    const progressComparison = compareProgress(remote, local);
+    const merged = mergeSnapshots(local, remote);
+    if (progressComparison > 0) {
       // Another device is further along: adopt it and remount the game.
       // The stage differs from what we had, so drop any local game-in-progress
       // state — it belonged to the old stage.
-      const merged = { ...mergeSnapshots(local, remote), interactionState: {} };
-      applySnapshot(merged);
-      try { saveSnapshot(localStorage, gameplayKey, merged); } catch { /* storage blocked */ }
+      const remoteAhead = { ...merged, interactionState: {} };
+      applySnapshot(remoteAhead);
+      try { saveSnapshot(localStorage, gameplayKey, remoteAhead); } catch { /* storage blocked */ }
       setEpoch((e) => e + 1);
     } else {
+      // A retry can replace an answer without changing the stage index or
+      // answer count. Merge that per-question update even when neither device
+      // is structurally further ahead.
+      if (JSON.stringify(merged.answerResults) !== JSON.stringify(local.answerResults)) {
+        restore({ ...merged, interactionState: local.interactionState });
+      }
       applyRemoteHints(remote.hintsUsed);
     }
-  }, [applySnapshot, applyRemoteHints, gameplayKey, isReplay]);
+  }, [applySnapshot, applyRemoteHints, gameplayKey, isReplay, restore]);
 
   const { save, flush } = useProgressSync({
     editionId,
@@ -156,6 +175,7 @@ export function GameplayEngine({
         score: 0,
         correctAnswers: 0,
         totalAnswers: 0,
+        answerResults: {},
         hintsUsed: {},
         interactionState: {},
       };
@@ -183,10 +203,12 @@ export function GameplayEngine({
     await fetch("/api/progress/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ editionId, nodeId, score, correctAnswers, totalAnswers }),
+      // The completion route derives persisted totals and score from this
+      // per-question ledger; summary counters are intentionally not trusted.
+      body: JSON.stringify({ editionId, nodeId, answerResults }),
     }).catch(() => { });
     try { localStorage.removeItem(gameplayKey); } catch { /* storage blocked */ }
-  }, [editionId, nodeId, preview, score, correctAnswers, totalAnswers, gameplayKey, flush, isReplay]);
+  }, [editionId, nodeId, preview, answerResults, gameplayKey, flush, isReplay]);
 
   useEffect(() => {
     if (!ready) return;
@@ -217,25 +239,27 @@ export function GameplayEngine({
     correct,
     feedback: message,
     points,
-    totalAnswers: answerCount = 1,
-    correctAnswers: correctAnswerCount = correct ? 1 : 0,
+    results,
+    singlePass,
   }: {
     correct: boolean;
     feedback: string;
     points?: number;
-    totalAnswers?: number;
-    correctAnswers?: number;
+    results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
+    singlePass?: boolean;
   }) {
     if (answerLocked.current) return;
     registerResult({
-      correct,
-      points: points ?? stage?.points ?? 0,
-      totalAnswers: answerCount,
-      correctAnswers: correctAnswerCount,
+      correct: singlePass ? true : correct,
+      results: results ?? [{
+        questionId: stage?.id ?? "",
+        isCorrect: correct,
+        points: points ?? stage?.points ?? 0,
+      }],
     });
     const snapshot = useGameplayStore.getState();
     answerLocked.current = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
-    setFeedback({ open: true, correct, message });
+    setFeedback({ open: true, correct, message, singlePass });
     syncStage();
   }
 
@@ -252,21 +276,18 @@ export function GameplayEngine({
     if (!stage) return;
     advanceStage();
   }
-
   async function advanceStage() {
-    const nextIndex = currentStage + 1;
+    const nextIndex = nextIndexAfterStage(stages, currentStage);
     const nextAttempts = stages[nextIndex]?.attemptsAllowed ?? 0;
-    nextStage(stages.length, nextAttempts);
+    nextStage(stages.length, nextAttempts, nextIndex);
     answerLocked.current = false;
-    // The completion endpoint is the only terminal write. Sending this last
-    // stage snapshot can otherwise race with it and reopen a completed node.
     if (nextIndex < stages.length) syncStage();
   }
 
   async function handleContinue() {
     setFeedback((s) => ({ ...s, open: false }));
     if (!stage) return;
-    if (feedback.correct || attemptsRemaining <= 0) {
+    if (feedback.singlePass || feedback.correct || attemptsRemaining <= 0) {
       await advanceStage();
     }
   }
@@ -328,6 +349,7 @@ export function GameplayEngine({
       <FeedbackModal
         open={feedback.open}
         correct={feedback.correct}
+        singlePass={feedback.singlePass}
         message={feedback.message}
         attemptsRemaining={attemptsRemaining}
         onContinue={handleContinue}
