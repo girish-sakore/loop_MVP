@@ -1,11 +1,11 @@
-import Navbar from "@/components/layout/navbar";
+import Navbar from "@/components/layout/navbar-server";
 import React from "react";
 import "../marketing.css";
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="marketing-shell">
-      {/* <Navbar /> */}
+      <Navbar />
       <main className="marketing-content">{children}</main>
     </div>
   );

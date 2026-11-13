@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "@/styles/marketing.css";
 import { bricolage, inter } from "@/lib/marketing-fonts";
 import {
   Header, Hero, VideoSection, WhySection, GamesSection,
@@ -20,7 +19,6 @@ export default async function LandingPage() {
   if (session?.user) redirect("/map"); if (session?.user) redirect("/map");
   return (
     <main className={`landing ${bricolage.variable} ${inter.variable}`}>
-      <Header />
       <Hero />
       <VideoSection />
       <WhySection />
