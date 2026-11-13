@@ -1,4 +1,4 @@
-.landing {
+.marketing-shell {
   --paper: #F1E6CC;
   --card: #FBF3E0;
   --ink: #1E1B2E;
@@ -14,23 +14,23 @@
   -webkit-font-smoothing: antialiased
 }
 
-.landing * {
+.marketing-shell * {
   box-sizing: border-box
 }
 
-.landing a {
+.marketing-shell a {
   /* color: inherit; */
   text-decoration: none
 }
 
-.landing h1,
-.landing h2,
-.landing h3,
-.landing p {
+.marketing-shell h1,
+.marketing-shell h2,
+.marketing-shell h3,
+.marketing-shell p {
   margin: 0
 }
 
-.landing :focus-visible {
+.marketing-shell :focus-visible {
   outline: 3px solid var(--ink);
   outline-offset: 2px
 }
@@ -304,7 +304,7 @@
 }
 
 @media (prefers-reduced-motion:reduce) {
-  .landing * {
+  .marketing-shell * {
     transition: none !important
   }
 }

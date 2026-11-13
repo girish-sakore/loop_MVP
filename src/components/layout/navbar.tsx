@@ -15,7 +15,7 @@ const PLAY_HREF = "/map";
 const PLAY_PAGES = [
   "/terms-of-service",
   "/privacy-policy",
-  "/login",
+  // "/login",
   "/pricing",
 ];
 
@@ -54,11 +54,7 @@ export default function NavbarClient({ user }: NavbarProps) {
           {!isLoggedIn && showPlayButton && (
             <Link
               href={PLAY_HREF}
-              className="l-btn l-btn--primary l-btn--sm"
-              // style={{
-              //   background: "var(--accent)",
-              //   color: "var(--on-accent)",
-              // }} TODO
+              className="site-sign-in"
             >
               Play Today&apos;s Edition
             </Link>
