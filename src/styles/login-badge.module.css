@@ -57,7 +57,6 @@
   border-radius: 4px;
   background: var(--badge-bg);
   color: var(--badge-fg);
-  font-family: "Open Sans", sans-serif;
   font-size: var(--badge-font-size);
   font-weight: 600;
   letter-spacing: 0.08em;
