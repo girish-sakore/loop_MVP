@@ -147,11 +147,30 @@ function ImageTextSAnswerIntro({
   return (
     <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#4aa8ee] px-5 pb-12 pt-8 text-[#0b0b0f]">
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-4 [@media(orientation:landscape)_and_(max-height:500px)]:flex-row [@media(orientation:landscape)_and_(max-height:500px)]:gap-6">
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18, duration: 0.28 }}
+          className="mb-6 text-center"
+        >
+          <h1
+            className="mx-auto max-w-[320px] text-center leading-none"
+            style={{
+              fontFamily: "Anton",
+              letterSpacing: "1px",
+              fontWeight: 500,
+              fontSize: "35px",
+            }}
+          >
+            {title}
+          </h1>
+        </motion.div>
         <motion.div
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.28, ease: [0.2, 0.9, 0.2, 1] }}
-          className="mb-4 h-[200px] w-full max-w-[280px] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] shadow-[0_8px_0_rgba(11,11,15,0.16)]"
+          className="mb-4 h-[300px] w-full max-w-[280px] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] shadow-[0_8px_0_rgba(11,11,15,0.16)]"
         >
           {image ? (
             <img
@@ -174,9 +193,6 @@ function ImageTextSAnswerIntro({
           transition={{ delay: 0.18, duration: 0.28 }}
           className="mb-6 text-center"
         >
-          <h1 className="font-display mx-auto max-w-[340px] text-[28px] leading-none">
-            {title}
-          </h1>
           <p className="mx-auto mt-3 max-w-[320px] text-[15px] font-semibold leading-snug text-[#1f2933]">
             Look at the image carefully and guess what it shows or what place it represents.
           </p>

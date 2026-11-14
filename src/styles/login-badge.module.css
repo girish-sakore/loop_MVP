@@ -7,14 +7,21 @@
 /* The hanging piece. Pivot is the nail at the top, so it swings like a tag. */
 .badges {
   /* ---- Tweak these ---- */
-  --badge-bg: #b22a1f;        /* pill color */
-  --badge-fg: #ffffff;        /* text color */
-  --badge-font-size: 12px;    /* text size */
-  --badge-padding-y: 6px;     /* pill height */
-  --badge-padding-x: 14px;    /* pill width */
-  --string-length: 28px;      /* how long the string is */
+  --badge-bg: #b22a1f;
+  /* pill color */
+  --badge-fg: #ffffff;
+  /* text color */
+  --badge-font-size: 12px;
+  /* text size */
+  --badge-padding-y: 6px;
+  /* pill height */
+  --badge-padding-x: 14px;
+  /* pill width */
+  --string-length: 28px;
+  /* how long the string is */
   --string-color: #333;
-  --badge-left: 345px;         /* distance from card's left edge */
+  --badge-left: 345px;
+  /* distance from card's left edge */
   /* --------------------- */
 
   position: absolute;
@@ -53,7 +60,8 @@
   position: relative;
   display: inline-block;
   white-space: nowrap;
-  padding: 10px 18px 16px;          /* extra bottom space for the striker */
+  padding: 10px 18px 16px;
+  /* extra bottom space for the striker */
   border-radius: 4px;
   background: var(--badge-bg);
   color: var(--badge-fg);
@@ -78,21 +86,47 @@
   width: 60%;
   height: 5px;
   border-radius: 1px;
-  background: repeating-linear-gradient(
-    90deg,
-    #7a2e1a 0 2px,
-    #a64a2e 2px 4px
-  );
+  background: repeating-linear-gradient(90deg,
+      #7a2e1a 0 2px,
+      #a64a2e 2px 4px);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
+
 @keyframes swing {
-  0%   { transform: rotate(4deg); }
-  50%  { transform: rotate(-4deg); }
-  100% { transform: rotate(4deg); }
+  0% {
+    transform: rotate(4deg);
+  }
+
+  50% {
+    transform: rotate(-4deg);
+  }
+
+  100% {
+    transform: rotate(4deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .badges {
     animation: none;
   }
+}
+
+@media (max-width: 520px) {
+  .badges {
+    top: 10px;
+    left:unset;
+    right: 0px;
+    width: 109px;
+  }
+
+  .badges span {
+    text-wrap: pretty;
+    text-align: center;
+    line-height: 13px;
+  }
+  .badgeText{
+    padding: 10px 13px 14px;
+  }
+
 }
