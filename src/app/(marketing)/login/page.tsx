@@ -15,8 +15,7 @@ export default async function LoginPage() {
         <div className={`${styles.badges}`}>
           <span className={`${styles.string}`} />
           <span className={`${styles.badgeText}`}>
-            <span>Free Beta</span>
-            <span> Access</span>
+            <span>Free Beta Access</span>
           </span>
         </div>
         <LoginForm />
