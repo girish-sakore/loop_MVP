@@ -583,6 +583,9 @@
   color: #c83727;
   font-weight: 800;
 }
+.marketing-shell p.auth-legal {
+    margin-top: 20px;
+}
 
 @media (max-width: 560px) {
   .site-header-inner {
@@ -604,7 +607,7 @@
   }
 
   .auth-card {
-    padding: 27px 20px 21px;
+    padding: 57px 20px 21px;
   }
 }
 
