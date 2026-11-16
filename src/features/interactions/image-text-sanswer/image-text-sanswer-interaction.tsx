@@ -16,6 +16,7 @@ type Props = {
   showIntro?: boolean;
   onIntroComplete?: () => void;
   hints?: StageHints;
+  editionTitle?: string; // for title
 };
 
 export function ImageTextSAnswerInteraction({
@@ -26,6 +27,7 @@ export function ImageTextSAnswerInteraction({
   showIntro = true,
   onIntroComplete,
   hints,
+  editionTitle,
 }: Props) {
   const [guess, setGuess] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -61,6 +63,7 @@ export function ImageTextSAnswerInteraction({
         title={stage.question}
         image={stage.image}
         onStart={onIntroComplete}
+        editionTitle={editionTitle}
       />
     );
   }
@@ -139,13 +142,15 @@ function ImageTextSAnswerIntro({
   title,
   image,
   onStart,
+  editionTitle,
 }: {
   title: string;
   image?: string;
   onStart?: () => void;
+  editionTitle?: string;
 }) {
   return (
-    <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#4aa8ee] px-5 pb-12 pt-8 text-[#0b0b0f]">
+    <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#f1e6cc] px-5 pb-12 pt-8 text-[#0b0b0f]">
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-4 [@media(orientation:landscape)_and_(max-height:500px)]:flex-row [@media(orientation:landscape)_and_(max-height:500px)]:gap-6">
 
         <motion.div
@@ -163,7 +168,7 @@ function ImageTextSAnswerIntro({
               fontSize: "35px",
             }}
           >
-            {title}
+            {editionTitle}
           </h1>
         </motion.div>
         <motion.div
@@ -206,7 +211,7 @@ function ImageTextSAnswerIntro({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         whileTap={{ y: 4, boxShadow: "0 2px 0 #0b0b0f" }}
         transition={{ delay: 0.36, duration: 0.3, ease: [0.2, 0.9, 0.2, 1] }}
-        className="relative h-14 w-full max-w-[340px] self-center rounded-full border-[3px] border-[#0b0b0f] bg-[#0b0b0f] text-[16px] font-extrabold text-white shadow-[0_6px_0_rgba(11,11,15,0.25)]"
+        className="relative h-14 w-full max-w-[340px] self-center rounded-lg border-[3px] border-[#0b0b0f] bg-[#0b0b0f] text-[16px] font-extrabold text-white shadow-[0_6px_0_rgba(11,11,15,0.25)]"
       >
         Start
       </motion.button>
