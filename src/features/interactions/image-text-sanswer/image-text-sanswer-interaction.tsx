@@ -16,6 +16,7 @@ type Props = {
   showIntro?: boolean;
   onIntroComplete?: () => void;
   hints?: StageHints;
+  editionTitle?: string;
 };
 
 export function ImageTextSAnswerInteraction({
@@ -99,12 +100,6 @@ export function ImageTextSAnswerInteraction({
         </motion.div>
 
         <div className="w-full max-w-[340px]">
-          <label
-            htmlFor="guess-input"
-            className="mb-2 block text-[14px] font-bold text-[#0b0b0f]"
-          >
-            What is this place or what does it show?
-          </label>
           <input
             id="guess-input"
             type="text"
@@ -154,6 +149,12 @@ function ImageTextSAnswerIntro({
           transition={{ delay: 0.18, duration: 0.28 }}
           className="mb-6 text-center"
         >
+          <span
+            className="mb-6 inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#0000] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#2B2A25]"
+            style={{ color: "var(--on-surface)" }}
+          >
+            Todays Edition
+          </span>
           <h1
             className="mx-auto max-w-[320px] text-center leading-none"
             style={{

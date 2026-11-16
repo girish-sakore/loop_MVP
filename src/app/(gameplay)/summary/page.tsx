@@ -9,7 +9,8 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { BlogReveal } from "@/components/summary/blog-reveal";
-import { Header } from "@/components/landing/sections";
+import { sanitizeAnswerResults } from "@/features/gameplay/progress/resume";
+import { buildSummaryItems } from "@/features/summery/build-summary-items";
 
 export default async function SummaryPage() {
   const edition = await getFeaturedEdition();
@@ -20,14 +21,9 @@ export default async function SummaryPage() {
   if (!userId) redirect("/login"); // use whatever your sign-in route is
 
   const rows = await prisma.userNodeProgress.findMany({
-    where: {
-      userId,
-      editionId: edition.id,
-      nodeId: { in: edition.nodes.map((n) => n.id) },
-    },
-    select: { score: true, correctAnswers: true, totalAnswers: true },
+    where: { userId, editionId: edition.id, nodeId: { in: edition.nodes.map((n) => n.id) } },
+    select: { nodeId: true, score: true, correctAnswers: true, totalAnswers: true, answerResults: true },
   });
-
   const totals = rows.reduce(
     (acc, r) => ({
       score: acc.score + r.score,
@@ -41,7 +37,12 @@ export default async function SummaryPage() {
     (sum, n) => sum + (n.subStages?.length ?? 1),
     0,
   );
+  // totals reduce stays exactly as it is
 
+  const resultsByNode = Object.fromEntries(
+    rows.map((r) => [r.nodeId, sanitizeAnswerResults(r.answerResults)]),
+  );
+  const items = buildSummaryItems(edition.nodes, resultsByNode);
   return (
     <MobileContainer>
       <Navbar />
@@ -53,8 +54,8 @@ export default async function SummaryPage() {
           category={edition.category ?? ""}
           {...totals}
         />
-        <BlogReveal />
-      </main>
+        <BlogReveal items={items} />      
+        </main>
       <BottomNav />
     </MobileContainer>
   );

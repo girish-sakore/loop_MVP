@@ -1063,7 +1063,38 @@ body {
   outline: 3px solid var(--yel);
   outline-offset: 3px
 }
+/* Append to your existing BlogReveal CSS. Nothing else changes. */
 
+.blog .tabs {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.blog .tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.blog .tab {
+  flex: none;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 248, 232, 0.3);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Active tab: swap these for your cream / dark tokens if you have them */
+.blog .tab[aria-pressed="true"] {
+  background: #fff8e8;
+  border-color: #fff8e8;
+  color: #1d1b18;
+}
 /* floating nav */
 .nav {
   position: fixed;
