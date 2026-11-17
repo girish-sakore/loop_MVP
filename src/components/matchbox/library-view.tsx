@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import ThemePicker from "./theme-picker";
-import { getAuthSession } from "@/lib/auth-session";
-import { redirect } from "next/navigation";
 
 export interface LibraryEdition {
   id: string;
@@ -34,11 +32,8 @@ const shortDate = (value?: string) => {
   return new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "2-digit", month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(y, m, d)));
 };
 
-export default async function LibraryView({ editions }: { editions: LibraryEdition[] }) {
-  const session = await getAuthSession();
-  if (!session?.user) redirect("/login");
+export default function LibraryView({ editions, premiumUser }: { editions: LibraryEdition[], premiumUser: boolean }) {
 
-  const premium = session.user.isPremium;
   const categories = useMemo(() => Array.from(new Set(editions.map((e) => e.category))), [editions]);
   const catIndex = (c: string) => Math.max(0, categories.indexOf(c));
 
@@ -81,14 +76,12 @@ export default async function LibraryView({ editions }: { editions: LibraryEditi
         <p>Every box, week by week.</p>
       </header>
 
-      {!premium && (
+      {!premiumUser && (
         <div className="library-promo">
           <b>Access all past puzzles</b>
           <Link href="/pricing">Go Premium</Link>
         </div>
       )}
-
-      <div className="library-theme-picker"><ThemePicker /></div>
 
       <div className="library-section-title">Calendar</div>
       <section className="library-calendar" aria-label="Edition calendar">
