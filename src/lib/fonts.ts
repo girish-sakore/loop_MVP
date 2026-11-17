@@ -1,10 +1,5 @@
-import { Abril_Fatface, Anton, Cinzel, DM_Sans, Titan_One } from "next/font/google";
+import { Abril_Fatface, Anton, DM_Sans, Titan_One } from "next/font/google";
 
-export const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["700", "800"],
-  display: "swap",
-});
 
 /** Matchbox theme fonts. Their CSS variables must be on <html> (see app/layout.tsx). */
 export const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm", display: "swap" });
