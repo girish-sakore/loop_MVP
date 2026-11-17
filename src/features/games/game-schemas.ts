@@ -21,7 +21,15 @@ const hintList = z.array(z.object({ id: hintId, text })).max(10).superRefine((va
   if (dupes(value.map((hint) => hint.id)).length) bad(ctx, "Hint ids must be unique");
 }).optional();
 const hintFields = { hints: hintList, hintsAllowed: z.number().int().min(0).max(10).optional() };
-
+const summary = z
+  .object({
+    body: text,
+    sources: z
+      .array(z.object({ label: text, url: z.string().trim().url().refine((u) => u.startsWith("https://"), "Must be https://") }))
+      .max(4)
+      .optional(),
+  })
+  .optional();
 // Fields every substage shares. Unknown keys (old ids, mapTitle...) are stripped by default.
 const base = {
   id: stageId.optional(),
@@ -29,6 +37,7 @@ const base = {
   attemptsAllowed: z.number().int().min(1).max(10).default(3),
   points: z.number().int().min(0).default(100),
   ...hintFields,
+  summary,
 };
 
 const placeholderIds = (s: string) => [...s.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]);
@@ -183,6 +192,7 @@ const clueConnect = z.object({
       z.object({
         id: hintId,
         ...hintFields,
+        summary,
         category: text,
         answer: text,
         icon: optText,
@@ -208,7 +218,7 @@ const colorMatch = z.object({
   eyebrow: optText,
   title: optText,
   clues: z
-    .array(z.object({ id: text, hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"), clue1: text, hint: text, name: text }))
+    .array(z.object({ id: text, hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"), clue1: text, hint: text, name: text, summary }))
     .min(2),
   feedback,
 });
