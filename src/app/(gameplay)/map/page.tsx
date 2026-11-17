@@ -53,6 +53,8 @@ export default async function MapPage() {
 
   const session = await getAuthSession();
   if (!session?.user) redirect("/login");
+  
+  const premium = session.user.isPremium;
 
   const [streak, currentEdition] = await Promise.all([
     getStreak(session.user.id),
@@ -108,10 +110,12 @@ export default async function MapPage() {
             )}
             <StreakCard streak={streak} />
 
-            <div className="premium-promo">
-              <b>Get every game and the full archive</b>
-              <Link href="/pricing" className="premium-promo-action">Go Premium</Link>
-            </div>
+            { !premium && (
+              <div className="premium-promo">
+                <b>Get every game and the full archive</b>
+                <Link href="/pricing" className="premium-promo-action">Go Premium</Link>
+              </div>
+            )}
           </>
         ) : (
           <div className="card paper"><div className="note">No box today. Check back soon.</div></div>
