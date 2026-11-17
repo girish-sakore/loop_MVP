@@ -41,12 +41,13 @@ interface GameplayEngineProps {
   preview?: boolean;
   exitHref?: string; //  fallback if the tab can't close
   summaryHref?: string;  // where a finished preview goes
+  editionTitle?: string; // for guide screens 
 }
 
 const EMPTY: string[] = [];
 
 export function GameplayEngine({
-  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal", preview = false, exitHref, summaryHref = "" }: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal", preview = false, exitHref, summaryHref = "", editionTitle }: GameplayEngineProps) {
   const router = useRouter();
   const isReplay = mode === "replay";
   const hasNavigated = useRef(false);
@@ -341,6 +342,7 @@ export function GameplayEngine({
               hints={hints}
               interactionState={interactionState[stage.id]}
               onInteractionStateChange={(s) => handleInteractionStateChange(stage.id, s)}
+              editionTitle={editionTitle} // new
             />
           </motion.div>
         </AnimatePresence>

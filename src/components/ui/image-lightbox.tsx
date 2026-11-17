@@ -29,7 +29,7 @@ export function ImageLightbox({
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open image full screen"
-        className={`relative block aspect-[5/4] w-full overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#f3ece2] shadow-[0_8px_0_rgba(11,11,15,0.16)] ${className}`}
+        className={`relative block aspect-[5/4] w-full overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#000000] shadow-[0_8px_0_rgba(11,11,15,0.16)] ${className}`}
       >
         <img
           src={src}

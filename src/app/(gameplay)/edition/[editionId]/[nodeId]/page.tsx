@@ -52,6 +52,7 @@ export default async function NodeGameplayPage({ params, searchParams }: PagePro
     <MobileContainer>
       <GameplayEngine
         editionId={edition.id}
+        editionTitle={edition.title}
         nodeId={node.id}
         stages={stages}
         mode={isReplay ? "replay" : "normal"}
