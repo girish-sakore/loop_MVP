@@ -71,6 +71,7 @@ export async function POST(req: Request) {
             title: g.title,
             subtitle: g.subtitle ?? null,
             isPremium: g.isPremium,
+            inputMode: g.type === "fill-blank-text" ? g.inputMode : "letters",
             subStages: g.subStages as Prisma.InputJsonValue,
           })),
         },

@@ -11,7 +11,7 @@ type EditionRow = {
 };
 type GameRow = {
   id: string; type: string; title: string; subtitle: string | null;
-  isPremium: boolean; subStages: Prisma.JsonValue;
+  isPremium: boolean; inputMode: string; subStages: Prisma.JsonValue;
 };
 type SubStage = Record<string, unknown>;
 
@@ -33,7 +33,7 @@ export function buildSnapshot(edition: EditionRow, games: GameRow[]): Edition {
 
     const parsed = gameCardSchema.safeParse({
       type: g.type, title: g.title, subtitle: g.subtitle ?? undefined,
-      isPremium: g.isPremium, subStages: g.subStages,
+      isPremium: g.isPremium, inputMode: g.inputMode, subStages: g.subStages,
     });
     if (!parsed.success) {
       formatImportErrors(parsed.error).forEach((e) => errors.push({ path: `card "${g.title}" ${e.path}`, message: e.message }));
@@ -56,7 +56,9 @@ export function buildSnapshot(edition: EditionRow, games: GameRow[]): Edition {
 
     return {
       id: g.id, type: g.type, mapTitle: g.title, mapSubtitle: g.subtitle ?? "",
-      isPremium: g.isPremium, subStages,
+      isPremium: g.isPremium,
+      inputMode: g.type === "fill-blank-text" && g.inputMode === "text" ? "text" : "letters",
+      subStages,
     };
   });
 
