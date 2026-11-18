@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import BottomNav from "@/components/layout/bottom-nav";
 import { SummaryHero } from "@/components/summary/summary-hero";
-import { getFeaturedEdition } from "@/features/editions/edition-content";
+import { getEditionById, getFeaturedEdition } from "@/features/editions/edition-content";
+import { hasPremium } from "@/lib/premium";
 import "../../marketing.css";
 import Navbar from "@/components/layout/navbar-server";
 import { prisma } from "@/lib/db";
@@ -12,18 +13,30 @@ import { BlogReveal } from "@/components/summary/blog-reveal";
 import { sanitizeAnswerResults } from "@/features/gameplay/progress/resume";
 import { buildSummaryItems } from "@/features/summery/build-summary-items";
 
-export default async function SummaryPage() {
-  const edition = await getFeaturedEdition();
-  if (!edition) redirect("/map");
+type PageProps = {
+  searchParams: Promise<{ edition?: string | string[] }>;
+};
+
+export default async function SummaryPage({ searchParams }: PageProps) {
+  const { edition: editionParam } = await searchParams;
+  const requestedId = typeof editionParam === "string" ? editionParam : undefined;
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const userId = session?.user?.id;
-  if (!userId) redirect("/login"); // use whatever your sign-in route is
+  if (!session?.user?.id) redirect("/login"); // login check first
+  const userId = session.user.id;
+
+  const featured = await getFeaturedEdition();
+  const edition = requestedId ? await getEditionById(requestedId) : featured;
+  if (!edition) redirect("/map");
+
+  // archive is premium-only, same rule as the gameplay page
+  if (edition.id !== featured?.id && !hasPremium(session.user)) redirect("/pricing");
 
   const rows = await prisma.userNodeProgress.findMany({
     where: { userId, editionId: edition.id, nodeId: { in: edition.nodes.map((n) => n.id) } },
     select: { nodeId: true, score: true, correctAnswers: true, totalAnswers: true, answerResults: true },
   });
+
   const totals = rows.reduce(
     (acc, r) => ({
       score: acc.score + r.score,
@@ -33,20 +46,16 @@ export default async function SummaryPage() {
     { score: 0, correctAnswers: 0, totalAnswers: 0 },
   );
 
-  const totalStages = edition.nodes.reduce(
-    (sum, n) => sum + (n.subStages?.length ?? 1),
-    0,
-  );
-  // totals reduce stays exactly as it is
+  const totalStages = edition.nodes.reduce((sum, n) => sum + (n.subStages?.length ?? 1), 0);
 
   const resultsByNode = Object.fromEntries(
     rows.map((r) => [r.nodeId, sanitizeAnswerResults(r.answerResults)]),
   );
   const items = buildSummaryItems(edition.nodes, resultsByNode);
+
   return (
     <MobileContainer>
       <Navbar />
-      {/* <Header /> */}
       <main>
         <SummaryHero
           editionTitle={edition.title}
@@ -54,8 +63,8 @@ export default async function SummaryPage() {
           category={edition.category ?? ""}
           {...totals}
         />
-        <BlogReveal items={items} />      
-        </main>
+        <BlogReveal items={items} />
+      </main>
       <BottomNav />
     </MobileContainer>
   );

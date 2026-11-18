@@ -216,8 +216,11 @@ export function GameplayEngine({
     if ((completed || !stage) && !hasNavigated.current) {
       hasNavigated.current = true;
       completeProgress().then(() => {
-        const destination = preview ? (summaryHref || exitHref || "/admin") : (isReplay ? "/map" : "/summary");
-        // A preview is opened in its own disposable tab and does not carry any
+        const destination = preview
+          ? (summaryHref || exitHref || "/admin")
+          : isReplay
+            ? "/map"
+            : `/summary?edition=${encodeURIComponent(editionId)}`;        // A preview is opened in its own disposable tab and does not carry any
         // client state into its summary. Use a document navigation so completing
         // a preview does not depend on fetching an RSC payload mid-transition.
         if (preview) {

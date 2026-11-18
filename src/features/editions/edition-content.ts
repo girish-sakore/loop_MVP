@@ -44,7 +44,7 @@ const summaries = unstable_cache(
         select: {
           id: true, title: true, description: true, theme: true, category: true, coverImage: true, date: true,
           _count: { select: { games: true } },
-          games: { select: { id: true }, orderBy: { position: "asc" }, take: 1 },
+          games: { select: { id: true }, orderBy: { position: "asc" } },
         },
         take: 365,
       })
@@ -54,6 +54,7 @@ const summaries = unstable_cache(
       weekLabel: weekFmt.format(date!),
       gameCount: _count.games,
       firstGameId: games[0]?.id ?? null,
+      gameIds: games.map((g) => g.id),
     })),
   ["edition-summaries"],
   opts,
