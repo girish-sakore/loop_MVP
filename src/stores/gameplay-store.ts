@@ -30,18 +30,17 @@ type GameplayState = {
   stagePassed: boolean;
   hintsUsed: HintsUsed;
   updatedAt: number;
-  interactionState: Record<string, InteractionState>;
-  // Actions
+  interactionState: Record<string, Record<string, unknown>>;  // Actions
+  setInteractionState: (stageId: string, state: Record<string, unknown>) => void;
   restore: (snapshot: GameplaySnapshot) => void;
   setAttempts: (attempts: number) => void;
   setStage: (stage: number) => void;
   registerResult: (args: { correct: boolean; results: AnswerResultInput[] }) => void;
-  nextStage: (totalStages: number, nextAttempts: number) => void;
-  setInteractionState: (stageId: string, state: InteractionState) => void;
-  clearInteractionState: (stageId: string) => void;
+  nextStage: (totalStages: number, nextAttempts: number, targetIndex?: number) => void; clearInteractionState: (stageId: string) => void;
   revealHint: (bucket: string, id: string, group: string, plan: HintPlan) => boolean;
   applyRemoteHints: (remote: HintsUsed) => void;
   reset: () => void;
+
 };
 
 const initialState = {
@@ -105,9 +104,9 @@ export const useGameplayStore = create<GameplayState>((set, get) => ({
       };
     }),
 
-  nextStage: (totalStages, nextAttempts) =>
+  nextStage: (totalStages, nextAttempts, targetIndex) =>
     set((state) => {
-      const nextStage = state.currentStage + 1;
+      const nextStage = Math.max(targetIndex ?? state.currentStage + 1, state.currentStage + 1);
       const completed = nextStage >= totalStages;
       return {
         currentStage: completed ? state.currentStage : nextStage,

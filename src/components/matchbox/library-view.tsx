@@ -32,7 +32,8 @@ const shortDate = (value?: string) => {
   return new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "2-digit", month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(y, m, d)));
 };
 
-export default function LibraryView({ editions }: { editions: LibraryEdition[] }) {
+export default function LibraryView({ editions, premiumUser }: { editions: LibraryEdition[], premiumUser: boolean }) {
+
   const categories = useMemo(() => Array.from(new Set(editions.map((e) => e.category))), [editions]);
   const catIndex = (c: string) => Math.max(0, categories.indexOf(c));
 
@@ -75,12 +76,12 @@ export default function LibraryView({ editions }: { editions: LibraryEdition[] }
         <p>Every box, week by week.</p>
       </header>
 
-      <div className="library-promo">
-        <b>Access all past puzzles</b>
-        <Link href="/pricing">Go Premium</Link>
-      </div>
-
-      <div className="library-theme-picker"><ThemePicker /></div>
+      {!premiumUser && (
+        <div className="library-promo">
+          <b>Access all past puzzles</b>
+          <Link href="/pricing">Go Premium</Link>
+        </div>
+      )}
 
       <div className="library-section-title">Calendar</div>
       <section className="library-calendar" aria-label="Edition calendar">

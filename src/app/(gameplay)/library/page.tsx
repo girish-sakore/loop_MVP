@@ -28,7 +28,7 @@ export default async function LibraryPage() {
   return (
     <MobileContainer>
       <main className="mb mb-root mb-page library-page">
-        <LibraryView editions={editions} />
+        <LibraryView editions={editions} premiumUser={premium} />
       </main>
       <BottomNav />
     </MobileContainer>
