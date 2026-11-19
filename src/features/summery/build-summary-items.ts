@@ -1,8 +1,9 @@
 // features/summery/build-summary-items.ts
 import type { AnswerResults } from "@/features/gameplay/progress/resume";
+import { timelineQuestionId } from "@/features/gameplay/scoring";
 
 export type SummaryItem = {
-  id: string;
+  id: string; // also the key into answerResults for timeline cards
   question: string | null;
   headline: string | null;
   body: string;
@@ -35,12 +36,14 @@ type RawSubStage = RawItem & {
   question?: unknown;
   cases?: unknown;
   clues?: unknown;
+  events?: unknown;
 };
 
 export type SummaryNode = {
   id: string;
   type: string;
   subStages?: RawSubStage[];
+  mapTitle?: string;
 };
 
 const SHOW_QUESTION = new Set(["image-select", "four-way-swipe", "border-hop", "drag-drop"]);
@@ -57,6 +60,23 @@ function readSummary(item: RawItem): { body: string; sources: Source[] } | null 
   if (!body) return null;
   const sources = Array.isArray(item.summary.sources) ? item.summary.sources.filter(isSource) : [];
   return { body, sources };
+}
+
+type TimelineEvent = { id: string; year: string; title: string; description: string; order: number };
+
+function readTimelineEvents(events: unknown): TimelineEvent[] {
+  if (!Array.isArray(events)) return [];
+  return events
+    .filter(isObj)
+    .map((e) => ({
+      id: str(e.id) ?? "",
+      year: str(e.year) ?? "",
+      title: str(e.title) ?? "",
+      description: str(e.description) ?? "",
+      order: typeof e.order === "number" ? e.order : 0,
+    }))
+    .filter((e) => e.id && e.title && e.description)
+    .sort((a, b) => a.order - b.order);
 }
 
 function correctOptionLabel(options: unknown): string | null {
@@ -97,15 +117,34 @@ export function buildSummaryItems(
   resultsByNode: Record<string, AnswerResults>,
 ): SummaryItem[] {
   const out: SummaryItem[] = [];
+
   for (const node of nodes) {
     const results = resultsByNode[node.id];
+
     for (const s of node.subStages ?? []) {
-      const cases = s.cases;
-      const clues = s.clues;
-      const children = Array.isArray(cases) ? cases : Array.isArray(clues) ? clues : null;
+      const r = results?.[s.id];
+
+      // Timeline: one card per event. The event's own description is the
+      // body, and the badge comes from that event's per-card result.
+      if (node.type === "timeline-builder") {
+        for (const e of readTimelineEvents(s.events)) {
+          const key = timelineQuestionId(s.id, e.id);
+          const res = results?.[key];
+          out.push({
+            id: key,
+            question: null,
+            headline: `${e.year}: ${e.title}`,
+            body: e.description,
+            sources: [],
+            correct: res ? res.isCorrect : null,
+          });
+        }
+        continue;
+      }
+
+      const children = Array.isArray(s.cases) ? s.cases : Array.isArray(s.clues) ? s.clues : null;
       const items: RawItem[] = children ? children.filter(isObj) : [s];
       const isStage = !children;
-      const r = results?.[s.id];
 
       for (const item of items) {
         const summary = readSummary(item);
@@ -122,5 +161,6 @@ export function buildSummaryItems(
       }
     }
   }
+
   return out;
 }
