@@ -2371,6 +2371,7 @@ a.go.white-bg {
     letter-spacing: 3px;
     padding: 12px 0 10px;
     font-size: 15px;
+    background-color: var(--mb-t0);
 }
 
 .map-hub .edition-feature-art {
