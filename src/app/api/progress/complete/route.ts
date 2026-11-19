@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { recordCompletionForStreak } from "@/features/streak/record-completion.server";
 import { sanitizeAnswerResults, type AnswerResults } from "@/features/gameplay/progress/resume";
+import { stageQuestions } from "@/features/gameplay/scoring";
 
 type Completion = {
   score: number;
@@ -48,13 +49,13 @@ function scoreCompletion(snapshot: unknown, nodeId: string, answerResults: Answe
   for (let index = 0; index < node.subStages.length; index += 1) {
     const stage = node.subStages[index];
     if (!stage || typeof stage !== "object" || Array.isArray(stage)) return null;
-    const raw = stage as { id?: unknown; points?: unknown };
+    const raw = stage as { id?: unknown; points?: unknown; type?: unknown; events?: unknown };
     const id = typeof raw.id === "string" && raw.id.length > 0 ? raw.id : `${nodeId}-${index + 1}`;
     // The page defaults an omitted authored score to 100 points.
     const points = typeof raw.points === "number" && Number.isSafeInteger(raw.points) && raw.points >= 0
       ? raw.points
       : 100;
-    questions.push({ id, points });
+    questions.push(...stageQuestions({ id, type: raw.type, points, events: raw.events }));
   }
 
   // Do not let omitted wrong answers improve the ratio used for stars.
