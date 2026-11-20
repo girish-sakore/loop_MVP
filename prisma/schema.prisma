@@ -199,6 +199,7 @@ model Game {
   subtitle      String?
   isPremium     Boolean      @default(false)
   subStages     Json         // array of stages, shape depends on `type`
+  inputMode String @default("letters")
   schemaVersion Int          @default(1)
 
   importBatchId String?

@@ -21,6 +21,7 @@ const hintList = z.array(z.object({ id: hintId, text })).max(10).superRefine((va
   if (dupes(value.map((hint) => hint.id)).length) bad(ctx, "Hint ids must be unique");
 }).optional();
 const hintFields = { hints: hintList, hintsAllowed: z.number().int().min(0).max(10).optional() };
+
 const summary = z
   .object({
     body: text,
@@ -98,7 +99,13 @@ const fillBlankText = z.object({
   ...base,
   prompt: text,
   introLabel: optText,
-  blanks: z.array(z.object({ id: hintId, answer: text, hint: optText, ...hintFields })).min(1),
+  blanks: z.array(z.object({
+    id: hintId,
+    answer: text,
+    acceptedAnswers: z.array(text).max(10).optional(),
+    hint: optText,
+    ...hintFields,
+  })).min(1),
   feedback,
 }).superRefine((s, ctx) => {
   const blankIds = s.blanks.map((b) => b.id).sort().join();
@@ -264,22 +271,27 @@ const imageTextAnswer = z.object({
 
 /* ---------- card (= Game row) schema ---------- */
 
-function card<T extends string, S extends z.ZodTypeAny>(type: T, stage: S) {
+function card<T extends string, S extends z.ZodTypeAny, E extends z.ZodRawShape = z.ZodRawShape>(
+  type: T,
+  stage: S,
+  extra?: E,
+) {
   return z.object({
     type: z.literal(type),
     title: text.max(60),
     subtitle: z.string().trim().max(120).optional(),
     isPremium: z.boolean().default(false),
+    ...(extra ?? ({} as E)),
     subStages: z.array(stage).min(1).max(50),
   });
 }
-
 export const gameCardSchema = z.discriminatedUnion("type", [
   card("image-select", imageSelect),
   card("swipe", swipe),
   card("fill-blank", fillBlank),
-  card("fill-blank-text", fillBlankText),
-  card("timeline-builder", timelineBuilder),
+  card("fill-blank-text", fillBlankText, {
+    inputMode: z.enum(["letters", "text"]).default("letters"),
+  }), card("timeline-builder", timelineBuilder),
   card("reorder", reorder),
   card("four-way-swipe", fourWaySwipe),
   card("drag-drop", dragDrop),
