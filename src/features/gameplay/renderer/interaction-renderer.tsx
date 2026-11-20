@@ -111,6 +111,7 @@ export function InteractionRenderer({
           retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
+          hints={hints}
         />
       );
     case "fill-blank":
