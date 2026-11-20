@@ -153,6 +153,14 @@ export type ColorMatchClue = {
   name: string;
   /** Optional per-clue score; otherwise the stage score is shared equally. */
   points?: number;
+  /** Text and references shown on the edition summary after this clue is answered. */
+  summary?: {
+    body: string;
+    sources?: Array<{
+      label: string;
+      url: string;
+    }>;
+  };
 };
 
 export type ColorMatchStage = StageBase & {

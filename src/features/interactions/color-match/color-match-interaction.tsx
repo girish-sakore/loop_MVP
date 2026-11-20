@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import type { ColorMatchStage } from "@/types/gameplay";
 
 import { ClueGrid } from "./clue-grid";
@@ -23,6 +25,17 @@ type Props = {
   onIntroComplete?: () => void;
 };
 
+function shuffleClues(clues: ColorMatchStage["clues"]) {
+  const shuffled = [...clues];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
+
 export function ColorMatchInteraction({
   stage,
   onAnswer,
@@ -31,6 +44,13 @@ export function ColorMatchInteraction({
   onIntroComplete,
 }: Props) {
   const game = useColorMatchGame({ stage, onAnswer, disabled });
+  const [dockClues, setDockClues] = useState(stage.clues);
+
+  // Shuffle only when a fresh stage loads. The dock order then remains stable
+  // while the player drags, checks, and retries placements.
+  useEffect(() => {
+    setDockClues(shuffleClues(stage.clues));
+  }, [stage.id, stage.clues]);
 
   if (showIntro) {
     return (
@@ -67,7 +87,7 @@ export function ColorMatchInteraction({
       />
 
       <SwatchTray
-        stage={stage}
+        clues={dockClues}
         matchedIds={game.matchedIds}
         placements={game.placements}
         dragging={game.dragging}

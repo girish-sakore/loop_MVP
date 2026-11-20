@@ -1,11 +1,11 @@
 "use client";
 
-import type { ColorMatchStage } from "@/types/gameplay";
+import type { ColorMatchClue } from "@/types/gameplay";
 
 import type { ColorPlacements, DragState } from "./use-color-match-game";
 
 type Props = {
-  stage: ColorMatchStage;
+  clues: ColorMatchClue[];
   matchedIds: string[];
   placements: ColorPlacements;
   dragging: DragState | null;
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export function SwatchTray({
-  stage,
+  clues,
   matchedIds,
   placements,
   dragging,
@@ -55,7 +55,7 @@ export function SwatchTray({
         </div>
 
         <div className="flex min-h-[52px] flex-wrap items-center justify-center gap-3">
-          {stage.clues.map((clue) => {
+          {clues.map((clue) => {
             const isMatched = matchedIds.includes(clue.id);
             const isPlaced = Object.values(placements).includes(clue.id);
 
