@@ -13,8 +13,8 @@ type Ctx = { params: Promise<{ id: string }> };
 
 const patchSchema = z
   .object({
-    title: z.string(),
-    subtitle: z.string().nullable(),
+    title: z.string().trim().min(1).max(80),
+    subtitle: z.string().trim().min(1).max(80).nullable(),
     isPremium: z.boolean(),
     subStages: z.array(z.unknown()),
   })
