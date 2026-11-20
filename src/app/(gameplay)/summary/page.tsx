@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { BlogReveal } from "@/components/summary/blog-reveal";
+import { stageQuestions } from "@/features/gameplay/scoring";
 import { sanitizeAnswerResults } from "@/features/gameplay/progress/resume";
 import { buildSummaryItems } from "@/features/summery/build-summary-items";
 
@@ -34,7 +35,11 @@ export default async function SummaryPage() {
   );
 
   const totalStages = edition.nodes.reduce(
-    (sum, n) => sum + (n.subStages?.length ?? 1),
+    (sum, n) =>
+      sum +
+      (n.subStages?.length
+        ? n.subStages.reduce((s, stage) => s + stageQuestions(stage).length, 0)
+        : 1),
     0,
   );
   // totals reduce stays exactly as it is

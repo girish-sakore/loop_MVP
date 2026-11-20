@@ -19,10 +19,17 @@ import { HintButton } from "@/components/hints/hint-button";
 import { STAGE_GROUP } from "@/features/gameplay/hints/registry";
 import { useInteractionProgress } from "@/features/gameplay/progress/use-interaction-progress";
 import type { StageHints, TimelineBuilderStage, TimelineEvent } from "@/types/gameplay";
+import { correctlyOrderedIds } from "./scoring"
+import { stageQuestions, timelineQuestionId } from "@/features/gameplay/scoring";
 
 type Props = {
   stage: TimelineBuilderStage;
-  onAnswer: (payload: { correct: boolean; feedback: string }) => void;
+  onAnswer: (payload: {
+    correct: boolean;
+    feedback: string;
+    points?: number;
+    results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
+  }) => void;
   disabled?: boolean;
   retryCount?: number;
   showIntro?: boolean;
@@ -175,10 +182,10 @@ export function TimelineBuilder({
       prev.confirmedIds.includes(eventId) || !prev.placedIds.includes(eventId)
         ? {}
         : {
-            placedIds: prev.placedIds.filter((id) => id !== eventId),
-            pendingIds: [eventId, ...prev.pendingIds],
-            incorrectIds: prev.incorrectIds.filter((id) => id !== eventId),
-          },
+          placedIds: prev.placedIds.filter((id) => id !== eventId),
+          pendingIds: [eventId, ...prev.pendingIds],
+          incorrectIds: prev.incorrectIds.filter((id) => id !== eventId),
+        },
     );
   }
 
@@ -228,15 +235,35 @@ export function TimelineBuilder({
 
   function checkGuess() {
     if (disabled || tl.pendingIds.length > 0 || tl.submitted) return;
-    const isCorrect = placedEvents.every(
-      (event, index, events) => index === 0 || event.order > events[index - 1].order,
-    );
+
+    const chain = correctlyOrderedIds(placedEvents);
+    const questions = stageQuestions(stage);
+    const perCard = !(questions.length === 1 && questions[0].id === stage.id);
+    const pointsById = new Map(questions.map((q) => [q.id, q.points] as const));
+
+    const results = perCard
+      ? placedEvents.map((event) => {
+        const questionId = timelineQuestionId(stage.id, event.id);
+        const isCorrect = chain.has(event.id);
+        return { questionId, isCorrect, points: isCorrect ? pointsById.get(questionId) ?? 0 : 0 };
+      })
+      : [{
+        questionId: stage.id,
+        isCorrect: chain.size === placedEvents.length,
+        points: chain.size === placedEvents.length ? questions[0].points : 0,
+      }];
+
+    const right = chain.size;
+    const total = placedEvents.length;
+    const isCorrect = right === total;
+
     update({ submitted: true });
     onAnswer({
-      correct: isCorrect,
+      correct: isCorrect, // green only when every card is right
       feedback: isCorrect
         ? "Timeline restored correctly."
-        : "Not quite. Check the order and try again.",
+        : `${right} of ${total} events are in the right order.`,
+      results,
     });
   }
 
@@ -261,25 +288,25 @@ export function TimelineBuilder({
           <div className="min-h-0 min-w-0 overflow-y-auto overscroll-contain py-2 pr-1 [scrollbar-gutter:stable]">
             <div className="flex min-h-full min-w-0 items-center">
               <div className="w-full min-w-0">
-              {placedEvents.map((event, index) => (
-                <div key={event.id} className="min-w-0">
-                  <TimelineDropZone index={index} isEdge={index === 0} isDragging={Boolean(activeEvent)} disabled={disabled || (!currentCandidate && !canReorder)} onChoose={placeCurrentEvent} />
-                  <TimelineRow
-                    event={event}
-                    index={index}
-                    status={
-                      event.id === starterEvent.id || tl.confirmedIds.includes(event.id)
-                        ? "correct"
-                        : tl.incorrectIds.includes(event.id)
-                          ? "wrong"
-                          : "unrevealed"
-                    }
-                    draggable={event.id !== starterEvent.id && !tl.confirmedIds.includes(event.id)}
-                    onOpen={() => setSelectedEvent(event)}
-                    onRemove={event.id !== starterEvent.id && !tl.confirmedIds.includes(event.id) ? () => removePlacedEvent(event.id) : undefined}
-                  />
-                </div>
-              ))}
+                {placedEvents.map((event, index) => (
+                  <div key={event.id} className="min-w-0">
+                    <TimelineDropZone index={index} isEdge={index === 0} isDragging={Boolean(activeEvent)} disabled={disabled || (!currentCandidate && !canReorder)} onChoose={placeCurrentEvent} />
+                    <TimelineRow
+                      event={event}
+                      index={index}
+                      status={
+                        event.id === starterEvent.id || tl.confirmedIds.includes(event.id)
+                          ? "correct"
+                          : tl.incorrectIds.includes(event.id)
+                            ? "wrong"
+                            : "unrevealed"
+                      }
+                      draggable={event.id !== starterEvent.id && !tl.confirmedIds.includes(event.id)}
+                      onOpen={() => setSelectedEvent(event)}
+                      onRemove={event.id !== starterEvent.id && !tl.confirmedIds.includes(event.id) ? () => removePlacedEvent(event.id) : undefined}
+                    />
+                  </div>
+                ))}
                 <TimelineDropZone index={placedEvents.length} isEdge isDragging={Boolean(activeEvent)} disabled={disabled || (!currentCandidate && !canReorder)} onChoose={placeCurrentEvent} />
               </div>
             </div>
@@ -337,8 +364,8 @@ function TimelineIntro({ title, instructions, event, onStart }: { title: string;
         <div className="w-full"><TimelineFeatureCard event={event} /></div>
         <div className="max-w-[340px] text-center">
           <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-[#5fa43a]">Timeline</p>
-        <h1 className="font-display text-[30px] leading-none">{title}</h1>
-        <p className="mx-auto mt-3 max-w-[330px] text-[15px] font-semibold leading-snug text-[#343238]">{instructions}</p>
+          <h1 className="font-display text-[30px] leading-none">{title}</h1>
+          <p className="mx-auto mt-3 max-w-[330px] text-[15px] font-semibold leading-snug text-[#343238]">{instructions}</p>
         </div>
       </div>
       <button type="button" onClick={onStart} className="mt-6 h-14 w-full max-w-[340px] self-center rounded-full border-[3px] border-[#0b0b0f] bg-[#85cb57] text-[16px] font-extrabold text-[#0b0b0f] shadow-[0_4px_0_#0b0b0f] transition active:translate-y-0.5 active:shadow-[0_2px_0_#0b0b0f]">Play</button>
@@ -432,11 +459,11 @@ function EventInfoModal({ event, onClose }: { event: TimelineEvent; onClose: () 
           />
         ) : null}
         <div className="p-4">
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <h2 className="text-lg font-extrabold leading-tight">{event.title}</h2>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7]" aria-label="Close event details"><span className="material-symbols-outlined text-2xl">close</span></button>
-        </div>
-        <p className="text-sm leading-relaxed text-[#343238]">{event.description}</p>
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <h2 className="text-lg font-extrabold leading-tight">{event.title}</h2>
+            <button type="button" onClick={onClose} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[#0b0b0f] bg-[#fffdf7]" aria-label="Close event details"><span className="material-symbols-outlined text-2xl">close</span></button>
+          </div>
+          <p className="text-sm leading-relaxed text-[#343238]">{event.description}</p>
         </div>
       </div>
     </div>
