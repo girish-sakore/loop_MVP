@@ -21,7 +21,15 @@ const hintList = z.array(z.object({ id: hintId, text })).max(10).superRefine((va
   if (dupes(value.map((hint) => hint.id)).length) bad(ctx, "Hint ids must be unique");
 }).optional();
 const hintFields = { hints: hintList, hintsAllowed: z.number().int().min(0).max(10).optional() };
-
+const summary = z
+  .object({
+    body: text,
+    sources: z
+      .array(z.object({ label: text, url: z.string().trim().url().refine((u) => u.startsWith("https://"), "Must be https://") }))
+      .max(4)
+      .optional(),
+  })
+  .optional();
 // Fields every substage shares. Unknown keys (old ids, mapTitle...) are stripped by default.
 const base = {
   id: stageId.optional(),
@@ -29,6 +37,7 @@ const base = {
   attemptsAllowed: z.number().int().min(1).max(10).default(3),
   points: z.number().int().min(0).default(100),
   ...hintFields,
+  summary,
 };
 
 const placeholderIds = (s: string) => [...s.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]);
@@ -183,6 +192,7 @@ const clueConnect = z.object({
       z.object({
         id: hintId,
         ...hintFields,
+        summary,
         category: text,
         answer: text,
         icon: optText,
@@ -214,10 +224,22 @@ const colorMatch = z.object({
       clue1: text,
       hint: text,
       name: text,
-      points: z.number().nonnegative().optional(),
+      points: z.number().int().nonnegative().optional(),
+      summary,
     }))
     .min(2),
   feedback,
+}).superRefine((stage, ctx) => {
+  const configured = stage.clues.filter((clue) => clue.points !== undefined);
+  if (configured.length > 0 && configured.length !== stage.clues.length) {
+    bad(ctx, "Set points for every clue or leave points unset for all clues", ["clues"]);
+  }
+  if (configured.length === stage.clues.length) {
+    const total = configured.reduce((sum, clue) => sum + (clue.points ?? 0), 0);
+    if (total !== stage.points) {
+      bad(ctx, "Clue points must add up to the stage points", ["clues"]);
+    }
+  }
 });
 
 const borderHop = z.object({

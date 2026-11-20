@@ -7,9 +7,10 @@ type FeedbackModalProps = {
   correct: boolean;
   message: string;
   attemptsRemaining: number;
+  singlePass?: boolean; // deck result: Continue is the only action
   onContinue: () => void;
   onRetry?: () => void;
-  onSkip?: () => void; 
+  onSkip?: () => void;
 };
 
 export function FeedbackModal({
@@ -17,6 +18,7 @@ export function FeedbackModal({
   correct,
   message,
   attemptsRemaining,
+  singlePass = false,
   onContinue,
   onRetry,
   onSkip
@@ -133,8 +135,8 @@ export function FeedbackModal({
                 </div>
               </div>
 
-              {/* Hint card on wrong */}
-              {!correct && (
+              {/* Hint card on wrong (not for single-pass results) */}
+              {!correct && !singlePass && (
                 <div
                   className="flex items-start gap-3 p-4 rounded-xl"
                   style={{ backgroundColor: "var(--primary-container)" }}
@@ -162,8 +164,8 @@ export function FeedbackModal({
                 </div>
               )}
 
-              {/* Attempts remaining on wrong */}
-              {!correct && attemptsRemaining > 0 && (
+              {/* Attempts remaining on wrong (not for single-pass results) */}
+              {!correct && !singlePass && attemptsRemaining > 0 && (
                 <div className="flex items-center gap-2">
                   {Array.from({ length: attemptsRemaining }).map((_, i) => (
                     <span
@@ -188,15 +190,23 @@ export function FeedbackModal({
               )}
 
               {/* Buttons */}
-              {correct ? (
+              {correct || singlePass ? (
                 <button
                   onClick={onContinue}
                   className="w-full h-14 rounded-xl text-[16px] font-bold flex items-center justify-center gap-2 transition-all duration-75 active:translate-y-0.5 group"
-                  style={{
-                    backgroundColor: "var(--secondary)",
-                    color: "var(--secondary-foreground)",
-                    boxShadow: "0 4px 0 0 #2a4d41",
-                  }}
+                  style={
+                    correct
+                      ? {
+                          backgroundColor: "var(--secondary)",
+                          color: "var(--secondary-foreground)",
+                          boxShadow: "0 4px 0 0 #2a4d41",
+                        }
+                      : {
+                          backgroundColor: "var(--error)",
+                          color: "var(--on-error)",
+                          boxShadow: "0 4px 0 0 #93000a",
+                        }
+                  }
                 >
                   Continue
                   <span

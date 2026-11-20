@@ -41,6 +41,7 @@ type InteractionRendererProps = {
   hints?: StageHints;
   interactionState?: InteractionState;
   onInteractionStateChange?: (state: InteractionState) => void;
+  editionTitle?: string; // new
 };
 
 export function InteractionRenderer({
@@ -55,6 +56,7 @@ export function InteractionRenderer({
   hints,
   interactionState,
   onInteractionStateChange,
+  editionTitle, // new
 }: InteractionRendererProps) {
   const stage = useMemo(() => mapImages(rawStage, assetUrl), [rawStage]);
   const legacy = hints?.group(STAGE_GROUP);
@@ -214,6 +216,7 @@ export function InteractionRenderer({
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
           hints={hints}
+          editionTitle={editionTitle} 
         />
       );
     default:

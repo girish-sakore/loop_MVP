@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { ColorMatchClue, ColorMatchStage } from "@/types/gameplay";
+import type { ColorMatchStage } from "@/types/gameplay";
+import { colorMatchQuestionId, stageQuestions } from "@/features/gameplay/scoring";
 
 export type DragState = {
   id: string;
@@ -58,10 +59,6 @@ function hasPlacementForSwatch(placements: ColorPlacements, swatchId: string) {
   return Object.values(placements).includes(swatchId);
 }
 
-function cluePoints(stage: ColorMatchStage, clue: ColorMatchClue) {
-  return clue.points ?? (stage.clues.length > 0 ? stage.points / stage.clues.length : 0);
-}
-
 /**
  * Owns a single ColorMatch board. Placements remain editable until Check;
  * correctly placed swatches become locked after the reveal and survive retries.
@@ -96,6 +93,7 @@ export function useColorMatchGame({
   const matchedCount = lockedIds.length;
   const allMatched = matchedCount === total;
   const unlockedClues = stage.clues.filter((clue) => !lockedIds.includes(clue.id));
+  const questionPoints = new Map(stageQuestions(stage).map((question) => [question.id, question.points]));
   const canCheck = !checking && unlockedClues.every((clue) => placements[clue.id]);
   const openClue = stage.clues.find((clue) => clue.id === openId) ?? null;
   const openClueMatched = openClue ? lockedIds.includes(openClue.id) : false;
@@ -349,13 +347,13 @@ export function useColorMatchGame({
         correct,
         feedback: correct ? stage.feedback.correct : stage.feedback.incorrect,
         results: stage.clues.map((clue) => ({
-          questionId: `${stage.id}:${clue.id}`,
+          questionId: colorMatchQuestionId(stage.id, clue.id),
           isCorrect: nextLockedIds.includes(clue.id),
-          points: cluePoints(stage, clue),
+          points: questionPoints.get(colorMatchQuestionId(stage.id, clue.id)) ?? 0,
         })),
       });
     }, REVEAL_DURATION_MS);
-  }, [disabled, schedule, stage, updateGameState]);
+  }, [disabled, questionPoints, schedule, stage, updateGameState]);
 
   return {
     placements,

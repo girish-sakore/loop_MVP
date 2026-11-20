@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { recordCompletionForStreak } from "@/features/streak/record-completion.server";
 import { sanitizeAnswerResults, type AnswerResults } from "@/features/gameplay/progress/resume";
+import { stageQuestions } from "@/features/gameplay/scoring";
 
 type Completion = {
   score: number;
@@ -16,16 +17,6 @@ type Completion = {
 };
 
 type SnapshotQuestion = { id: string; points: number };
-
-type SnapshotStage = {
-  id?: unknown;
-  type?: unknown;
-  points?: unknown;
-  clues?: unknown;
-};
-
-const isPoints = (value: unknown): value is number =>
-  typeof value === "number" && Number.isFinite(value) && value >= 0;
 
 async function getUserId(): Promise<string | null> {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -58,29 +49,26 @@ function scoreCompletion(snapshot: unknown, nodeId: string, answerResults: Answe
   for (let index = 0; index < node.subStages.length; index += 1) {
     const stage = node.subStages[index];
     if (!stage || typeof stage !== "object" || Array.isArray(stage)) return null;
-    const raw = stage as SnapshotStage;
+    const raw = stage as {
+      id?: unknown;
+      points?: unknown;
+      type?: unknown;
+      events?: unknown;
+      clues?: unknown;
+    };
     const id = typeof raw.id === "string" && raw.id.length > 0 ? raw.id : `${nodeId}-${index + 1}`;
     // The page defaults an omitted authored score to 100 points.
-    const points = isPoints(raw.points) ? raw.points : 100;
-
-    // Published snapshots normally repeat the game type on each substage, but
-    // older editions keep it only on the parent node.
-    if ((raw.type ?? node.type) === "color-match" && Array.isArray(raw.clues) && raw.clues.length > 0) {
-      const perCluePoints = points / raw.clues.length;
-      for (const clue of raw.clues) {
-        if (!clue || typeof clue !== "object" || Array.isArray(clue)) return null;
-        const clueId = (clue as { id?: unknown }).id;
-        if (typeof clueId !== "string" || clueId.length === 0) return null;
-        const cluePoints = (clue as { points?: unknown }).points;
-        questions.push({
-          id: `${id}:${clueId}`,
-          points: isPoints(cluePoints) ? cluePoints : perCluePoints,
-        });
-      }
-      continue;
-    }
-
-    questions.push({ id, points });
+    const points = typeof raw.points === "number" && Number.isSafeInteger(raw.points) && raw.points >= 0
+      ? raw.points
+      : 100;
+    // Old published editions stored the type only on the parent node.
+    questions.push(...stageQuestions({
+      id,
+      type: raw.type ?? node.type,
+      points,
+      events: raw.events,
+      clues: raw.clues,
+    }));
   }
 
   // Do not let omitted wrong answers improve the ratio used for stars.

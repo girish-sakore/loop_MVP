@@ -16,6 +16,7 @@ type Props = {
   showIntro?: boolean;
   onIntroComplete?: () => void;
   hints?: StageHints;
+  editionTitle?: string;
 };
 
 export function ImageTextSAnswerInteraction({
@@ -26,6 +27,7 @@ export function ImageTextSAnswerInteraction({
   showIntro = true,
   onIntroComplete,
   hints,
+  editionTitle,
 }: Props) {
   const [guess, setGuess] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -61,6 +63,7 @@ export function ImageTextSAnswerInteraction({
         title={stage.question}
         image={stage.image}
         onStart={onIntroComplete}
+        editionTitle={editionTitle}
       />
     );
   }
@@ -99,12 +102,6 @@ export function ImageTextSAnswerInteraction({
         </motion.div>
 
         <div className="w-full max-w-[340px]">
-          <label
-            htmlFor="guess-input"
-            className="mb-2 block text-[14px] font-bold text-[#0b0b0f]"
-          >
-            What is this place or what does it show?
-          </label>
           <input
             id="guess-input"
             type="text"
@@ -139,19 +136,46 @@ function ImageTextSAnswerIntro({
   title,
   image,
   onStart,
+  editionTitle,
 }: {
   title: string;
   image?: string;
   onStart?: () => void;
+  editionTitle?: string;
 }) {
   return (
-    <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#4aa8ee] px-5 pb-12 pt-8 text-[#0b0b0f]">
+    <div className="relative flex min-h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#f1e6cc] px-5 pb-12 pt-8 text-[#0b0b0f]">
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-4 [@media(orientation:landscape)_and_(max-height:500px)]:flex-row [@media(orientation:landscape)_and_(max-height:500px)]:gap-6">
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18, duration: 0.28 }}
+          className="mb-6 text-center"
+        >
+          <span
+            className="mb-6 inline-flex rounded-full border-[3px] border-[#2B2A25] bg-[#0000] px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest shadow-[0_3px_0_#2B2A25]"
+            style={{ color: "var(--on-surface)" }}
+          >
+            Todays Edition
+          </span>
+          <h1
+            className="mx-auto max-w-[320px] text-center leading-none"
+            style={{
+              fontFamily: "Anton",
+              letterSpacing: "1px",
+              fontWeight: 500,
+              fontSize: "35px",
+            }}
+          >
+            {editionTitle}
+          </h1>
+        </motion.div>
         <motion.div
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.28, ease: [0.2, 0.9, 0.2, 1] }}
-          className="mb-4 h-[200px] w-full max-w-[280px] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] shadow-[0_8px_0_rgba(11,11,15,0.16)]"
+          className="mb-4 h-[300px] w-full max-w-[280px] overflow-hidden rounded-md border-[3px] border-[#0b0b0f] bg-[#fffdf7] shadow-[0_8px_0_rgba(11,11,15,0.16)]"
         >
           {image ? (
             <img
@@ -174,9 +198,6 @@ function ImageTextSAnswerIntro({
           transition={{ delay: 0.18, duration: 0.28 }}
           className="mb-6 text-center"
         >
-          <h1 className="font-display mx-auto max-w-[340px] text-[28px] leading-none">
-            {title}
-          </h1>
           <p className="mx-auto mt-3 max-w-[320px] text-[15px] font-semibold leading-snug text-[#1f2933]">
             Look at the image carefully and guess what it shows or what place it represents.
           </p>
@@ -190,7 +211,7 @@ function ImageTextSAnswerIntro({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         whileTap={{ y: 4, boxShadow: "0 2px 0 #0b0b0f" }}
         transition={{ delay: 0.36, duration: 0.3, ease: [0.2, 0.9, 0.2, 1] }}
-        className="relative h-14 w-full max-w-[340px] self-center rounded-full border-[3px] border-[#0b0b0f] bg-[#0b0b0f] text-[16px] font-extrabold text-white shadow-[0_6px_0_rgba(11,11,15,0.25)]"
+        className="relative h-14 w-full max-w-[340px] self-center rounded-lg border-[3px] border-[#0b0b0f] bg-[#0b0b0f] text-[16px] font-extrabold text-white shadow-[0_6px_0_rgba(11,11,15,0.25)]"
       >
         Start
       </motion.button>

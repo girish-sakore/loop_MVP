@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import type { StreakData } from "@/features/streak/types";
+import ThemePicker from "../matchbox/theme-picker";
 
 export interface ProfileIdentity {
   name: string;
@@ -83,12 +84,15 @@ export default function ProfileView({
         </div>
       </section>
 
-      {!identity.isPremium && (
+      {!identity.isPremium ? (
         <div className="premium-promo">
           <b>Unlock every past edition</b>
           <Link href="/pricing" className="premium-promo-action">Go Premium</Link>
         </div>
-      )}
+      ) :
+        <div className="library-theme-picker"><ThemePicker /></div>
+      }
+
 
       <section className="profile-stats" aria-label="Your stats">
         <div><b>{streak.current}</b><span>Day streak</span></div>
