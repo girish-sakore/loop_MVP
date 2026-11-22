@@ -271,11 +271,11 @@ const imageTextAnswer = z.object({
 
 /* ---------- card (= Game row) schema ---------- */
 
-function card<T extends string, S extends z.ZodTypeAny, E extends z.ZodRawShape = z.ZodRawShape>(
-  type: T,
-  stage: S,
-  extra?: E,
-) {
+function card<
+  T extends string,
+  S extends z.ZodTypeAny,
+  E extends z.ZodRawShape = Record<never, never>, // i.e. {}
+>(type: T, stage: S, extra?: E) {
   return z.object({
     type: z.literal(type),
     title: text.max(60),
