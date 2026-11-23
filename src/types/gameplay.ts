@@ -200,6 +200,7 @@ export type FillBlankTextStage = StageBase & {
   blanks: Array<{
     id: string;
     answer: string;
+    acceptedAnswers?: string[]; // alternate valid answers (used in "text" input mode)
     hint?: string; // optional small-text hint shown in the popup
     hints?: HintDef[];
     hintsAllowed?: number;
@@ -209,7 +210,6 @@ export type FillBlankTextStage = StageBase & {
     incorrect: string;
   };
 };
-
 export type SwipeStage = StageBase & {
   type: "swipe";
 
@@ -325,6 +325,7 @@ export interface EditionNode {
   mapSubtitle: string;
   isPremium?: boolean;
   subStages: Stage[]; // Stage = your existing per-question union type — unchanged
+  inputMode?: "letters" | "text";
 }
 
 export type Edition = {
@@ -339,7 +340,7 @@ export type Edition = {
   publishedAt?: string;
   weekLabel?: string;
   author?: string;
-   coverImage?: string | null;
+  coverImage?: string | null;
 };
 
 export type ImageTextSAnswerStage = StageBase & {

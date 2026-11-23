@@ -503,10 +503,13 @@
       }
     ]
   },
+ 
   {
     "type": "fill-blank-text",
     "title": "Sufism",
     "subtitle": "",
+    "isPremium": false,
+    "inputMode": "letters",
     "subStages": [
       {
         "id": "node-3-stage-1",
@@ -514,12 +517,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "In 1192, {{b1}}, the legendary Rajput warrior, was defeated by Muizuddin Muhammad bin Sam at the Second Battle of Tarain, opening India to Islamic mysticism. Four years later, Khwaja Moinuddin Chishti arrived from Afghanistan and established the Chishti Order, a spiritual movement that would transform Indian spirituality for the next 800 years.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Prithviraj Chauhan"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Prithviraj Chauhan" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-2",
@@ -527,12 +526,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "{{b1}}, Rajasthan, became the heart of Indian Sufism after Khwaja Moinuddin Chishti settled there in 1196, establishing Islam’s most visited shrine, which attracts 20,000+ pilgrims daily and 400,000+ during the annual Urs in Rajab, the 7th Islamic month. Its most sacred ceremony, Chhati Sharif, held on the 6th day, the recitation of the Chishti Order’s genealogical tree and concludes with a 21 gun salute.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Ajmer"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Ajmer" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-3",
@@ -540,12 +535,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "Delhi's Nizamuddin Dargah celebrates {{b1}}, the 5th day of the Hindu lunar month Phalgun, marking spring's arrival. Devotees drape the dargah in yellow flowers, symbolizing renewal and the Sufi concept of \"noor\" (divine light). This Hindu-Islamic fusion, 700+ years old, shows how Sufism wove spirituality across religious boundaries.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Basant Panchami"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Basant Panchami" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-4",
@@ -553,12 +544,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "In 1244–1325, {{b1}} became one of Sufism’s greatest voices, was known as the “Nightingale of India.\" Though his master Hazrat Nizamuddin Auliya had 600+ khalifas (authorized disciples), he alone was declared his most beloved. The irony was profound: despite Nizamuddin’s view that musical instruments were haram (forbidden), his beloved disciple is credited with inventing the musical instrument and creating Qawwali, the musical form that made Sufism globally famous.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Amir Khusrow"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Amir Khusrow" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-5",
@@ -566,12 +553,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "According to legend, he split the traditional pakhawaj (barrel drum) into two drums for Sufi music one the high-pitched dayan and deep bass bayan, creating the {{b1}}. Another tale claims Mughal musician Tansen's accompanist's pakhawaj cracked during performance, and Tansen exclaimed \"Tab bhi bola!\" (It still sounds!) supposedly naming the instrument from that moment.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Tabla"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Tabla" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-6",
@@ -579,12 +562,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "The Turkish Mevlevi Order expressed spiritual devotion through {{b1}}, a ritual association with Rumi that was proclaimed a UNESCO Masterpiece of Oral and Intangible Heritage in 2005. The Arabic word samāʿ means \"listening\" or \"hearing\", making this movement a physical expression of spiritual listening through music, poetry, and prayer.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Whirling"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Whirling" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-7",
@@ -592,12 +571,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "{{b1}} (the First Woman Sufi Saint), born into 8th-century Basra poverty, her name meaning 'fourth daughter' became history's first feminist mystic. Orphaned and enslaved, she prayed all night until her master witnessed divine light surrounding her. She rejected all marriage proposals, declaring marriage would distract her from God, act of radical autonomy in 8th-century Arabia.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Rabia"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Rabia" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-8",
@@ -605,12 +580,8 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "{{b1}}, a Persian institution within the Chishti Order, gives food and drink to the needy regardless of background. Sugar represents piety's sweetness; salt symbolizes purity; bread's transformation mirrors Sufi spiritual development and nafs (ego) purification.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Langar"
-          }
-        ]
+        "blanks": [{ "id": "b1", "answer": "Langar" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       },
       {
         "id": "node-3-stage-9",
@@ -618,137 +589,107 @@
         "attemptsAllowed": 1,
         "points": 10,
         "prompt": "Sufi {{b1}} was an act of worship, not decoration. Each letter of Allah's name was traced with spiritual intention, making the scribe a mystic. \"Tezhip\" (gilding) the golden illuminations in Qur'an manuscripts—served as spiritual technology to lift consciousness toward Paradise. Ink, paper, and brush became meditation tools as powerful as prayer.",
-        "blanks": [
-          {
-            "id": "b1",
-            "answer": "Calligraphy"
-          }
-        ]
-      },
-      {
-        "id": "node-3-stage-10",
-        "question": "Read the passage",
-        "attemptsAllowed": 1,
-        "points": 10,
-        "prompt": "Through saints and musicians, food and flowers, ink and rhythm, Sufism transformed from a response to political upheaval into a comprehensive spiritual path. The divine is reached through listening, service, love, and surrender of the self—the greatest transformation of all.",
-        "blanks": []
+        "blanks": [{ "id": "b1", "answer": "Calligraphy" }],
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite. Try again!" }
       }
     ]
   },
   {
     "type": "fill-blank-text",
     "title": "Prison",
-    "subtitle": "Identify X",
+    "subtitle": "",
+    "isPremium": false,
+    "inputMode": "text",
     "subStages": [
       {
-        "id": "node-3b-prison-stage-1",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-1",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "While serving time in a late-18th-century English prison for inciting a riot, William Addis fashioned the first mass-producible version of {{b1}} from a carved bone handle and boar bristles held in place by wire. He went on to die a wealthy man. In 1938, DuPont reworked it with nylon fibers, which proved sturdier and more efficient than animal hair. In the United States, daily use became widespread only after World War II veterans returned home with military hygiene habits. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "While serving time in a late-18th-century English prison for inciting a riot, William Addis fashioned the first mass-producible version of X from a carved bone handle and boar bristles held in place by wire. He went on to die a wealthy man. In 1938, DuPont reworked X with nylon fibers, which proved sturdier and more efficient than animal hair. In the United States, daily use of X became widespread only after World War II veterans returned home with military hygiene habits. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
             "answer": "Toothbrush",
-            "hint": "It is used to clean your teeth."
+            "acceptedAnswers": ["A toothbrush", "Tooth brush"],
+            "hint": "Legend says Addis got the idea from a household sweeping tool, a broom."
           }
         ],
-        "feedback": {
-          "correct": "Correct!",
-          "incorrect": "Not quite. Think of the everyday hygiene tool William Addis helped popularize."
-        }
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite." }
       },
       {
-        "id": "node-3b-prison-stage-2",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-2",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "Built between 1896 and 1906 with bricks from Burma, {{b1}} followed Jeremy Bentham's panopticon: seven wings radiated from a central watchtower, with cells positioned so each faced the back of another wing, preventing communication. In 1872, Viceroy Lord Mayo was assassinated by Sher Ali Afridi, a convict in the earlier penal settlement here. In 1942, Subhas Chandra Bose's Azad Hind government took notional control of the islands and hoisted the Indian National Flag. Only the watchtower and three wings survive today, and it became a national memorial in 1979. Its popular name evokes the sea crossing that threatened convicts with loss of caste. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "Built between 1896 and 1906 with bricks from Burma, X followed Jeremy Bentham's panopticon: seven wings radiated from a central watchtower, with cells positioned so each faced the back of another wing, preventing any communication. In 1872, the Viceroy Lord Mayo was assassinated by Sher Ali Afridi, a convict in the earlier penal settlement here. In 1942, Subhas Chandra Bose's Azad Hind government took notional control of the islands and hoisted the Indian National Flag. Only the watchtower and three wings survive today, and it became a national memorial in 1979. Its popular name also evokes the sea crossing that threatened convicts with loss of caste. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
-            "answer": "Cellular Jail",
-            "hint": "It is the historic prison in the Andaman Islands, also associated with the term Kala Pani."
+            "answer": "The Cellular Jail",
+            "acceptedAnswers": ["Cellular Jail", "Kala Pani", "Kaala Pani", "Kālā Pānī", "Cellular Jail (Kala Pani)"],
+            "hint": "It stands at Port Blair in the Andaman Islands."
           }
         ],
-        "feedback": {
-          "correct": "Correct! The answer is Cellular Jail, also known as Kala Pani.",
-          "incorrect": "Not quite. Think of the historic prison in the Andaman Islands."
-        }
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite." }
       },
       {
-        "id": "node-3b-prison-stage-3",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-3",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "{{b1}} is a psychological phenomenon in which large numbers of people share the same false memory. It was named by paranormal researcher Fiona Broome after she and others wrongly recalled a world leader dying in prison in the 1980s. Examples include people recalling the Monopoly Man wearing a monocle, remembering a cornucopia in the Fruit of the Loom logo, and misquoting a famous Star Wars line as \"Luke, I am your father\" instead of \"No, I am your father.\" Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "X is a psychological phenomenon in which large numbers of people share the same false memory, and it was named by paranormal researcher Fiona Broome after she and others wrongly recalled a world leader dying in prison in the 1980s. Here are a few examples of it: Many people recall the Monopoly Man wearing a monocle, but he never has. Many remember the Fruit of the Loom logo containing a cornucopia, which never existed. Many misquote a famous Star Wars line as \"Luke, I am your father,\" when the actual line is \"No, I am your father.\" Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
             "answer": "The Mandela Effect",
-            "hint": "It is named after Nelson Mandela and describes shared false memories."
+            "acceptedAnswers": ["Mandela Effect"],
+            "hint": "It is named after the anti-apartheid leader who became South Africa’s president in 1994."
           }
         ],
-        "feedback": {
-          "correct": "Correct! This phenomenon is known as the Mandela Effect.",
-          "incorrect": "Not quite. Think of the term for shared false memories."
-        }
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite." }
       },
       {
-        "id": "node-3b-prison-stage-4",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-4",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "Gandhi was jailed in 1908 in the same Johannesburg prison where Nelson Mandela was held 54 years later, in 1962. Its Section 4 now houses an exhibition on Gandhi, and a bust of him was unveiled nearby in 2012. In the mid-1990s, the Awaiting Trial Block where Mandela was held was demolished to make way for {{b1}}, which was built using the block's original bricks. It is now South Africa's highest court on matters of constitutional law. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "Gandhi was jailed in 1908 in the same Johannesburg prison where Nelson Mandela was held 54 years later, in 1962. Its Section 4 now houses an exhibition on Gandhi, and a bust of him was unveiled nearby in 2012. In the mid-1990s, the Awaiting Trial Block where Mandela was held was demolished to make way for X, which was built using the block's original bricks. X is now South Africa's highest court on matters of constitutional law. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
-            "answer": "Constitutional Court of South Africa",
-            "hint": "It is South Africa's highest court for constitutional matters and is located at Constitution Hill."
+            "answer": "The Constitutional Court of South Africa",
+            "acceptedAnswers": [
+              "Constitutional Court of South Africa",
+              "Constitutional Court",
+              "South African Constitutional Court",
+              "The Constitutional Court"
+            ],
+            "hint": "It is located in Braamfontein, Johannesburg, on a site that also holds a former fort and prison complex."
           }
         ],
-        "feedback": {
-          "correct": "Correct! The answer is the Constitutional Court of South Africa.",
-          "incorrect": "Not quite. Think of South Africa's highest constitutional court."
-        }
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite." }
       },
       {
-        "id": "node-3b-prison-stage-5",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-5",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "{{b1}} is an improvised stabbing weapon in American prison slang, often made by melting a razor blade into the end of a toothbrush or by filing down a metal bucket handle. Its name comes from a steel support rib once found in men's boots and work boots, which 19th-century prisoners extracted and sharpened. In 1882, authorities holding Charles Guiteau confiscated his shoes for this very reason, though the slang then was \"cheeser.\" Its British counterpart derives its name from the Romani word for blade. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "X is an improvised stabbing weapon in American prison slang, often made by melting a razor blade into the end of a toothbrush or by filing down a metal bucket handle. Its name comes from a steel support rib once found in men's boots and work boots, which 19th-century prisoners extracted and sharpened. In 1882, authorities holding Charles Guiteau confiscated his shoes for this very reason, though the slang then was \"cheeser.\" Its British counterpart derives its name from the Romani word for blade. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
             "answer": "Shank",
-            "hint": "It is a slang term for an improvised prison weapon."
+            "acceptedAnswers": ["A shank"],
+            "hint": "It is also a cut of lamb or beef from the lower leg"
           }
         ],
-        "feedback": {
-          "correct": "Correct! The answer is a shank.",
-          "incorrect": "Not quite. Think of the prison slang term for an improvised stabbing weapon."
-        }
+        "feedback": { "correct": "Correct!", "incorrect": "Not quite." }
       }
     ]
   },

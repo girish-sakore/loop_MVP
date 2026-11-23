@@ -43,6 +43,7 @@ interface GameplayEngineProps {
   exitHref?: string; //  fallback if the tab can't close
   summaryHref?: string;  // where a finished preview goes
   editionTitle?: string; // for guide screens 
+  inputMode?: "letters" | "text"; //for in text or letter input mode in fill-blank-text interaction
 }
 
 const EMPTY: string[] = [];
@@ -80,7 +81,7 @@ function repairPassedColorMatchLedger(
 }
 
 export function GameplayEngine({
-  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal", preview = false, exitHref, summaryHref = "", editionTitle }: GameplayEngineProps) {
+  editionId, nodeId, userId, stages, initialStage = 0, initialProgress, mode = "normal", preview = false, exitHref, summaryHref = "", editionTitle , inputMode}: GameplayEngineProps) {
   const router = useRouter();
   const isReplay = mode === "replay";
   const hasNavigated = useRef(false);
@@ -378,6 +379,7 @@ export function GameplayEngine({
               interactionState={interactionState[stage.id]}
               onInteractionStateChange={(s) => handleInteractionStateChange(stage.id, s)}
               editionTitle={editionTitle} // new
+              inputMode={inputMode} // for in text or letter input mode in fill-blank-text interaction
             />
           </motion.div>
         </AnimatePresence>

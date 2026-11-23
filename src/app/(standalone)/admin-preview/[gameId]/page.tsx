@@ -53,6 +53,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ gameId
         editionId="preview"
         nodeId={game.id}
         stages={stages}
+        inputMode={game.inputMode === "text" ? "text" : "letters"}
         userId={user.id}
         preview
         exitHref={back}

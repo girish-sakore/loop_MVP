@@ -40,6 +40,7 @@ type Props = {
   onIntroComplete?: () => void;
   interactionState?: Record<string, unknown>;
   onInteractionStateChange?: (state: Record<string, unknown>) => void;
+  inputMode?: "letters" | "text";
 };
 
 const maxAttempts = (s: FillBlankTextStage) => s.attemptsAllowed ?? 3;
@@ -56,7 +57,29 @@ function normalizeAnswer(raw: string, answer: string): string {
   }
   return out;
 }
+function canon(s: string): string {
+  return s
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^(the|a|an)\s+/, ""); // "The Mandela Effect" == "Mandela Effect"
+}
 
+function isBlankCorrect(blank: Option, value: string, freeText: boolean): boolean {
+  const candidates = [blank.answer, ...(blank.acceptedAnswers ?? [])];
+  if (freeText) {
+    const u = canon(value);
+    return candidates.some((a) => canon(a) === u);
+  }
+  // Letters mode: ignore spacing, since the boxes lay out spaces from `answer`.
+  const squash = (s: string) => canon(s).replace(/\s+/g, "");
+  const u = squash(value);
+  return candidates.some((a) => squash(a) === u);
+}
 export function FillBlankTextInteraction({
   stage: singleStage,
   stages,
@@ -69,7 +92,9 @@ export function FillBlankTextInteraction({
   hints,
   interactionState,
   onInteractionStateChange,
+  inputMode = "letters",
 }: Props) {
+  const freeText = inputMode === "text";
   const stageList = useMemo(
     () => stages ?? (singleStage ? [singleStage] : []),
     [stages, singleStage],
@@ -133,17 +158,18 @@ export function FillBlankTextInteraction({
   const locked = isLocked(stage, statusByStage, attemptsUsedByStage);
   const left = triesLeft(stage, attemptsUsedByStage);
   const inputsDisabled = disabled || locked;
-  console.log("card", { id: stage.id, status, left, locked, disabled, inputsDisabled });
+  // console.log("card", { id: stage.id, status, left, locked, disabled, inputsDisabled });
   const allFilled = stage.blanks.every((blank) => answers[blank.id]?.trim());
   const firstUnfilled = stage.blanks.find((blank) => !(answers[blank.id]?.trim()));
-  const firstWrong = stage.blanks.find((blank) => answers[blank.id]?.trim() && answers[blank.id]!.trim().toLowerCase() !== blank.answer.toLowerCase());
-  const target = firstUnfilled ?? firstWrong ?? stage.blanks[0];
+  const firstWrong = stage.blanks.find(
+    (blank) => answers[blank.id]?.trim() && !isBlankCorrect(blank, answers[blank.id]!, freeText),
+  ); const target = firstUnfilled ?? firstWrong ?? stage.blanks[0];
   const group = target ? hints?.group(`${stage.id}.${target.id}`) : undefined;
   const hintGroup = group?.anonymous ? undefined : group;
   const canFinish = allTouched(statusByStage);
 
   function handleInputChange(blankId: string, value: string) {
-    console.log("change", { blankId, value, inputsDisabled, locked, disabled });
+    // console.log("change", { blankId, value, inputsDisabled, locked, disabled });
     if (inputsDisabled) return;
     update((prev) => ({
       answersByStage: {
@@ -166,10 +192,9 @@ export function FillBlankTextInteraction({
   function handleCheckGuess() {
     if (disabled || locked || !allFilled) return;
 
-    const correct = stage.blanks.every((blank) => {
-      const userAnswer = (answers[blank.id] ?? "").trim();
-      return userAnswer.toLowerCase() === blank.answer.toLowerCase();
-    });
+    const correct = stage.blanks.every((blank) =>
+      isBlankCorrect(blank, answers[blank.id] ?? "", freeText),
+    );
 
     const nextStatus: Record<string, CardStatus> = {
       ...statusByStage,
@@ -276,7 +301,11 @@ export function FillBlankTextInteraction({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.28, duration: 0.28 }}
           >
-            Read the prompt, then fill in each blank with the correct word.
+            {
+              freeText
+                ? "Read the prompt, then type your answer."
+                : "Read the prompt, then fill in each blank with the correct word."
+            }
           </motion.p>
         </div>
 
@@ -351,8 +380,7 @@ export function FillBlankTextInteraction({
 
             <div className="font-display mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 text-[16px] leading-relaxed text-[#2B2A25]">
               {parts.map((part, index) =>
-                renderPart(part, index, answers, blanksById, handleInputChange, inputsDisabled, focusedId, setFocusedId),
-              )}
+                renderPart(part, index, answers, blanksById, handleInputChange, inputsDisabled, focusedId, setFocusedId, freeText, handleCheckGuess),)}
             </div>
           </div>
         </div>
@@ -474,6 +502,8 @@ function renderPart(
   disabled?: boolean,
   focusedId?: string | null,
   onFocusChange?: (id: string | null) => void,
+  freeText?: boolean,
+  onSubmit?: () => void,
 ) {
   if (part.type === "text") {
     return <span key={index}>{part.value}</span>;
@@ -481,6 +511,28 @@ function renderPart(
 
   const blank = blanksById.get(part.id);
   if (!blank) return null;
+  if (freeText) {
+    return (
+      <input
+        key={part.id}
+        type="text"
+        value={answers[part.id] ?? ""}
+        onChange={(e) => onChange(part.id, e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") onSubmit?.(); }}
+        onFocus={() => onFocusChange?.(part.id)}
+        onBlur={() => onFocusChange?.(null)}
+        disabled={disabled}
+        placeholder="Type your answer"
+        aria-label="Your answer"
+        enterKeyHint="done"
+        autoCapitalize="none"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
+        className="my-2 block w-full rounded-xl border-[3px] border-[#2B2A25] bg-[#FDF9F1] px-3 py-2 font-display text-[16px] italic text-[#2B2A25] outline-none placeholder:text-[#b7afa4] focus:border-[#E8933A] disabled:opacity-60"
+      />
+    );
+  }
 
   const answer = blank.answer ?? "";
   const words = answer.split(" ");
