@@ -57,7 +57,21 @@ function checkHints(items: Array<{ hints?: { id: string }[]; hintsAllowed?: numb
 }
 
 /* ---------- substage schemas ---------- */
+// Font Awesome class string, e.g. "fa-solid fa-volcano". Letters, digits, spaces, hyphens only.
+const faIcon = z
+  .string()
+  .trim()
+  .max(80)
+  .regex(/^[a-z0-9 -]+$/i, "Letters, numbers, spaces and - only");
 
+// Any CSS color: #RGB, #RRGGBB, #RRGGBBAA, or a plain name like "white".
+const cssColor = z
+  .string()
+  .trim()
+  .regex(
+    /^(#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,30})$/,
+    "Use a hex color (#fff, #RRGGBB) or a color name",
+  );
 const imageSelect = z.object({
   ...base,
   options: z
@@ -233,6 +247,8 @@ const colorMatch = z.object({
       name: text,
       points: z.number().int().nonnegative().optional(),
       summary,
+      icon: faIcon.optional(),
+      iconColor: cssColor.optional(),
     }))
     .min(2),
   feedback,

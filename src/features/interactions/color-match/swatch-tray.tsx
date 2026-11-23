@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColorMatchClue } from "@/types/gameplay";
-
+import { ColorIcon } from "./ColorIcon";
 import type { ColorPlacements, DragState } from "./use-color-match-game";
 
 type Props = {
@@ -79,18 +79,24 @@ export function SwatchTray({
                 role="button"
                 aria-label={`Drag ${clue.name} to its clue`}
                 onPointerDown={(event) => onStartDrag(event, clue.id, null)}
-                className={`h-12 w-12 rounded-full border-[3px] border-[#0b0b0f] transition-all ${
-                  dragging?.id === clue.id
+                className={`flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#0b0b0f] transition-all ${dragging?.id === clue.id
                     ? "pointer-events-none opacity-30"
                     : "cursor-grab active:cursor-grabbing active:scale-95"
-                }`}
+                  }`}
                 style={{
                   background: clue.hex,
                   boxShadow:
                     "inset 0 0 0 3px rgba(255,255,255,0.35), 0 2px 5px rgba(11,11,15,0.18)",
                   touchAction: "none",
                 }}
-              />
+              >
+                <ColorIcon
+                  icon={clue.icon}
+                  iconColor={clue.iconColor}
+                  onHex={clue.hex}
+                  className="text-lg"
+                />
+              </div>
             );
           })}
         </div>

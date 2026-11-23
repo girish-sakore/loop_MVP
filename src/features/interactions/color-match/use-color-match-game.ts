@@ -16,6 +16,8 @@ export type DragState = {
   h: number;
   hex: string;
   name: string;
+  icon?: string;
+  iconColor?: string;
 };
 
 export type FloatLabel = { x: number; y: number; text: string } | null;
@@ -202,6 +204,8 @@ export function useColorMatchGame({
       h: rect.height,
       hex: clue.hex,
       name: clue.name,
+      icon: clue.icon,
+      iconColor: clue.iconColor,
     };
 
     dragRef.current = nextDrag;

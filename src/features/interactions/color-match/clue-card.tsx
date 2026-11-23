@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-
+import { ColorIcon } from "./ColorIcon";
 import type { ColorMatchClue } from "@/types/gameplay";
 
 type Props = {
@@ -42,6 +42,7 @@ export function ClueCard({
         : hasVisiblePlacement
           ? placedSwatch?.hex ?? "#fffdf7"
           : "#fffdf7";
+  const shownSwatch = isLocked ? clue : hasVisiblePlacement ? placedSwatch : null;
 
   return (
     <motion.button
@@ -54,11 +55,11 @@ export function ClueCard({
         if (disabled) return;
         onOpen(clue.id);
       }}
-      className={`relative flex min-h-[150px] flex-col items-start justify-end overflow-hidden rounded-[18px] border-[3px] border-[#0b0b0f] p-3 text-left transition-[box-shadow,background-color] ${
-        isDragOver
+      className={`relative flex min-h-[150px] flex-col items-start justify-end overflow-hidden rounded-[18px] border-[3px] border-[#0b0b0f] p-3 text-left transition-[box-shadow,background-color] ${shownSwatch && !isLocked ? "pt-11" : ""
+        } ${isDragOver
           ? "shadow-[0_0_0_3px_#f2b84b,0_4px_0_rgba(11,11,15,0.2)]"
           : "shadow-[0_4px_0_rgba(11,11,15,0.16)]"
-      } ${reveal === "correct" ? "ring-4 ring-[#5fa43a]" : ""} ${reveal === "wrong" ? "ring-4 ring-[#bf3434]" : ""}`}
+        } ${reveal === "correct" ? "ring-4 ring-[#5fa43a]" : ""} ${reveal === "wrong" ? "ring-4 ring-[#bf3434]" : ""}`}
       style={{ background }}
       whileTap={{ scale: 0.97 }}
     >
@@ -71,9 +72,8 @@ export function ClueCard({
       />
 
       <span
-        className={`absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] text-[#0b0b0f] transition-all ${
-          isLocked ? "scale-100 opacity-100" : "scale-50 opacity-0"
-        }`}
+        className={`absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] text-[#0b0b0f] transition-all ${isLocked ? "scale-100 opacity-100" : "scale-50 opacity-0"
+          }`}
       >
         <svg
           viewBox="0 0 24 24"
@@ -90,19 +90,21 @@ export function ClueCard({
           />
         </svg>
       </span>
-
+      {shownSwatch ? (
+        <span className="relative mb-1.5 max-w-full truncate rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7] px-2 py-0.5 text-[11px] font-extrabold leading-none text-[#0b0b0f]">
+          {shownSwatch.name}
+        </span>
+      ) : null}
       <span
-        className={`relative w-full text-[13px] font-extrabold leading-snug ${
-          showColorStyle ? "text-white" : "text-[#0b0b0f]"
-        }`}
+        className={`relative w-full text-[13px] font-extrabold leading-snug ${showColorStyle ? "text-white" : "text-[#0b0b0f]"
+          }`}
       >
         {clue.clue1}
       </span>
 
       <span
-        className={`relative mt-2 text-[10px] font-bold uppercase tracking-wide ${
-          showColorStyle ? "text-white/85" : "text-[#746a5c]"
-        }`}
+        className={`relative mt-2 text-[10px] font-bold uppercase tracking-wide ${showColorStyle ? "text-white/85" : "text-[#746a5c]"
+          }`}
       >
         tap for the full story
       </span>
