@@ -503,7 +503,6 @@
       }
     ]
   },
- 
   {
     "type": "fill-blank-text",
     "title": "Sufism",
@@ -1734,6 +1733,84 @@
         "feedback": {
           "correct": "Great Eye!",
           "incorrect": "Not quite — try again and watch for the small details."
+        }
+      }
+    ]
+  },
+  {
+    "type": "match-pairs",
+    "title": "Famous Books",
+    "subtitle": "Match every clue with its book.",
+    "subStages": [
+      {
+        "id": "match-pairs-stage-1",
+        "question": "Match each clue to its book",
+        "attemptsAllowed": 3,
+        "points": 100,
+        "introLabel": "Tap the matching pairs",
+        "eyebrow": "Today's Puzzle",
+        "title": "Famous Books",
+        "prompt": "Tap a clue, then tap its matching answer.",
+        "pairs": [
+          {
+            "id": "atlas",
+            "clue": "A bound collection of maps took its name in 1595 from a legendary king of Mauretania, remembered as a philosopher and astronomer.",
+            "answer": { "text": "Atlas" },
+            "summary": {
+              "body": "Mercator used Atlas as the title of his 1595 collection of maps, helping the name become the word for a book of maps."
+            }
+          },
+          {
+            "id": "gray",
+            "clue": "The first edition of this 1858 London textbook was illustrated by a surgeon who drew from real dissections.",
+            "answer": { "emoji": "🫀", "caption": "Gray's Anatomy" },
+            "summary": {
+              "body": "Henry Gray's anatomy textbook first appeared in 1858, with illustrations by Henry Vandyke Carter."
+            }
+          },
+          {
+            "id": "gutenberg",
+            "clue": "Around 1455, a goldsmith in Mainz printed the first major European book using movable metal type. Roughly 180 copies were made.",
+            "answer": {
+              "image": "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=600&q=80",
+              "imageAlt": "An open antique book",
+              "caption": "Gutenberg Bible"
+            },
+            "summary": {
+              "body": "The Gutenberg Bible is among the earliest major books printed in Europe with movable metal type."
+            }
+          },
+          {
+            "id": "dead",
+            "clue": "Despite its name, this ancient Egyptian text was usually written on papyrus scrolls and placed in tombs, not bound like a book.",
+            "answer": { "emoji": "📜", "caption": "Book of the Dead" },
+            "summary": {
+              "body": "The Book of the Dead is a collection of ancient Egyptian funerary texts, commonly recorded on papyrus."
+            }
+          },
+          {
+            "id": "johnson",
+            "clue": "One man spent about nine years on this 1755 work with only a handful of assistants, hacking each definition out himself.",
+            "answer": { "text": "Johnson's Dictionary" },
+            "summary": {
+              "body": "Samuel Johnson published A Dictionary of the English Language in 1755 after years of largely independent work."
+            }
+          },
+          {
+            "id": "anne",
+            "clue": "A girl received this red-checkered book for her 13th birthday in 1942 and began writing in it within days.",
+            "answer": {
+              "background": "repeating-conic-gradient(#c8372d 0 25%, #fff 0 50%) 0 0 / 22px 22px",
+              "caption": "The Diary of Anne Frank"
+            },
+            "summary": {
+              "body": "Anne Frank began the diary that became world-famous shortly after receiving it for her thirteenth birthday."
+            }
+          }
+        ],
+        "feedback": {
+          "correct": "Every clue found its book!",
+          "incorrect": "Review the pairs and try to spot the matching clues."
         }
       }
     ]

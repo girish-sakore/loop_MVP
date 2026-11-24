@@ -1,6 +1,6 @@
 // features/summery/build-summary-items.ts
 import type { AnswerResults } from "@/features/gameplay/progress/resume";
-import { timelineQuestionId } from "@/features/gameplay/scoring";
+import { matchPairQuestionId, timelineQuestionId } from "@/features/gameplay/scoring";
 
 export type SummaryItem = {
   id: string; // also the key into answerResults for timeline cards
@@ -36,6 +36,7 @@ type RawSubStage = RawItem & {
   question?: unknown;
   cases?: unknown;
   clues?: unknown;
+  pairs?: unknown;
   events?: unknown;
 };
 
@@ -85,6 +86,12 @@ function correctOptionLabel(options: unknown): string | null {
   return isObj(hit) ? str(hit.label) : null;
 }
 
+function answerLabel(answer: unknown): string | null {
+  if (typeof answer === "string") return answer;
+  if (!isObj(answer)) return null;
+  return str(answer.caption) ?? str(answer.text) ?? str(answer.imageAlt);
+}
+
 function getHeadline(item: RawItem): string | null {
   const fromOptions = correctOptionLabel(item.options);
   if (fromOptions) return fromOptions;
@@ -105,10 +112,12 @@ function getHeadline(item: RawItem): string | null {
   if (start) return `${start} → ${str(item.targetCountry) ?? ""}`;
 
   return (
+    answerLabel(item.answer) ??
     str(item.answer) ??
     str(item.name) ??
     (isObj(item.learning) ? str(item.learning.title) : null) ??
-    str(item.mapTitle)
+    str(item.mapTitle) ??
+    str(item.id)
   );
 }
 
@@ -142,21 +151,33 @@ export function buildSummaryItems(
         continue;
       }
 
-      const children = Array.isArray(s.cases) ? s.cases : Array.isArray(s.clues) ? s.clues : null;
+      const children = Array.isArray(s.cases)
+        ? s.cases
+        : Array.isArray(s.clues)
+          ? s.clues
+          : Array.isArray(s.pairs)
+            ? s.pairs
+            : null;
       const items: RawItem[] = children ? children.filter(isObj) : [s];
       const isStage = !children;
 
       for (const item of items) {
         const summary = readSummary(item);
         if (!summary) continue;
+        const itemId = str(item.id) ?? s.id;
+        const pairQuestionId = node.type === "match-pairs"
+          ? matchPairQuestionId(s.id, itemId)
+          : itemId;
         out.push({
-          id: str(item.id) ?? s.id,
+          id: pairQuestionId,
           question: SHOW_QUESTION.has(node.type) ? str(s.question) : null,
           headline: getHeadline(item),
           body: summary.body,
           sources: summary.sources,
-          // one result per sub-stage, so only stage-level cards get a badge
-          correct: isStage && r ? r.isCorrect : null,
+          correct: node.type === "match-pairs"
+            ? results?.[pairQuestionId]?.isCorrect ?? null
+            // one result per sub-stage, so only stage-level cards get a badge
+            : isStage && r ? r.isCorrect : null,
         });
       }
     }

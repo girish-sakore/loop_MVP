@@ -12,6 +12,7 @@ import { TimelineBuilder } from "@/features/interactions/timeline-builder/timeli
 import { ReorderInteractionPlaceholder } from "@/features/interactions/reorder/reorder-interaction";
 import { ClueConnectInteraction } from "@/features/interactions/clue-connect/clue-connect-interaction";
 import { ColorMatchInteraction } from "@/features/interactions/color-match/color-match-interaction";
+import { MatchPairsInteraction } from "@/features/interactions/match-pairs/match-pairs-interaction";
 import { WordRootInteraction } from "@/features/interactions/word-root/word-root-interaction";
 import { ImageTextSAnswerInteraction } from "@/features/interactions/image-text-sanswer/image-text-sanswer-interaction";
 import dynamic from "next/dynamic";
@@ -34,6 +35,8 @@ type InteractionRendererProps = {
     correct: boolean;
     feedback: string;
     points?: number;
+    singlePass?: boolean;
+    allowSkip?: boolean;
     results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
   }) => void;
   showIntro: boolean;
@@ -174,6 +177,19 @@ export function InteractionRenderer({
           onAnswer={onAnswer}
           disabled={disabled}
           retryCount={retryCount}
+          showIntro={showIntro}
+          onIntroComplete={onIntroComplete}
+        />
+      );
+    case "match-pairs":
+      return (
+        <MatchPairsInteraction
+          key={stage.id}
+          stage={stage}
+          onAnswer={onAnswer}
+          disabled={disabled}
+          retryCount={retryCount}
+          attemptsRemaining={attemptsRemaining}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
         />

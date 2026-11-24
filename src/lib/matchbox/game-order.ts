@@ -7,6 +7,7 @@ export const GAME_ORDER = [
   "image-select",
   "fill-blank",
   "color-match",
+  "match-pairs",
   "border-hop",
 ] as const;
 

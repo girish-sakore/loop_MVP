@@ -230,6 +230,58 @@ const colorMatch = z.object({
   feedback,
 });
 
+const answerBackground = z.string().trim().min(1).max(300).optional();
+
+const matchPairAnswer = z.object({
+  text: optText,
+  image: imageUrl.optional(),
+  imageAlt: optText,
+  caption: optText,
+  emoji: optText,
+  background: answerBackground,
+}).superRefine((answer, ctx) => {
+  const hasVisual = Boolean(answer.image || answer.emoji || answer.background);
+  const hasLabel = Boolean(answer.text || answer.caption);
+  if (!hasVisual && !hasLabel) bad(ctx, "An answer needs text, an image, an emoji, or a background");
+  if (answer.caption && !hasVisual) bad(ctx, "caption needs an image, emoji, or background", ["caption"]);
+  if (answer.imageAlt && !answer.image) bad(ctx, "imageAlt needs an image", ["imageAlt"]);
+});
+
+const matchPairs = z.object({
+  ...base,
+  prompt: text,
+  introLabel: optText,
+  eyebrow: optText,
+  title: optText,
+  pairs: z.array(z.object({
+    id: text,
+    clue: text.max(700),
+    // The structured form is preferred. The flat fields below are accepted
+    // so the supplied HTML example can be imported without a data rewrite.
+    answer: matchPairAnswer.optional(),
+    text: optText,
+    img: imageUrl.optional(),
+    pic: optText,
+    bg: answerBackground,
+    summary,
+  }).superRefine((pair, ctx) => {
+    const hasFlatAnswer = Boolean(pair.text || pair.img || pair.pic || pair.bg);
+    if (!pair.answer && !hasFlatAnswer) {
+      bad(ctx, "An answer needs the answer object or text, img, pic, or bg");
+    }
+    if (pair.answer && hasFlatAnswer) {
+      bad(ctx, "Use either answer or the flat text, img, pic, and bg fields, not both");
+    }
+  }).transform(({ answer, text: answerText, img, pic, bg, ...pair }) => ({
+    ...pair,
+    answer: answer ?? { text: answerText, image: img, emoji: pic, background: bg },
+  }))).min(2).max(12),
+  feedback,
+}).superRefine((s, ctx) => {
+  if (dupes(s.pairs.map((pair) => pair.id)).length) bad(ctx, "Pair ids must be unique", ["pairs"]);
+  if (s.hints || s.hintsAllowed !== undefined) bad(ctx, "Hints are not supported for match-pairs");
+});
+
 const borderHop = z.object({
   ...base,
   startCountry: text,
@@ -297,6 +349,7 @@ export const gameCardSchema = z.discriminatedUnion("type", [
   card("drag-drop", dragDrop),
   card("clue-connect", clueConnect),
   card("color-match", colorMatch),
+  card("match-pairs", matchPairs),
   card("border-hop", borderHop),
   card("word-root", wordRoot),
   card("image-text-answer", imageTextAnswer),

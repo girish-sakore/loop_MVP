@@ -57,7 +57,7 @@ export function GameplayEngine({
   const [retryCount, setRetryCount] = useState(0);
   // Bumped when another device is ahead, so the game remounts with the new state.
   const [epoch, setEpoch] = useState(0);
-  const [feedback, setFeedback] = useState<{ open: boolean; correct: boolean; message: string; singlePass?: boolean }>(
+  const [feedback, setFeedback] = useState<{ open: boolean; correct: boolean; message: string; singlePass?: boolean; allowSkip?: boolean }>(
     { open: false, correct: false, message: "" });
   const [introState, setIntroState] = useState<{ key: string; dismissed: boolean } | null>(null);
   const {
@@ -243,12 +243,14 @@ export function GameplayEngine({
     points,
     results,
     singlePass,
+    allowSkip,
   }: {
     correct: boolean;
     feedback: string;
     points?: number;
     results?: Array<{ questionId: string; isCorrect: boolean; points: number }>;
     singlePass?: boolean;
+    allowSkip?: boolean;
   }) {
     if (answerLocked.current) return;
     registerResult({
@@ -261,7 +263,7 @@ export function GameplayEngine({
     });
     const snapshot = useGameplayStore.getState();
     answerLocked.current = snapshot.stagePassed || snapshot.attemptsRemaining === 0;
-    setFeedback({ open: true, correct, message, singlePass });
+    setFeedback({ open: true, correct, message, singlePass, allowSkip });
     syncStage();
   }
 
@@ -354,6 +356,7 @@ export function GameplayEngine({
         open={feedback.open}
         correct={feedback.correct}
         singlePass={feedback.singlePass}
+        allowSkip={feedback.allowSkip}
         message={feedback.message}
         attemptsRemaining={attemptsRemaining}
         onContinue={handleContinue}

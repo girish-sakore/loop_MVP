@@ -46,6 +46,7 @@ const gameTileConfig: Record<string, TileConfig> = {
   "image-select": { key: "image-select", title: "Knockout", subtitle: "Choose a winner", icon: "hotel_class" },
   "fill-blank": { key: "fill-blank", title: "Hindsight", subtitle: "Find the moment", icon: "public", badge: "New" },
   "color-match": { key: "color-match", title: "Palette", subtitle: "Match the color", icon: "palette" },
+  "match-pairs": { key: "match-pairs", title: "Match pairs", subtitle: "Find each answer", icon: "join_inner" },
 };
 
 

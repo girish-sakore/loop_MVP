@@ -8,6 +8,7 @@ type FeedbackModalProps = {
   message: string;
   attemptsRemaining: number;
   singlePass?: boolean; // deck result: Continue is the only action
+  allowSkip?: boolean;
   onContinue: () => void;
   onRetry?: () => void;
   onSkip?: () => void;
@@ -19,6 +20,7 @@ export function FeedbackModal({
   message,
   attemptsRemaining,
   singlePass = false,
+  allowSkip = true,
   onContinue,
   onRetry,
   onSkip
@@ -234,13 +236,15 @@ export function FeedbackModal({
                       Retry
                     </button>
                   )}
-                  <button
-                    onClick={attemptsRemaining <= 0 ? onContinue : onSkip}  // ← skip forces advance
-                    className="w-full h-12 rounded-xl text-[13px] font-bold tracking-widest uppercase transition-all duration-75"
-                    style={{ color: "var(--on-error-container)", opacity: 0.7 }}
-                  >
-                    {attemptsRemaining <= 0 ? "Continue Anyway" : "View Explanation"}
-                  </button>
+                  {(attemptsRemaining <= 0 || allowSkip) && (
+                    <button
+                      onClick={attemptsRemaining <= 0 ? onContinue : onSkip}
+                      className="w-full h-12 rounded-xl text-[13px] font-bold tracking-widest uppercase transition-all duration-75"
+                      style={{ color: "var(--on-error-container)", opacity: 0.7 }}
+                    >
+                      {attemptsRemaining <= 0 ? "Continue Anyway" : "View Explanation"}
+                    </button>
+                  )}
                 </div>
               )}
             </div>

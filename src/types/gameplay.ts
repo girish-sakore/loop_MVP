@@ -9,6 +9,7 @@ export type StageType =
   | "drag-drop"
   | "clue-connect"
   | "color-match"
+  | "match-pairs"
   | "border-hop"
   | "word-root"
   | "image-text-answer";
@@ -166,6 +167,42 @@ export type ColorMatchStage = StageBase & {
   };
 };
 
+export type MatchPairAnswer = {
+  /** A text-only answer, or a label below an image, emoji, or background. */
+  text?: string;
+  /** A remote or uploaded image. Use caption to label it. */
+  image?: string;
+  imageAlt?: string;
+  caption?: string;
+  /** A small visual answer such as an emoji. */
+  emoji?: string;
+  /** A CSS background for an answer visual, for example a repeating pattern. */
+  background?: string;
+};
+
+export type MatchPair = {
+  id: string;
+  clue: string;
+  answer: MatchPairAnswer;
+  summary?: {
+    body: string;
+    sources?: Array<{ label: string; url: string }>;
+  };
+};
+
+export type MatchPairsStage = StageBase & {
+  type: "match-pairs";
+  prompt: string;
+  introLabel?: string;
+  eyebrow?: string;
+  title?: string;
+  pairs: MatchPair[];
+  feedback: {
+    correct: string;
+    incorrect: string;
+  };
+};
+
 export type FillBlankStage = StageBase & {
   type: "fill-blank";
 
@@ -305,6 +342,7 @@ export type Stage =
   | DragDropStage
   | ClueConnectStage
   | ColorMatchStage
+  | MatchPairsStage
   | WordRootStage
   | ImageTextSAnswerStage;
 

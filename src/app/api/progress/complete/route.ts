@@ -36,26 +36,29 @@ function computeStars(correctAnswers: number, totalAnswers: number): number {
  * client aggregate counters or client-provided points. The client only reports
  * each question's latest correctness result.
  */
-function scoreCompletion(snapshot: unknown, nodeId: string, answerResults: AnswerResults): Completion | null {
+export function scoreCompletion(snapshot: unknown, nodeId: string, answerResults: AnswerResults): Completion | null {
   if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) return null;
   const nodes = (snapshot as { nodes?: unknown }).nodes;
   if (!Array.isArray(nodes)) return null;
   const node = nodes.find((candidate) =>
     candidate && typeof candidate === "object" && (candidate as { id?: unknown }).id === nodeId,
-  ) as { subStages?: unknown } | undefined;
+  ) as { type?: unknown; subStages?: unknown } | undefined;
   if (!node || !Array.isArray(node.subStages) || node.subStages.length === 0) return null;
 
   const questions: SnapshotQuestion[] = [];
   for (let index = 0; index < node.subStages.length; index += 1) {
     const stage = node.subStages[index];
     if (!stage || typeof stage !== "object" || Array.isArray(stage)) return null;
-    const raw = stage as { id?: unknown; points?: unknown; type?: unknown; events?: unknown };
+    const raw = stage as { id?: unknown; points?: unknown; type?: unknown; events?: unknown; pairs?: unknown };
     const id = typeof raw.id === "string" && raw.id.length > 0 ? raw.id : `${nodeId}-${index + 1}`;
     // The page defaults an omitted authored score to 100 points.
     const points = typeof raw.points === "number" && Number.isSafeInteger(raw.points) && raw.points >= 0
       ? raw.points
       : 100;
-    questions.push(...stageQuestions({ id, type: raw.type, points, events: raw.events }));
+    // Current snapshots put the game type on every substage. Falling back to
+    // the parent keeps older snapshots on the same per-item scoring rules.
+    const type = typeof raw.type === "string" ? raw.type : node.type;
+    questions.push(...stageQuestions({ id, type, points, events: raw.events, pairs: raw.pairs }));
   }
 
   // Do not let omitted wrong answers improve the ratio used for stars.
