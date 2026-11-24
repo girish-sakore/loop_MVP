@@ -42,7 +42,6 @@ export default async function SummaryPage() {
         : 1),
     0,
   );
-  // totals reduce stays exactly as it is
 
   const resultsByNode = Object.fromEntries(
     rows.map((r) => [r.nodeId, sanitizeAnswerResults(r.answerResults)]),
@@ -59,7 +58,7 @@ export default async function SummaryPage() {
           category={edition.category ?? ""}
           {...totals}
         />
-        <BlogReveal items={items} />      
+        <BlogReveal items={items} />
         </main>
       <BottomNav />
     </MobileContainer>

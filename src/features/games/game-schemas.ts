@@ -57,7 +57,21 @@ function checkHints(items: Array<{ hints?: { id: string }[]; hintsAllowed?: numb
 }
 
 /* ---------- substage schemas ---------- */
+// Font Awesome class string, e.g. "fa-solid fa-volcano". Letters, digits, spaces, hyphens only.
+const faIcon = z
+  .string()
+  .trim()
+  .max(80)
+  .regex(/^[a-z0-9 -]+$/i, "Letters, numbers, spaces and - only");
 
+// Any CSS color: #RGB, #RRGGBB, #RRGGBBAA, or a plain name like "white".
+const cssColor = z
+  .string()
+  .trim()
+  .regex(
+    /^(#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,30})$/,
+    "Use a hex color (#fff, #RRGGBB) or a color name",
+  );
 const imageSelect = z.object({
   ...base,
   options: z
@@ -225,9 +239,30 @@ const colorMatch = z.object({
   eyebrow: optText,
   title: optText,
   clues: z
-    .array(z.object({ id: text, hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"), clue1: text, hint: text, name: text, summary }))
+    .array(z.object({
+      id: text,
+      hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"),
+      clue1: text,
+      hint: text,
+      name: text,
+      points: z.number().int().nonnegative().optional(),
+      summary,
+      icon: faIcon.optional(),
+      iconColor: cssColor.optional(),
+    }))
     .min(2),
   feedback,
+}).superRefine((stage, ctx) => {
+  const configured = stage.clues.filter((clue) => clue.points !== undefined);
+  if (configured.length > 0 && configured.length !== stage.clues.length) {
+    bad(ctx, "Set points for every clue or leave points unset for all clues", ["clues"]);
+  }
+  if (configured.length === stage.clues.length) {
+    const total = configured.reduce((sum, clue) => sum + (clue.points ?? 0), 0);
+    if (total !== stage.points) {
+      bad(ctx, "Clue points must add up to the stage points", ["clues"]);
+    }
+  }
 });
 
 const borderHop = z.object({

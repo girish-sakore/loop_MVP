@@ -59,6 +59,10 @@ export function progressStorageKey(userId: string, editionId: string, nodeId: st
 
 const isCount = (v: unknown): v is number => typeof v === "number" && Number.isSafeInteger(v) && v >= 0;
 
+// Question values can be split equally across authored sub-questions, so they
+// are not necessarily integers (for example, 100 points across six clues).
+const isPoints = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v) && v >= 0;
+
 const isQuestionId = (value: string) => value.length > 0 && value.length <= 160;
 
 export function sanitizeAnswerResults(value: unknown): AnswerResults {
@@ -67,7 +71,7 @@ export function sanitizeAnswerResults(value: unknown): AnswerResults {
   for (const [questionId, raw] of Object.entries(value).slice(0, MAX_ANSWER_RESULTS)) {
     if (!isQuestionId(questionId) || !raw || typeof raw !== "object" || Array.isArray(raw)) continue;
     const result = raw as Record<string, unknown>;
-    if (typeof result.isCorrect !== "boolean" || !isCount(result.points) || !isCount(result.updatedAt)) continue;
+    if (typeof result.isCorrect !== "boolean" || !isPoints(result.points) || !isCount(result.updatedAt)) continue;
     out[questionId] = {
       isCorrect: result.isCorrect,
       points: result.points,
