@@ -55,7 +55,8 @@ export default async function NodeGameplayPage({ params, searchParams }: PagePro
         editionTitle={edition.title}
         nodeId={node.id}
         stages={stages}
-        mode={isReplay ? "replay" : "normal"}
+        inputMode={node.inputMode === "text" ? "text" : "letters"}
+        mode={isReplay ? "replay" : "normal"} 
         initialStage={isReplay ? 0 : nodeProgress.currentSubStage}
         initialProgress={
           !isReplay && nodeProgress.status === "in_progress"

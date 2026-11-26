@@ -151,6 +151,18 @@ export type ColorMatchClue = {
   clue1: string;
   hint: string;
   name: string;
+  icon?: string;       // e.g. "fa-solid fa-volcano"
+  iconColor?: string;  // any CSS color; falls back to hex
+  /** Optional per-clue score; otherwise the stage score is shared equally. */
+  points?: number;
+  /** Text and references shown on the edition summary after this clue is answered. */
+  summary?: {
+    body: string;
+    sources?: Array<{
+      label: string;
+      url: string;
+    }>;
+  };
 };
 
 export type ColorMatchStage = StageBase & {
@@ -190,6 +202,7 @@ export type FillBlankTextStage = StageBase & {
   blanks: Array<{
     id: string;
     answer: string;
+    acceptedAnswers?: string[]; // alternate valid answers (used in "text" input mode)
     hint?: string; // optional small-text hint shown in the popup
     hints?: HintDef[];
     hintsAllowed?: number;
@@ -199,7 +212,6 @@ export type FillBlankTextStage = StageBase & {
     incorrect: string;
   };
 };
-
 export type SwipeStage = StageBase & {
   type: "swipe";
 
@@ -315,6 +327,7 @@ export interface EditionNode {
   mapSubtitle: string;
   isPremium?: boolean;
   subStages: Stage[]; // Stage = your existing per-question union type — unchanged
+  inputMode?: "letters" | "text";
 }
 
 export type Edition = {
@@ -329,7 +342,7 @@ export type Edition = {
   publishedAt?: string;
   weekLabel?: string;
   author?: string;
-   coverImage?: string | null;
+  coverImage?: string | null;
 };
 
 export type ImageTextSAnswerStage = StageBase & {

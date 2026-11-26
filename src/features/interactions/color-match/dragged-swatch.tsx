@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { DragState, FloatLabel } from "./use-color-match-game";
+import { ColorIcon } from "./ColorIcon";
 
 type Props = {
   dragging: DragState | null;

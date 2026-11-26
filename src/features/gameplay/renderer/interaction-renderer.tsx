@@ -41,7 +41,8 @@ type InteractionRendererProps = {
   hints?: StageHints;
   interactionState?: InteractionState;
   onInteractionStateChange?: (state: InteractionState) => void;
-  editionTitle?: string; // new
+  editionTitle?: string; // for guide screen to have edition title.
+  inputMode?: "letters" | "text"; //for in text or letter input mode in fill-blank-text interaction
 };
 
 export function InteractionRenderer({
@@ -57,6 +58,7 @@ export function InteractionRenderer({
   interactionState,
   onInteractionStateChange,
   editionTitle, // new
+  inputMode,
 }: InteractionRendererProps) {
   const stage = useMemo(() => mapImages(rawStage, assetUrl), [rawStage]);
   const legacy = hints?.group(STAGE_GROUP);
@@ -137,6 +139,7 @@ export function InteractionRenderer({
           hints={hints}
           interactionState={interactionState}
           onInteractionStateChange={onInteractionStateChange}
+          inputMode={inputMode}
         />
       );
     case "drag-drop":
@@ -167,11 +170,9 @@ export function InteractionRenderer({
     case "color-match":
       return (
         <ColorMatchInteraction
-          key={`${stage.id}:${retryCount}`}
           stage={stage}
           onAnswer={onAnswer}
           disabled={disabled}
-          retryCount={retryCount}
           showIntro={showIntro}
           onIntroComplete={onIntroComplete}
         />

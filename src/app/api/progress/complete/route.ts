@@ -42,20 +42,33 @@ function scoreCompletion(snapshot: unknown, nodeId: string, answerResults: Answe
   if (!Array.isArray(nodes)) return null;
   const node = nodes.find((candidate) =>
     candidate && typeof candidate === "object" && (candidate as { id?: unknown }).id === nodeId,
-  ) as { subStages?: unknown } | undefined;
+  ) as { type?: unknown; subStages?: unknown } | undefined;
   if (!node || !Array.isArray(node.subStages) || node.subStages.length === 0) return null;
 
   const questions: SnapshotQuestion[] = [];
   for (let index = 0; index < node.subStages.length; index += 1) {
     const stage = node.subStages[index];
     if (!stage || typeof stage !== "object" || Array.isArray(stage)) return null;
-    const raw = stage as { id?: unknown; points?: unknown; type?: unknown; events?: unknown };
+    const raw = stage as {
+      id?: unknown;
+      points?: unknown;
+      type?: unknown;
+      events?: unknown;
+      clues?: unknown;
+    };
     const id = typeof raw.id === "string" && raw.id.length > 0 ? raw.id : `${nodeId}-${index + 1}`;
     // The page defaults an omitted authored score to 100 points.
     const points = typeof raw.points === "number" && Number.isSafeInteger(raw.points) && raw.points >= 0
       ? raw.points
       : 100;
-    questions.push(...stageQuestions({ id, type: raw.type, points, events: raw.events }));
+    // Old published editions stored the type only on the parent node.
+    questions.push(...stageQuestions({
+      id,
+      type: raw.type ?? node.type,
+      points,
+      events: raw.events,
+      clues: raw.clues,
+    }));
   }
 
   // Do not let omitted wrong answers improve the ratio used for stars.

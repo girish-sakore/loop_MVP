@@ -21,6 +21,7 @@ const hintList = z.array(z.object({ id: hintId, text })).max(10).superRefine((va
   if (dupes(value.map((hint) => hint.id)).length) bad(ctx, "Hint ids must be unique");
 }).optional();
 const hintFields = { hints: hintList, hintsAllowed: z.number().int().min(0).max(10).optional() };
+
 const summary = z
   .object({
     body: text,
@@ -56,7 +57,21 @@ function checkHints(items: Array<{ hints?: { id: string }[]; hintsAllowed?: numb
 }
 
 /* ---------- substage schemas ---------- */
+// Font Awesome class string, e.g. "fa-solid fa-volcano". Letters, digits, spaces, hyphens only.
+const faIcon = z
+  .string()
+  .trim()
+  .max(80)
+  .regex(/^[a-z0-9 -]+$/i, "Letters, numbers, spaces and - only");
 
+// Any CSS color: #RGB, #RRGGBB, #RRGGBBAA, or a plain name like "white".
+const cssColor = z
+  .string()
+  .trim()
+  .regex(
+    /^(#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,30})$/,
+    "Use a hex color (#fff, #RRGGBB) or a color name",
+  );
 const imageSelect = z.object({
   ...base,
   options: z
@@ -98,7 +113,13 @@ const fillBlankText = z.object({
   ...base,
   prompt: text,
   introLabel: optText,
-  blanks: z.array(z.object({ id: hintId, answer: text, hint: optText, ...hintFields })).min(1),
+  blanks: z.array(z.object({
+    id: hintId,
+    answer: text,
+    acceptedAnswers: z.array(text).max(10).optional(),
+    hint: optText,
+    ...hintFields,
+  })).min(1),
   feedback,
 }).superRefine((s, ctx) => {
   const blankIds = s.blanks.map((b) => b.id).sort().join();
@@ -221,9 +242,30 @@ const colorMatch = z.object({
   eyebrow: optText,
   title: optText,
   clues: z
-    .array(z.object({ id: text, hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"), clue1: text, hint: text, name: text, summary }))
+    .array(z.object({
+      id: text,
+      hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex"),
+      clue1: text,
+      hint: text,
+      name: text,
+      points: z.number().int().nonnegative().optional(),
+      summary,
+      icon: faIcon.optional(),
+      iconColor: cssColor.optional(),
+    }))
     .min(2),
   feedback,
+}).superRefine((stage, ctx) => {
+  const configured = stage.clues.filter((clue) => clue.points !== undefined);
+  if (configured.length > 0 && configured.length !== stage.clues.length) {
+    bad(ctx, "Set points for every clue or leave points unset for all clues", ["clues"]);
+  }
+  if (configured.length === stage.clues.length) {
+    const total = configured.reduce((sum, clue) => sum + (clue.points ?? 0), 0);
+    if (total !== stage.points) {
+      bad(ctx, "Clue points must add up to the stage points", ["clues"]);
+    }
+  }
 });
 
 const borderHop = z.object({
@@ -267,22 +309,27 @@ const imageTextAnswer = z.object({
 
 /* ---------- card (= Game row) schema ---------- */
 
-function card<T extends string, S extends z.ZodTypeAny>(type: T, stage: S) {
+function card<
+  T extends string,
+  S extends z.ZodTypeAny,
+  E extends z.ZodRawShape = Record<never, never>, // i.e. {}
+>(type: T, stage: S, extra?: E) {
   return z.object({
     type: z.literal(type),
     title: text.max(60),
     subtitle: z.string().trim().max(120).optional(),
     isPremium: z.boolean().default(false),
+    ...(extra ?? ({} as E)),
     subStages: z.array(stage).min(1).max(50),
   });
 }
-
 export const gameCardSchema = z.discriminatedUnion("type", [
   card("image-select", imageSelect),
   card("swipe", swipe),
   card("fill-blank", fillBlank),
-  card("fill-blank-text", fillBlankText),
-  card("timeline-builder", timelineBuilder),
+  card("fill-blank-text", fillBlankText, {
+    inputMode: z.enum(["letters", "text"]).default("letters"),
+  }), card("timeline-builder", timelineBuilder),
   card("reorder", reorder),
   card("four-way-swipe", fourWaySwipe),
   card("drag-drop", dragDrop),

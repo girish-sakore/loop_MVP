@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import type { ColorMatchStage } from "@/types/gameplay";
 
 import { ClueGrid } from "./clue-grid";
@@ -13,22 +15,42 @@ import { WinBanner } from "./win-banner";
 
 type Props = {
   stage: ColorMatchStage;
-  onAnswer: (payload: { correct: boolean; feedback: string }) => void;
+  onAnswer: (payload: {
+    correct: boolean;
+    feedback: string;
+    results: Array<{ questionId: string; isCorrect: boolean; points: number }>;
+  }) => void;
   disabled?: boolean;
-  retryCount?: number;
   showIntro?: boolean;
   onIntroComplete?: () => void;
 };
+
+function shuffleClues(clues: ColorMatchStage["clues"]) {
+  const shuffled = [...clues];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
 
 export function ColorMatchInteraction({
   stage,
   onAnswer,
   disabled,
-  retryCount = 0,
   showIntro = true,
   onIntroComplete,
 }: Props) {
-  const game = useColorMatchGame({ stage, onAnswer, disabled, retryCount });
+  const game = useColorMatchGame({ stage, onAnswer, disabled });
+  const [dockClues, setDockClues] = useState(stage.clues);
+
+  // Shuffle only when a fresh stage loads. The dock order then remains stable
+  // while the player drags, checks, and retries placements.
+  useEffect(() => {
+    setDockClues(shuffleClues(stage.clues));
+  }, [stage.id, stage.clues]);
 
   if (showIntro) {
     return (
@@ -56,16 +78,24 @@ export function ColorMatchInteraction({
         matchedIds={game.matchedIds}
         openId={game.openId}
         dragOverId={game.dragOverId}
-        shakingId={game.shakingId}
+        placements={game.placements}
+        reveal={game.reveal}
+        dragging={game.dragging}
         disabled={disabled}
         onOpen={game.setOpenId}
+        onStartDrag={game.startDrag}
       />
 
       <SwatchTray
-        stage={stage}
+        clues={dockClues}
         matchedIds={game.matchedIds}
+        placements={game.placements}
         dragging={game.dragging}
         onStartDrag={game.startDrag}
+        onCheck={game.checkPlacements}
+        canCheck={game.canCheck}
+        checking={game.checking}
+        disabled={disabled}
       />
 
       <DraggedSwatch dragging={game.dragging} label={game.label} />

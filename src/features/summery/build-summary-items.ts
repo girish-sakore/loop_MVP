@@ -1,6 +1,6 @@
 // features/summery/build-summary-items.ts
 import type { AnswerResults } from "@/features/gameplay/progress/resume";
-import { timelineQuestionId } from "@/features/gameplay/scoring";
+import { colorMatchQuestionId, timelineQuestionId } from "@/features/gameplay/scoring";
 
 export type SummaryItem = {
   id: string; // also the key into answerResults for timeline cards
@@ -147,16 +147,21 @@ export function buildSummaryItems(
       const isStage = !children;
 
       for (const item of items) {
+        const itemId = str(item.id) ?? s.id;
+        const resultId = node.type === "color-match"
+          ? colorMatchQuestionId(s.id, itemId)
+          : s.id;
+        const result = results?.[resultId];
+        const itemResult = isStage ? r : result;
         const summary = readSummary(item);
         if (!summary) continue;
         out.push({
-          id: str(item.id) ?? s.id,
+          id: resultId,
           question: SHOW_QUESTION.has(node.type) ? str(s.question) : null,
           headline: getHeadline(item),
           body: summary.body,
           sources: summary.sources,
-          // one result per sub-stage, so only stage-level cards get a badge
-          correct: isStage && r ? r.isCorrect : null,
+          correct: itemResult ? itemResult.isCorrect : null,
         });
       }
     }

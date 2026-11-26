@@ -507,6 +507,8 @@
     "type": "fill-blank-text",
     "title": "Sufism",
     "subtitle": "",
+    "isPremium": false,
+    "inputMode": "letters",
     "subStages": [
       {
         "id": "node-3-stage-1",
@@ -519,7 +521,11 @@
             "id": "b1",
             "answer": "Prithviraj Chauhan"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-2",
@@ -532,7 +538,11 @@
             "id": "b1",
             "answer": "Ajmer"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-3",
@@ -545,7 +555,11 @@
             "id": "b1",
             "answer": "Basant Panchami"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-4",
@@ -558,7 +572,11 @@
             "id": "b1",
             "answer": "Amir Khusrow"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-5",
@@ -571,7 +589,11 @@
             "id": "b1",
             "answer": "Tabla"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-6",
@@ -584,7 +606,11 @@
             "id": "b1",
             "answer": "Whirling"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-7",
@@ -597,7 +623,11 @@
             "id": "b1",
             "answer": "Rabia"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-8",
@@ -610,7 +640,11 @@
             "id": "b1",
             "answer": "Langar"
           }
-        ]
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       },
       {
         "id": "node-3-stage-9",
@@ -623,131 +657,137 @@
             "id": "b1",
             "answer": "Calligraphy"
           }
-        ]
-      },
-      {
-        "id": "node-3-stage-10",
-        "question": "Read the passage",
-        "attemptsAllowed": 1,
-        "points": 10,
-        "prompt": "Through saints and musicians, food and flowers, ink and rhythm, Sufism transformed from a response to political upheaval into a comprehensive spiritual path. The divine is reached through listening, service, love, and surrender of the self—the greatest transformation of all.",
-        "blanks": []
+        ],
+        "feedback": {
+          "correct": "Correct!",
+          "incorrect": "Not quite. Try again!"
+        }
       }
     ]
   },
   {
     "type": "fill-blank-text",
     "title": "Prison",
-    "subtitle": "Identify X",
+    "subtitle": "",
+    "isPremium": false,
+    "inputMode": "text",
     "subStages": [
       {
-        "id": "node-3b-prison-stage-1",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-1",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "While serving time in a late-18th-century English prison for inciting a riot, William Addis fashioned the first mass-producible version of {{b1}} from a carved bone handle and boar bristles held in place by wire. He went on to die a wealthy man. In 1938, DuPont reworked it with nylon fibers, which proved sturdier and more efficient than animal hair. In the United States, daily use became widespread only after World War II veterans returned home with military hygiene habits. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "While serving time in a late-18th-century English prison for inciting a riot, William Addis fashioned the first mass-producible version of X from a carved bone handle and boar bristles held in place by wire. He went on to die a wealthy man. In 1938, DuPont reworked X with nylon fibers, which proved sturdier and more efficient than animal hair. In the United States, daily use of X became widespread only after World War II veterans returned home with military hygiene habits. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
             "answer": "Toothbrush",
-            "hint": "It is used to clean your teeth."
+            "acceptedAnswers": [
+              "A toothbrush",
+              "Tooth brush"
+            ],
+            "hint": "Legend says Addis got the idea from a household sweeping tool, a broom."
           }
         ],
         "feedback": {
           "correct": "Correct!",
-          "incorrect": "Not quite. Think of the everyday hygiene tool William Addis helped popularize."
+          "incorrect": "Not quite."
         }
       },
       {
-        "id": "node-3b-prison-stage-2",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-2",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "Built between 1896 and 1906 with bricks from Burma, {{b1}} followed Jeremy Bentham's panopticon: seven wings radiated from a central watchtower, with cells positioned so each faced the back of another wing, preventing communication. In 1872, Viceroy Lord Mayo was assassinated by Sher Ali Afridi, a convict in the earlier penal settlement here. In 1942, Subhas Chandra Bose's Azad Hind government took notional control of the islands and hoisted the Indian National Flag. Only the watchtower and three wings survive today, and it became a national memorial in 1979. Its popular name evokes the sea crossing that threatened convicts with loss of caste. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "Built between 1896 and 1906 with bricks from Burma, X followed Jeremy Bentham's panopticon: seven wings radiated from a central watchtower, with cells positioned so each faced the back of another wing, preventing any communication. In 1872, the Viceroy Lord Mayo was assassinated by Sher Ali Afridi, a convict in the earlier penal settlement here. In 1942, Subhas Chandra Bose's Azad Hind government took notional control of the islands and hoisted the Indian National Flag. Only the watchtower and three wings survive today, and it became a national memorial in 1979. Its popular name also evokes the sea crossing that threatened convicts with loss of caste. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
-            "answer": "Cellular Jail",
-            "hint": "It is the historic prison in the Andaman Islands, also associated with the term Kala Pani."
+            "answer": "The Cellular Jail",
+            "acceptedAnswers": [
+              "Cellular Jail",
+              "Kala Pani",
+              "Kaala Pani",
+              "Kālā Pānī",
+              "Cellular Jail (Kala Pani)"
+            ],
+            "hint": "It stands at Port Blair in the Andaman Islands."
           }
         ],
         "feedback": {
-          "correct": "Correct! The answer is Cellular Jail, also known as Kala Pani.",
-          "incorrect": "Not quite. Think of the historic prison in the Andaman Islands."
+          "correct": "Correct!",
+          "incorrect": "Not quite."
         }
       },
       {
-        "id": "node-3b-prison-stage-3",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-3",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "{{b1}} is a psychological phenomenon in which large numbers of people share the same false memory. It was named by paranormal researcher Fiona Broome after she and others wrongly recalled a world leader dying in prison in the 1980s. Examples include people recalling the Monopoly Man wearing a monocle, remembering a cornucopia in the Fruit of the Loom logo, and misquoting a famous Star Wars line as \"Luke, I am your father\" instead of \"No, I am your father.\" Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "X is a psychological phenomenon in which large numbers of people share the same false memory, and it was named by paranormal researcher Fiona Broome after she and others wrongly recalled a world leader dying in prison in the 1980s. Here are a few examples of it: Many people recall the Monopoly Man wearing a monocle, but he never has. Many remember the Fruit of the Loom logo containing a cornucopia, which never existed. Many misquote a famous Star Wars line as \"Luke, I am your father,\" when the actual line is \"No, I am your father.\" Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
             "answer": "The Mandela Effect",
-            "hint": "It is named after Nelson Mandela and describes shared false memories."
+            "acceptedAnswers": [
+              "Mandela Effect"
+            ],
+            "hint": "It is named after the anti-apartheid leader who became South Africa’s president in 1994."
           }
         ],
         "feedback": {
-          "correct": "Correct! This phenomenon is known as the Mandela Effect.",
-          "incorrect": "Not quite. Think of the term for shared false memories."
+          "correct": "Correct!",
+          "incorrect": "Not quite."
         }
       },
       {
-        "id": "node-3b-prison-stage-4",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-4",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "Gandhi was jailed in 1908 in the same Johannesburg prison where Nelson Mandela was held 54 years later, in 1962. Its Section 4 now houses an exhibition on Gandhi, and a bust of him was unveiled nearby in 2012. In the mid-1990s, the Awaiting Trial Block where Mandela was held was demolished to make way for {{b1}}, which was built using the block's original bricks. It is now South Africa's highest court on matters of constitutional law. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "Gandhi was jailed in 1908 in the same Johannesburg prison where Nelson Mandela was held 54 years later, in 1962. Its Section 4 now houses an exhibition on Gandhi, and a bust of him was unveiled nearby in 2012. In the mid-1990s, the Awaiting Trial Block where Mandela was held was demolished to make way for X, which was built using the block's original bricks. X is now South Africa's highest court on matters of constitutional law. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
-            "answer": "Constitutional Court of South Africa",
-            "hint": "It is South Africa's highest court for constitutional matters and is located at Constitution Hill."
+            "answer": "The Constitutional Court of South Africa",
+            "acceptedAnswers": [
+              "Constitutional Court of South Africa",
+              "Constitutional Court",
+              "South African Constitutional Court",
+              "The Constitutional Court"
+            ],
+            "hint": "It is located in Braamfontein, Johannesburg, on a site that also holds a former fort and prison complex."
           }
         ],
         "feedback": {
-          "correct": "Correct! The answer is the Constitutional Court of South Africa.",
-          "incorrect": "Not quite. Think of South Africa's highest constitutional court."
+          "correct": "Correct!",
+          "incorrect": "Not quite."
         }
       },
       {
-        "id": "node-3b-prison-stage-5",
-        "type": "fill-blank-text",
-        "mapTitle": "Prison",
-        "mapSubtitle": "Identify X",
+        "id": "node-3b-stage-5",
         "question": "Identify X",
         "attemptsAllowed": 2,
         "points": 10,
-        "introLabel": "Text Blank",
-        "prompt": "{{b1}} is an improvised stabbing weapon in American prison slang, often made by melting a razor blade into the end of a toothbrush or by filing down a metal bucket handle. Its name comes from a steel support rib once found in men's boots and work boots, which 19th-century prisoners extracted and sharpened. In 1882, authorities holding Charles Guiteau confiscated his shoes for this very reason, though the slang then was \"cheeser.\" Its British counterpart derives its name from the Romani word for blade. Identify X.",
+        "introLabel": "Identify X",
+        "prompt": "X is an improvised stabbing weapon in American prison slang, often made by melting a razor blade into the end of a toothbrush or by filing down a metal bucket handle. Its name comes from a steel support rib once found in men's boots and work boots, which 19th-century prisoners extracted and sharpened. In 1882, authorities holding Charles Guiteau confiscated his shoes for this very reason, though the slang then was \"cheeser.\" Its British counterpart derives its name from the Romani word for blade. Identify X. {{b1}}",
         "blanks": [
           {
             "id": "b1",
             "answer": "Shank",
-            "hint": "It is a slang term for an improvised prison weapon."
+            "acceptedAnswers": [
+              "A shank"
+            ],
+            "hint": "It is also a cut of lamb or beef from the lower leg"
           }
         ],
         "feedback": {
-          "correct": "Correct! The answer is a shank.",
-          "incorrect": "Not quite. Think of the prison slang term for an improvised stabbing weapon."
+          "correct": "Correct!",
+          "incorrect": "Not quite."
         }
       }
     ]
@@ -1736,62 +1776,116 @@
   },
   {
     "type": "color-match",
-    "title": "Color",
-    "subtitle": "Drag each color to its story.",
+    "title": "Color Stories",
+    "subtitle": "Drag each color to its true story.",
     "subStages": [
       {
         "id": "node-9-stage-1",
-        "question": "Colors and their Stories",
+        "question": "Colors with Real Stories",
         "attemptsAllowed": 3,
         "points": 100,
-        "prompt": "",
-        "label": "",
+        "prompt": "When you finish this world, keep exploring the hidden colors around you.",
+        "introLabel": "Palette",
         "clues": [
           {
-            "id": "Saffron",
-            "hex": "#F4C430",
+            "id": "saffron",
+            "hex": "#F1A83D",
             "clue1": "It takes about 150,000 hand-picked, dried crocus flowers to produce just 1 kilogram of this dye.",
             "hint": "For most of history this dye traded at nearly the same value as gold and silver by weight. Only three stigmas can be hand-plucked per flower, which is why the price has never really dropped.",
-            "name": "Saffron"
+            "name": "Saffron",
+            "summary": {
+              "body": "Estimates run from 150,000 to 200,000 flowers per kilogram, and each flower gives only three stigmas, all picked by hand. Even an experienced harvester gets only about 60 to 80 grams a day.",
+              "sources": [
+                {
+                  "label": "Flora Incognita — Series: Spices 4",
+                  "url": "https://floraincognita.com/blog/2026/09/06/series-spices-4/"
+                }
+              ]
+            }
           },
           {
-            "id": "Prussian Blue",
+            "id": "prussianblue",
             "hex": "#003153",
             "clue1": "A dye-maker in 1704 was trying to invent a red pigment from crushed cochineal insects but accidentally created this instead.",
-            "hint": "The compound became an FDA-approved antidote for radioactive cesium and thallium poisoning, is stocked in nuclear emergency kits worldwide, enabled cyanotype blueprints, and was quickly adopted for Prussian army uniforms.",
-            "name": "Prussian Blue"
+            "hint": "The resulting compound is now an FDA-approved antidote for radioactive cesium and thallium poisoning, kept in nuclear emergency kits worldwide. It also gave photography the cyanotype process, the original technique behind architectural blueprints.",
+            "name": "Prussian Blue",
+            "summary": {
+              "body": "The accident is believed to have come from contaminated potash. The FDA found Prussian blue capsules safe and effective for treating internal contamination with radioactive caesium and thallium. It is also the pigment that forms in cyanotype (blueprint) prints.",
+              "sources": [
+                {
+                  "label": "Encyclopaedia Britannica — Biochemistry",
+                  "url": "https://www.britannica.com/science/chemistry/Biochemistry"
+                }
+              ]
+            }
           },
           {
-            "id": "Tyrian Purple",
+            "id": "tyrianpurple",
             "hex": "#66023C",
             "clue1": "Dye-makers had to crack open roughly 12,000 sea snails to extract enough gland fluid to color a single garment hem.",
             "hint": "In 2024, Paris Olympics organizers chose this exact hue for the running track at the Stade de France, the first time in Olympic history the surface was not red or blue.",
-            "name": "Tyrian Purple"
+            "name": "Tyrian Purple",
+            "summary": {
+              "body": "About 12,000 snails of one species yield only 1.4 grams of pure dye. A Greek historian of the 4th century BC reported that purple dye fetched its weight in silver.",
+              "sources": [
+                {
+                  "label": "History Skills — Tyrian Purple",
+                  "url": "https://www.historyskills.com/classroom/ancient-history/tyrian-purple/"
+                }
+              ]
+            }
           },
           {
-            "id": "Pompeian Red",
-            "hex": "#A4292E",
-            "clue1": "In 2023, scientists found that many walls at this ancient Roman site were never actually painted this color—it appeared by accident.",
-            "hint": "Lab analysis found the original pigment was yellow ochre, transformed within moments by superheated volcanic gas during the 79 CE eruption, inspiring the same colour on government buildings across many Indian cities.",
-            "name": "Pompeian Red"
+            "id": "pompeianred",
+            "hex": "#B33A3A",
+            "clue1": "In 2023, scientists found that many walls at this ancient Roman site were never actually painted this color — it appeared by accident.",
+            "hint": "Lab analysis showed the original pigment was yellow ochre, chemically transformed in moments by superheated volcanic gas during the 79 CE eruption.",
+            "name": "Pompeian Red",
+            "summary": {
+              "body": "The heat of the pyroclastic flow from Vesuvius in AD 79 turned some yellow ochre areas red. Today about 246 walls look red and 57 look yellow, but fewer were red before the eruption.",
+              "sources": [
+                {
+                  "label": "Analytical and Bioanalytical Chemistry",
+                  "url": "https://link.springer.com/article/10.1007/s00216-017-0329-3"
+                }
+              ]
+            }
           },
           {
-            "id": "Indigo",
+            "id": "indigo",
             "hex": "#4B0082",
             "clue1": "A dye helped start a movement against the British Raj in Colonial India.",
             "hint": "Colonial planters coercively forced Bengali and Bihari farmers to grow this crop for the European dye trade, sparking the 1859 revolt and later leading Gandhi to Champaran in 1917 for his first satyagraha.",
-            "name": "Indigo"
+            "name": "Indigo",
+            "summary": {
+              "body": "In 1859–60, Bengal peasants who were essentially being forced to grow indigo rebelled against British planters, and an official commission found they could not be compelled to grow it. Gandhi launched his first satyagraha in India in 1917, in Champaran, Bihar, against the same planters.",
+              "sources": [
+                {
+                  "label": "Britannica Kids — Indigo Revolt",
+                  "url": "https://kids.britannica.com/students/article/Indigo-Revolt/623607"
+                }
+              ]
+            }
           },
           {
-            "id": "Mummy Brown",
+            "id": "mummybrown",
             "hex": "#824B27",
             "clue1": "From the 1500s to the early 1900s, this paint was made by grinding up actual embalmed human remains.",
             "hint": "Art suppliers sourced Egyptian mummies specifically to grind their wrappings, resin, and tissue into pigment for oil painting.",
-            "name": "Mummy Brown"
+            "name": "Mummy Brown",
+            "summary": {
+              "body": "From the 1500s to the early 1900s, this paint was made from the remains of embalmed Egyptian mummies.",
+              "sources": [
+                {
+                  "label": "National Geographic — The strange story of mummy brown",
+                  "url": "https://www.nationalgeographic.com/history/article/mummy-art-painting-delacroix-pigment-ancient-Egypt"
+                }
+              ]
+            }
           }
         ],
         "feedback": {
-          "correct": "Great Eye!",
+          "correct": "Every color found its story. Great eye!",
           "incorrect": "Not quite — try again and watch for the small details."
         }
       }
