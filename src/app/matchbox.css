@@ -2535,7 +2535,7 @@ a.go.white-bg {
 .edition-feature-banner {
     padding: 8px 12px;
     background: var(--feature-accent);
-    color: var(--feature-accent-text);
+    color: #fff7e6;
     font: 400 16px/1 var(--font-abril), Georgia, serif;
     letter-spacing: .14em;
     text-align: center;
@@ -3583,11 +3583,11 @@ a.go.bg-white {
 /* summery */
 
 
-.sk.sk--embed {
-    margin: 0;
-    border: 0;
-    border-top: 2px solid var(--mb-ink);
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent
+.sk.sk--embed{margin:0;border:0;border-top:2px solid var(--mb-ink);border-radius:0;
+  box-shadow:none;background:transparent}
+
+
+
+.four-way-hint button{
+    width: 100% !important;
 }
