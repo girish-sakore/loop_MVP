@@ -23,6 +23,7 @@ function loadMatchPairs() {
     cache.set(filename, mod);
     mod.require = (id) => {
       if (id === "@/features/gameplay/scoring") return load("src/features/gameplay/scoring/index.ts");
+      if (id === "@/components/ui/image-lightbox") return { ImageLightbox: () => null };
       return require(id);
     };
     mod._compile(

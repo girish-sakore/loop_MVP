@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { matchPairQuestionId, stageQuestions } from "@/features/gameplay/scoring";
 import type { MatchPair, MatchPairsStage } from "@/types/gameplay";
 
@@ -50,32 +51,34 @@ function answerLabel(pair: MatchPair) {
   return pair.answer.caption ?? pair.answer.text ?? pair.answer.imageAlt ?? pair.id;
 }
 
-function AnswerContents({ pair }: { pair: MatchPair }) {
+function AnswerVisual({ pair }: { pair: MatchPair }) {
   const { answer } = pair;
-  const label = answer.caption ?? answer.text;
-  const hasVisual = Boolean(answer.image || answer.emoji || answer.background);
+
+  if (answer.image) {
+    return (
+      <ImageLightbox
+        src={answer.image}
+        alt={answer.imageAlt ?? answerLabel(pair)}
+        className="!h-[88px] !aspect-auto !border-2 !shadow-none"
+      />
+    );
+  }
+
+  if (!answer.emoji && !answer.background) return null;
 
   return (
-    <>
-      {hasVisual ? (
-        <div
-          className="flex w-full min-h-16 items-center justify-center overflow-hidden rounded-lg border-2 border-[#0b0b0f] bg-[#f6f2ec]"
-          style={answer.background ? { background: answer.background } : undefined}
-        >
-          {answer.image ? (
-            <img
-              src={answer.image}
-              alt={answer.imageAlt ?? label ?? ""}
-              className="h-full min-h-16 w-full object-cover"
-            />
-          ) : answer.emoji ? (
-            <span aria-hidden="true" className="text-4xl leading-none">{answer.emoji}</span>
-          ) : null}
-        </div>
-      ) : null}
-      {label ? <span className="text-center text-[14px] font-extrabold leading-snug">{label}</span> : null}
-    </>
+    <div
+      className="flex h-16 w-full items-center justify-center overflow-hidden rounded-lg border-2 border-[#0b0b0f] bg-[#f6f2ec]"
+      style={answer.background ? { background: answer.background } : undefined}
+    >
+      {answer.emoji ? <span aria-hidden="true" className="text-3xl leading-none">{answer.emoji}</span> : null}
+    </div>
   );
+}
+
+function AnswerLabel({ pair }: { pair: MatchPair }) {
+  const label = answerLabel(pair);
+  return <span className="block text-center text-[11px] font-extrabold leading-[1.05]">{label}</span>;
 }
 
 function MatchPairsIntro({ stage, onStart, disabled }: IntroProps) {
@@ -246,11 +249,11 @@ export function MatchPairsInteraction({
   const progress = Math.round((answeredCount / total) * 100);
 
   return (
-    <div className="min-h-[calc(100dvh-86px)] bg-[#f6f2ec] px-4 pb-8 pt-6 text-[#0b0b0f]">
-      <header className="mb-5 text-center">
-        <p className="text-sm font-semibold text-[#746a5c]">{stage.eyebrow ?? "Today’s Puzzle"}</p>
-        <h1 className="mt-1 font-serif text-[32px] font-bold leading-none tracking-tight">{stage.title ?? stage.mapTitle}</h1>
-        <p className="mt-2 text-sm font-semibold text-[#746a5c]">{correctCount} correct · {answeredCount} of {total} answered</p>
+    <div className="flex h-[calc(100dvh-86px)] flex-col overflow-hidden bg-[#f6f2ec] px-3 pb-4 pt-5 text-[#0b0b0f]">
+      <header className="mb-4 shrink-0 text-center">
+        <p className="text-xs font-semibold text-[#746a5c]">{stage.eyebrow ?? "Today’s Puzzle"}</p>
+        <h1 className="mt-1 font-serif text-[26px] font-bold leading-none tracking-tight">{stage.title ?? stage.mapTitle}</h1>
+        <p className="mt-1.5 text-xs font-semibold text-[#746a5c]">{correctCount} correct · {answeredCount} of {total} answered</p>
         <div
           className="mx-auto mt-3 h-2 w-full max-w-[360px] overflow-hidden rounded-full border-2 border-[#0b0b0f] bg-[#fffdf7]"
           aria-label={`${answeredCount} of ${total} pairs answered`}
@@ -261,11 +264,13 @@ export function MatchPairsInteraction({
         >
           <div className="h-full bg-[#85cb57] transition-[width] duration-300" style={{ width: `${progress}%` }} />
         </div>
-        <p className="mt-3 text-[13px] font-bold text-[#343238]">{stage.prompt}</p>
+        <p className="mt-2.5 text-[12px] font-bold text-[#343238]">{stage.prompt}</p>
       </header>
 
-      <div className="grid grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] gap-3" aria-label="Match clues with answers">
-        <div className="flex flex-col gap-3">
+      <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] gap-2.5" aria-label="Match clues with answers">
+        <div
+          className="flex min-h-0 min-w-0 flex-col gap-2.5 overflow-y-auto overscroll-contain pr-1"
+        >
           {round.clueIds.map((id) => {
             const pair = pairsById.get(id);
             if (!pair) return null;
@@ -279,7 +284,7 @@ export function MatchPairsInteraction({
                 disabled={disabled || busy || Boolean(status)}
                 aria-pressed={isSelected}
                 onClick={() => choose("clue", id)}
-                className={`rounded-[14px] border-2 border-b-4 px-3 py-3 text-left text-[14px] font-bold leading-snug transition ${status === "correct" ? "border-[#4c9a1f] bg-[#d9f2c4] opacity-45" : incorrect ? "border-[#d33a2c] bg-[#ffd6d2] animate-pulse" : isSelected ? "bg-[#fff1c2] translate-y-0.5" : "bg-[#fffdf7] active:translate-y-0.5"}`}
+                className={`rounded-[12px] border-2 border-b-4 px-2.5 py-2.5 text-left text-[14px] font-bold leading-snug transition ${status === "correct" ? "border-[#4c9a1f] bg-[#d9f2c4] opacity-45" : incorrect ? "border-[#d33a2c] bg-[#ffd6d2] animate-pulse" : isSelected ? "bg-[#fff1c2] translate-y-0.5" : "bg-[#fffdf7] active:translate-y-0.5"}`}
               >
                 {pair.clue}
               </button>
@@ -287,24 +292,49 @@ export function MatchPairsInteraction({
           })}
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div
+          className="flex min-h-0 min-w-0 flex-col gap-2.5 overflow-y-auto overscroll-contain pr-1"
+        >
           {round.answerIds.map((id) => {
             const pair = pairsById.get(id);
             if (!pair) return null;
             const matched = statusById[id] === "correct";
             const isSelected = selected?.side === "answer" && selected.id === id;
             const incorrect = incorrectPair?.answerId === id;
+            const cardStyles = `rounded-[12px] border-2 border-b-4 p-1.5 transition ${matched ? "border-[#4c9a1f] bg-[#d9f2c4] opacity-45" : incorrect ? "border-[#d33a2c] bg-[#ffd6d2] animate-pulse" : isSelected ? "bg-[#fff1c2] translate-y-0.5" : "bg-[#fffdf7]"}`;
+            const selectAnswer = () => choose("answer", id);
+            const answerButtonProps = {
+              type: "button" as const,
+              disabled: disabled || busy || matched,
+              "aria-label": `Answer: ${answerLabel(pair)}`,
+              "aria-pressed": isSelected,
+              onClick: selectAnswer,
+            };
+
+            // The lightbox is a button of its own, so image answers use their
+            // caption as the matching button rather than nesting buttons.
+            if (pair.answer.image) {
+              return (
+                <div key={id} className={`flex min-w-0 flex-col items-center gap-1 ${cardStyles}`}>
+                  <AnswerVisual pair={pair} />
+                  <button
+                    {...answerButtonProps}
+                    className="w-full rounded-md px-1 py-0 text-center leading-none active:bg-[#fff1c2] disabled:cursor-not-allowed"
+                  >
+                    <AnswerLabel pair={pair} />
+                  </button>
+                </div>
+              );
+            }
+
             return (
               <button
                 key={id}
-                type="button"
-                disabled={disabled || busy || matched}
-                aria-label={`Answer: ${answerLabel(pair)}`}
-                aria-pressed={isSelected}
-                onClick={() => choose("answer", id)}
-                className={`flex min-h-16 flex-col items-center justify-center gap-2 rounded-[14px] border-2 border-b-4 p-2 transition ${matched ? "border-[#4c9a1f] bg-[#d9f2c4] opacity-45" : incorrect ? "border-[#d33a2c] bg-[#ffd6d2] animate-pulse" : isSelected ? "bg-[#fff1c2] translate-y-0.5" : "bg-[#fffdf7] active:translate-y-0.5"}`}
+                {...answerButtonProps}
+                className={`flex min-h-16 w-full flex-col items-center justify-center gap-1.5 ${cardStyles} active:translate-y-0.5`}
               >
-                <AnswerContents pair={pair} />
+                <AnswerVisual pair={pair} />
+                <AnswerLabel pair={pair} />
               </button>
             );
           })}
