@@ -155,6 +155,9 @@ const fourWaySwipe = z.object({
   ...base,
   category: optText,
   prompt: optText,
+  image: imageUrl.optional(),
+  imageAlt: optText,
+  clue: optText,
   answers: z.object({
     up: z.object({ label: text, icon: optText }),
     down: z.object({ label: text, icon: optText }),
@@ -164,7 +167,7 @@ const fourWaySwipe = z.object({
   correctDirection: direction,
   feedback,
 }).superRefine((s, ctx) => {
-  if (s.hints || s.hintsAllowed !== undefined) bad(ctx, "Hints are not supported for four-way-swipe");
+  checkHints([s], ctx, []);
 });
 
 const dragDrop = z.object({
