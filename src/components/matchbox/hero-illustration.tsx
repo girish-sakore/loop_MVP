@@ -57,7 +57,6 @@ const BURST = Array.from({ length: 14 }, (_, i) => {
 function Backdrop() {
   return (
     <>
-      <path d={BURST} fill={R2} opacity=".42" />
       <circle cx="30" cy="70" r="4" fill={R1} />
       <circle cx="214" cy="58" r="3.5" fill={R1} />
       <circle cx="208" cy="132" r="4" fill={R1} />
