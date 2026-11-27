@@ -2343,8 +2343,9 @@
 }
 
 a.go.white-bg {
-    background: transparent;
-    color: #1e1b2e;
+    /* filter: saturate(.52); */
+    /* background: transparent; */
+    /* color: #1e1b2e; */
 }
 
 .map-hub .hub-streak-count {
@@ -2886,7 +2887,8 @@ a.go.bg-white {
 }
 
 .mb-page.profile-page {
-    background: var(--mb-dcream);
+    /* background: var(--mb-dcream); */
+    background: #f1e6cc;
     color: var(--mb-ink);
 }
 
@@ -3172,17 +3174,17 @@ a.go.bg-white {
 }
 
 /* The dock is a sibling of the profile page, so give it the same active palette. */
-.profile-page + .mb .mb-nav {
+.profile-page+.mb .mb-nav {
     border-color: var(--mb-ink);
     background: var(--mb-cream);
     box-shadow: 5px 5px 0 var(--mb-ink);
 }
 
-.profile-page + .mb .mb-tab {
+.profile-page+.mb .mb-tab {
     color: var(--mb-ink);
 }
 
-.profile-page + .mb .mb-tab[aria-current=page] {
+.profile-page+.mb .mb-tab[aria-current=page] {
     border-color: var(--mb-ink);
     background: var(--mb-ink);
     color: var(--mb-cream);
@@ -3629,11 +3631,17 @@ a.go.bg-white {
 /* summery */
 
 
-.sk.sk--embed{margin:0;border:0;border-top:2px solid var(--mb-ink);border-radius:0;
-  box-shadow:none;background:transparent}
+.sk.sk--embed {
+    margin: 0;
+    border: 0;
+    border-top: 2px solid var(--mb-ink);
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent
+}
 
 
 
-.four-way-hint button{
+.four-way-hint button {
     width: 100% !important;
 }
