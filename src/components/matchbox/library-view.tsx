@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import ThemePicker from "./theme-picker";
 
 export interface LibraryEdition {
   id: string;

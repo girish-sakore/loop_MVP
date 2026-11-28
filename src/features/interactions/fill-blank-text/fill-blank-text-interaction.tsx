@@ -9,6 +9,8 @@ import { useInteractionProgress } from "@/features/gameplay/progress/use-interac
 import type { FillBlankTextStage, StageHints } from "@/types/gameplay";
 import { HintButton } from "@/components/hints/hint-button";
 import { HintSheet } from "@/components/hints/hint-sheet";
+import { matchesAnswer } from "@/features/interactions/shared/answer-match";
+
 
 type Option = FillBlankTextStage["blanks"][number];
 type CardStatus = "unanswered" | "correct" | "wrong" | "skipped";
@@ -57,28 +59,10 @@ function normalizeAnswer(raw: string, answer: string): string {
   }
   return out;
 }
-function canon(s: string): string {
-  return s
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/['’]/g, "")
-    .replace(/[^\p{L}\p{N}\s]/gu, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/^(the|a|an)\s+/, ""); // "The Mandela Effect" == "Mandela Effect"
-}
-
 function isBlankCorrect(blank: Option, value: string, freeText: boolean): boolean {
   const candidates = [blank.answer, ...(blank.acceptedAnswers ?? [])];
-  if (freeText) {
-    const u = canon(value);
-    return candidates.some((a) => canon(a) === u);
-  }
-  // Letters mode: ignore spacing, since the boxes lay out spaces from `answer`.
-  const squash = (s: string) => canon(s).replace(/\s+/g, "");
-  const u = squash(value);
-  return candidates.some((a) => squash(a) === u);
+  // Fuzzy only in free-text mode. Letters mode has fixed boxes, so typos would just be wrong letters.
+  return matchesAnswer(candidates, value, { fuzzy: freeText });
 }
 export function FillBlankTextInteraction({
   stage: singleStage,

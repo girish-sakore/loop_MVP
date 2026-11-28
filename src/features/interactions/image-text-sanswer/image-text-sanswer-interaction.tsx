@@ -7,6 +7,7 @@ import { STAGE_GROUP } from "@/features/gameplay/hints/registry";
 import { HintButton } from "@/components/hints/hint-button";
 import { HintSheet } from "@/components/hints/hint-sheet";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
+import { matchesAnswer } from "@/features/interactions/shared/answer-match";
 
 type Props = {
   stage: ImageTextSAnswerStage;
@@ -46,7 +47,11 @@ export function ImageTextSAnswerInteraction({
   function handleCheckGuess() {
     if (disabled || !guess.trim() || isSubmitted) return;
 
-    const correct = guess.toLowerCase().trim() === stage.answer.toLowerCase().trim();
+    const correct = matchesAnswer(
+      [stage.answer, ...(stage.acceptedAnswers ?? [])],
+      guess,
+      { fuzzy: true },
+    );
     setIsSubmitted(true);
     onAnswer({ correct, feedback: correct ? "Correct!" : "Not quite. Try again!" });
   }
