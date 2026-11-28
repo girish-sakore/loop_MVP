@@ -1402,6 +1402,16 @@
         "introLabel": "Visual Guess",
         "image": "scream_by_edvard_munch.jpg",
         "answer": "The Scream",
+        "acceptedAnswers": [
+          "Skrik",
+          "The Cry",
+          "Der Schrei",
+          "The Scream of Nature",
+          "Screem",
+          "The Screem",
+          "Screaming",
+          "The Scram"
+        ],
         "hint": "The artist behind this work was a Norwegian painter whose art often explored anxiety, loneliness, love, and death.",
         "feedback": {
           "correct": "Correct! The Scream is a painting by Edvard Munch.",
@@ -1419,6 +1429,18 @@
         "introLabel": "Visual Guess",
         "image": "las_meninas_by_diego_velazquez.jpg",
         "answer": "Las Meninas",
+        "acceptedAnswers": [
+          "Meninas",
+          "The Ladies-in-Waiting",
+          "The Maids of Honour",
+          "The Maids of Honor",
+          "The Family of Philip IV",
+          "Las Menina",
+          "Las Maninas",
+          "La Meninas",
+          "Las Meninias",
+          "Las Mininas"
+        ],
         "hint": "The title of this painting refers to the young women who served at the Spanish royal court. Look at the little girl in the centre—she is Infanta Margarita, the daughter of King Philip IV, surrounded by her ladies-in-waiting.",
         "feedback": {
           "correct": "Correct! Las Meninas by Diego Velázquez.",
@@ -1436,6 +1458,17 @@
         "introLabel": "Visual Guess",
         "image": "the_swing_by_jean-honore_fragonard.jpg",
         "answer": "The Swing",
+        "acceptedAnswers": [
+          "The Swinging",
+          "The Happy Accidents of the Swing",
+          "The Happy Accidents on the Swing",
+          "Les Hasards heureux de l'escarpolette",
+          "L'Escarpolette",
+          "Girl on a Swing",
+          "The Girl on the Swing",
+          "Lady on a Swing",
+          "The Swng"
+        ],
         "hint": "The painting was originally commissioned as a romantic scene involving a young woman, her lover, and her husband.",
         "feedback": {
           "correct": "Correct! The Swing by Jean-Honoré Fragonard.",
@@ -1453,6 +1486,17 @@
         "introLabel": "Visual Guess",
         "image": "musicians_by_caravaggio.jpg",
         "answer": "The Musicians",
+        "acceptedAnswers": [
+          "Musicians",
+          "The Musician",
+          "The Concert",
+          "Concert of Youths",
+          "The Concert of Youth",
+          "The Musicans",
+          "The Musitians",
+          "Musitians",
+          "I Musici"
+        ],
         "hint": "Look closely at the figures. They are dressed in elaborate, almost theatrical clothing, and several are holding or playing musical instruments.",
         "feedback": {
           "correct": "Correct! It's The Musicians by Caravaggio.",
@@ -1470,6 +1514,17 @@
         "introLabel": "Visual Guess",
         "image": "primavera_by_sandro_botticelli.jpg",
         "answer": "Primavera",
+        "acceptedAnswers": [
+          "La Primavera",
+          "Spring",
+          "Allegory of Spring",
+          "Primvera",
+          "Primavara",
+          "Primevera",
+          "Primavere",
+          "Primaveira",
+          "Primavea"
+        ],
         "hint": "The central figure is Venus, the Roman goddess of love, surrounded by other mythological characters.",
         "feedback": {
           "correct": "Correct! The painting is Primavera by Sandro Botticelli.",
@@ -1487,6 +1542,17 @@
         "introLabel": "Visual Guess",
         "image": "the_gleaners_by_jean-francois_millet.jpg",
         "answer": "The Gleaners",
+        "acceptedAnswers": [
+          "The Gleaner",
+          "Gleaner",
+          "Des glaneuses",
+          "Les Glaneuses",
+          "Glaneuses",
+          "The Gleeners",
+          "Gleeners",
+          "The Gleners",
+          "The Gleaner's"
+        ],
         "hint": "The title comes from the act of collecting the small amounts of grain left behind after harvesting.",
         "feedback": {
           "correct": "Correct! It is The Gleaners by Jean-François Millet.",
@@ -1504,6 +1570,15 @@
         "introLabel": "Visual Guess",
         "image": "olympia_by_edouard_manet.jpg",
         "answer": "Olympia",
+        "acceptedAnswers": [
+          "Olimpia",
+          "Olympya",
+          "Olympai",
+          "Olympea",
+          "Olimpya",
+          "Olympiya",
+          "Olympa"
+        ],
         "hint": "The title is a woman's name that was often associated with courtesans in 19th-century Paris.",
         "feedback": {
           "correct": "Correct! The painting is Olympia by Édouard Manet.",
@@ -1521,6 +1596,17 @@
         "introLabel": "Visual Guess",
         "image": "the_astronomer_by_johannes_vermeer.jpg",
         "answer": "The Astronomer",
+        "acceptedAnswers": [
+          "Astronomer",
+          "L'Astronome",
+          "The Astrologer",
+          "Astrologer",
+          "The Astronmer",
+          "The Astonomer",
+          "The Astronomor",
+          "Astronomar",
+          "The Astrnomer"
+        ],
         "hint": "The person in the painting is studying the stars and planets rather than the Earth; his profession gives the painting its title.",
         "feedback": {
           "correct": "Correct! It is The Astronomer by Johannes Vermeer.",
@@ -1538,6 +1624,17 @@
         "introLabel": "Visual Guess",
         "image": "the_night_cafe_by_vincent_van_gogh.jpg",
         "answer": "The Night Cafe",
+        "acceptedAnswers": [
+          "Night Cafe",
+          "Le Café de nuit",
+          "Cafe de nuit",
+          "The Night Cafe in Arles",
+          "Night Cafe Arles",
+          "The Nite Cafe",
+          "The Night Caffe",
+          "The Night Caffee",
+          "The Night Coffee"
+        ],
         "hint": "The title tells you both when the scene takes place and the kind of place we are looking at.",
         "feedback": {
           "correct": "Correct! The painting is The Night Cafe by Vincent van Gogh.",
@@ -1555,6 +1652,17 @@
         "introLabel": "Visual Guess",
         "image": "Water_Lilies_by_Claude_Monet.jpg",
         "answer": "Water Lilies",
+        "acceptedAnswers": [
+          "Waterlilies",
+          "Water Lily",
+          "Waterlily",
+          "Nymphéas",
+          "Les Nymphéas",
+          "Water Lillies",
+          "Waterlillies",
+          "Water Lilys",
+          "Water Lilly"
+        ],
         "hint": "The French artist painted this subject again and again, inspired by the water garden at his home in Giverny.",
         "feedback": {
           "correct": "Correct! It is Water Lilies by Claude Monet.",

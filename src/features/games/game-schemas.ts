@@ -302,6 +302,7 @@ const imageTextAnswer = z.object({
   ...base,
   image: imageUrl,
   answer: text,
+  acceptedAnswers: z.array(text).max(10).optional(),
   hint: optText,
   introLabel: optText,
   feedback: feedback.optional(),

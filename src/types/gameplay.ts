@@ -344,15 +344,12 @@ export type Edition = {
   author?: string;
   coverImage?: string | null;
 };
-
 export type ImageTextSAnswerStage = StageBase & {
   type: "image-text-answer";
   image: string;
   answer: string;
+  acceptedAnswers?: string[];
   hint?: string;
   introLabel?: string;
-  feedback?: {
-    correct: string;
-    incorrect: string;
-  };
+  feedback?: { correct: string; incorrect: string };
 };

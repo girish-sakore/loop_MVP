@@ -46,13 +46,7 @@ function Cloud({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
   );
 }
 
-/* Sunburst backdrop shared by every illustration */
-const BURST = Array.from({ length: 14 }, (_, i) => {
-  const a1 = (i * 2 * Math.PI) / 14;
-  const a2 = a1 + Math.PI / 14;
-  const p = (a: number) => `${(120 + 140 * Math.cos(a)).toFixed(1)} ${(98 + 140 * Math.sin(a)).toFixed(1)}`;
-  return `M120 98L${p(a1)}L${p(a2)}Z`;
-}).join("");
+
 
 function Backdrop() {
   return (
