@@ -634,21 +634,10 @@
   --muted: color-mix(in srgb, var(--ink) 60%, transparent);
   --display: "Anton", "Bebas Neue", Impact, "Arial Narrow", sans-serif;
   --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  color-scheme: light;
+  /* Do not let the browser's preferred dark scheme recolor this UI. */
+  color-scheme: only light;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
-}
-
-@media (prefers-color-scheme:dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #17140f;
-    --card: #25201a;
-    --ink: #f4ecdc;
-    --sh: #000;
-    --sheet: #0d0b08;
-    --on-sheet: #f4ecdc;
-    color-scheme: dark;
-  }
 }
 
 :root[data-theme="dark"] {

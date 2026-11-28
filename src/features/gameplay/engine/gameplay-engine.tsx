@@ -29,6 +29,8 @@ import { createHintsApi } from "@/features/gameplay/hints/api";
 import { buildHintPlan, usageKey } from "@/features/gameplay/hints/registry";
 import { closePreviewTab } from "@/features/gameplay/preview/close-preview";
 import { deckStages, nextIndexAfterStage } from "@/features/gameplay/engine/deck";
+import { assetUrl } from "@/lib/assets";
+import { collectImages } from "@/lib/image-refs";
 
 interface GameplayEngineProps {
   editionId: string;
@@ -47,6 +49,36 @@ interface GameplayEngineProps {
 }
 
 const EMPTY: string[] = [];
+const IMAGE_PREFETCH_CONCURRENCY = 2;
+const IMAGE_PREFETCH_STAGE_WINDOW = 3; // Current stage plus the next two.
+
+// Kept for the lifetime of the gameplay bundle so a retry, replay, or React
+// remount never starts another request for an image that was already warmed.
+const requestedImageUrls = new Set<string>();
+
+function prefetchImages(urls: readonly string[]) {
+  const pending = urls.filter((url) => {
+    if (requestedImageUrls.has(url)) return false;
+    requestedImageUrls.add(url);
+    return true;
+  });
+  let next = 0;
+
+  function loadNext() {
+    const src = pending[next++];
+    if (!src) return;
+
+    const image = new window.Image();
+    image.decoding = "async";
+    image.onload = loadNext;
+    image.onerror = loadNext;
+    image.src = src;
+  }
+
+  for (let index = 0; index < Math.min(IMAGE_PREFETCH_CONCURRENCY, pending.length); index += 1) {
+    loadNext();
+  }
+}
 
 /**
  * ColorMatch used to submit one stage-level answer. A saved board that was
@@ -119,6 +151,21 @@ export function GameplayEngine({
   const sessionKey = isReplay ? `${gameplayKey}:replay` : gameplayKey;
   const introDismissed = introState?.key === sessionKey ? introState.dismissed : false;
   const ready = initializedKey === sessionKey;
+  const imageUrlsToPrefetch = useMemo(
+    () => [...new Set(
+      collectImages(stages.slice(currentStage, currentStage + IMAGE_PREFETCH_STAGE_WINDOW))
+        .map(assetUrl),
+    )],
+    [currentStage, stages],
+  );
+
+  // The first run is while the guide is visible. On later substages this moves
+  // forward with the player, keeping upcoming image-heavy screens ready
+  // without downloading a whole long game upfront.
+  useEffect(() => {
+    if (!ready) return;
+    prefetchImages(imageUrlsToPrefetch);
+  }, [imageUrlsToPrefetch, ready]);
 
   const applySnapshot = useCallback((snapshot: GameplaySnapshot) => {
     restore(snapshot);

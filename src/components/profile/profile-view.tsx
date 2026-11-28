@@ -89,9 +89,12 @@ export default function ProfileView({
           <b>Unlock every past edition</b>
           <Link href="/pricing" className="premium-promo-action">Go Premium</Link>
         </div>
-      ) :
-        <div className="library-theme-picker"><ThemePicker /></div>
-      }
+      ) : (
+        <>
+          <div className="profile-section-title">Theme</div>
+          <div className="profile-theme-picker"><ThemePicker /></div>
+        </>
+      )}
 
 
       <section className="profile-stats" aria-label="Your stats">
